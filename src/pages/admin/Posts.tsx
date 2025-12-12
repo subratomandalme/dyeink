@@ -103,9 +103,7 @@ export default function Posts() {
                                                 {post.title}
                                             </Link>
                                         </div>
-                                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={post.slug}>
-                                            {post.slug}
-                                        </div>
+
                                     </td>
                                     <td style={{ padding: '1.25rem 1rem', verticalAlign: 'top' }}>
                                         <span style={{
