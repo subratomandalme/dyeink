@@ -1,18 +1,19 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useParams } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
 import type { Post } from '../types'
 import { format } from 'date-fns'
 // import ColorBends from '../components/common/ColorBends'
 import ThemeToggle from '../components/common/ThemeToggle'
-import { Share2, Twitter, Linkedin, Github, Globe } from 'lucide-react'
+import { Share2, Twitter, Linkedin, Github, Globe, ArrowLeft } from 'lucide-react'
 import { useToast } from '../components/common/Toast'
 import { useCodeCopy } from '../hooks/useCodeCopy'
 import SubscribeModal from '../components/common/SubscribeModal'
 import UpvoteButton from '../components/common/UpvoteButton'
 
 export default function Blog() {
+    const { slug } = useParams()
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -73,14 +74,16 @@ export default function Blog() {
     }, [])
 
     // Search & Pagination Logic - Filter by Search AND Published status
-    const filteredPosts = posts.filter(post =>
-        post.published && post.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const filteredPosts = posts.filter(post => {
+        if (!post.published) return false
+        if (slug) return post.slug === slug
+        return post.title.toLowerCase().includes(searchTerm.toLowerCase())
+    })
 
     const totalPages = Math.ceil(filteredPosts.length / itemsPerPage)
     const indexOfLastPost = currentPage * itemsPerPage
     const indexOfFirstPost = indexOfLastPost - itemsPerPage
-    const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost)
+    const currentPosts = slug ? filteredPosts : filteredPosts.slice(indexOfFirstPost, indexOfLastPost)
 
     const handlePageChange = (page: number) => {
         setSearchParams({ page: page.toString() })
