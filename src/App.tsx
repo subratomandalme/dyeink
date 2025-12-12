@@ -71,6 +71,7 @@ function App() {
 
                 {/* Public Route (Always accessible) */}
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<Blog />} />
                 {/* PostView route removed */}
 
                 {/* Auth Routes (PublicOnly?) - Keeping accessible for now, or could wrap in PublicRoute */}
