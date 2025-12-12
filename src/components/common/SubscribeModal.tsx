@@ -92,16 +92,7 @@ export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps)
                 ) : (
                     <>
                         <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-                            <div style={{
-                                display: 'inline-flex',
-                                padding: '0.75rem',
-                                borderRadius: '50%',
-                                background: 'var(--bg-secondary)',
-                                color: 'var(--text-primary)',
-                                marginBottom: '1rem'
-                            }}>
-                                <Mail size={24} />
-                            </div>
+
                             <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.5rem 0', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
                                 Stay in the loop
                             </h3>
