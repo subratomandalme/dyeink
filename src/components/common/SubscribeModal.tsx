@@ -1,6 +1,6 @@
 
 import { useState } from 'react'
-import { X, Mail, Loader2, CheckCircle } from 'lucide-react'
+import { X, Loader2, CheckCircle } from 'lucide-react'
 import { subscribeService } from '../../services/subscribeService'
 import { useToast } from './Toast'
 
