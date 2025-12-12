@@ -28,8 +28,8 @@ export default function AdminLayout() {
 
         if (isCreateHovered) {
             if (isDark) {
-                // Dark Mode Hover: Top-Left=White(15%), Bottom-Right=FaintWhite(5%) for visibility on #000
-                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5)'
+                // Dark Mode Hover: Orange Bottom Glow
+                return '0 0 20px rgba(255, 94, 0, 0.4), 0 5px 10px rgba(255, 94, 0, 0.2), -1px -1px 5px rgba(255,255,255,0.1)'
             }
             return '-1px -1px 5px rgba(255,255,255,0.6), 1px 1px 5px rgba(0,0,0,0.3), inset -2px -2px 5px rgba(255,255,255,1), inset 2px 2px 4px rgba(0,0,0,0.3)'
         } else {
