@@ -5,6 +5,8 @@ import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
 
+import { supabase } from '../lib/supabase'
+
 export default function Register() {
     const navigate = useNavigate()
     const [name, setName] = useState('')
@@ -17,17 +19,15 @@ export default function Register() {
         setLoading(true)
 
         try {
-            const { data, error } = await import('../lib/supabase').then(m =>
-                m.supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            name: name
-                        }
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        name: name
                     }
-                })
-            )
+                }
+            })
 
             if (error) throw error
 
