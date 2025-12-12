@@ -155,7 +155,6 @@ export default function Blog() {
                         >
                             Subscribe by Email
                         </button>
-                        <SubscribeModal isOpen={isSubscribeOpen} onClose={() => setIsSubscribeOpen(false)} />
 
                         <div style={{ margin: '1rem 0' }}>
                             <input
@@ -378,11 +377,13 @@ export default function Blog() {
                 </main>
             </div>
 
+            <SubscribeModal isOpen={isSubscribeOpen} onClose={() => setIsSubscribeOpen(false)} />
+
             <style>{`
-    .sidebar - link {
-    color: var(--text - secondary);
-    text - decoration: none;
-    font - size: 1rem;
+    .sidebar-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1rem;
     transition: color 0.2s;
 }
                 .sidebar - link:hover {

@@ -40,7 +40,7 @@ export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps)
         <div style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 9999,
+            zIndex: 2147483647, // Max z-index to prevent anything bleeding through
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
