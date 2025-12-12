@@ -1,5 +1,5 @@
-
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { X, Loader2, CheckCircle } from 'lucide-react'
 import { subscribeService } from '../../services/subscribeService'
 import { useToast } from './Toast'
@@ -36,11 +36,11 @@ export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps)
         }
     }
 
-    return (
+    return createPortal(
         <div style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 2147483647, // Max z-index to prevent anything bleeding through
+            zIndex: 2147483647, // Max z-index
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -161,6 +161,7 @@ export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps)
                     to { opacity: 1; }
                 }
             `}</style>
-        </div>
+        </div>,
+        document.body
     )
 }
