@@ -97,7 +97,7 @@ export default function Posts() {
                         <tbody>
                             {filteredPosts.map((post) => (
                                 <tr key={post.id} className="hover-row">
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'top', maxWidth: '300px' }}>
+                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle', maxWidth: '300px' }}>
                                         <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                             <Link to={`/admin/posts/${post.id}/edit`} style={{ color: 'inherit', textDecoration: 'none' }} title={post.title}>
                                                 {post.title}
@@ -105,7 +105,7 @@ export default function Posts() {
                                         </div>
 
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'top' }}>
+                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle' }}>
                                         <span style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
@@ -121,10 +121,10 @@ export default function Posts() {
                                             {post.published ? 'Published' : 'Draft'}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', color: 'var(--text-muted)', fontSize: '0.9rem', verticalAlign: 'top' }}>
+                                    <td style={{ padding: '1.25rem 1rem', color: 'var(--text-muted)', fontSize: '0.9rem', verticalAlign: 'middle' }}>
                                         {format(new Date(post.createdAt), 'MMM d, yyyy')}
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', textAlign: 'right', verticalAlign: 'top' }}>
+                                    <td style={{ padding: '1.25rem 1rem', textAlign: 'right', verticalAlign: 'middle' }}>
                                         <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                                             <Link
                                                 to={`/admin/posts/${post.id}/edit`}
