@@ -141,7 +141,13 @@ export default function Blog() {
                     </div>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        <Link to="/admin" className="sidebar-link" style={{ fontSize: '0.95rem' }}>Home</Link>
+                        {slug ? (
+                            <Link to="/blog" className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <ArrowLeft size={16} /> All Posts
+                            </Link>
+                        ) : (
+                            <Link to="/admin" className="sidebar-link" style={{ fontSize: '0.95rem' }}>Home</Link>
+                        )}
 
                         <button
                             onClick={() => setIsSubscribeOpen(true)}
@@ -159,26 +165,28 @@ export default function Blog() {
                             Subscribe by Email
                         </button>
 
-                        <div style={{ margin: '1rem 0' }}>
-                            <input
-                                type="text"
-                                placeholder="Search here..."
-                                value={searchTerm}
-                                onChange={(e) => {
-                                    setSearchTerm(e.target.value)
-                                    setSearchParams({ page: '1' }) // Reset to page 1 on search
-                                }}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.5rem',
-                                    fontSize: '0.9rem',
-                                    border: '1px solid var(--border-color)',
-                                    background: 'transparent',
-                                    borderRadius: '4px',
-                                    color: 'var(--text-primary)'
-                                }}
-                            />
-                        </div>
+                        {!slug && (
+                            <div style={{ margin: '1rem 0' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search here..."
+                                    value={searchTerm}
+                                    onChange={(e) => {
+                                        setSearchTerm(e.target.value)
+                                        setSearchParams({ page: '1' }) // Reset to page 1 on search
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.5rem',
+                                        fontSize: '0.9rem',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'transparent',
+                                        borderRadius: '4px',
+                                        color: 'var(--text-primary)'
+                                    }}
+                                />
+                            </div>
+                        )}
 
                         <div style={{ marginTop: '0rem', display: 'flex', gap: '1rem' }}>
                             {twitterLink && (
@@ -282,7 +290,7 @@ export default function Blog() {
                                             overflowWrap: 'anywhere',
                                             wordBreak: 'break-word'
                                         }}>
-                                            {post.title}
+                                            {slug ? post.title : <Link to={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{post.title}</Link>}
                                         </h2>
                                     </header>
 
@@ -312,7 +320,8 @@ export default function Blog() {
 
                                             <button
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(window.location.href)
+                                                    const permalink = window.location.origin + '/blog/' + post.slug
+                                                    navigator.clipboard.writeText(permalink)
                                                     addToast({
                                                         type: 'success',
                                                         message: 'Link copied to clipboard',
@@ -352,7 +361,7 @@ export default function Blog() {
                             ))}
 
                             {/* Pagination Controls */}
-                            {totalPages > 1 && (
+                            {!slug && totalPages > 1 && (
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', marginTop: '2rem' }}>
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
                                         <button
