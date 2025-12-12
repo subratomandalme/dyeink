@@ -7,7 +7,9 @@ import {
     Tooltip,
     ResponsiveContainer
 } from 'recharts'
-import { ChevronDown, BarChart2, Users, ArrowRight } from 'lucide-react'
+import {
+    ArrowRight
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { postService } from '../../services/postService'

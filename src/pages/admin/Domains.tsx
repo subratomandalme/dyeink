@@ -1,5 +1,4 @@
 import { useState, useEffect, FormEvent } from 'react'
-import AdminLayout from '../../components/admin/AdminLayout'
 import { domainsApi } from '../../services/api'
 import type { Domain, DNSInstructions } from '../../types'
 
@@ -79,7 +78,13 @@ export default function Domains() {
     }
 
     return (
-        <AdminLayout title="Custom Domains" subtitle="Connect your own domain to your blog">
+        <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem' }}>
+            {/* Header */}
+            <div style={{ marginBottom: '3rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Custom Domains</h1>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Connect your own domain to your blog</p>
+            </div>
+
             <div className="card" style={{ marginBottom: '2rem' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Add Domain</h3>
                 <form onSubmit={handleAdd} style={{ display: 'flex', gap: '1rem' }}>
@@ -151,6 +156,6 @@ export default function Domains() {
                     ))}
                 </div>
             )}
-        </AdminLayout>
+        </div>
     )
 }

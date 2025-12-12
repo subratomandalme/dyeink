@@ -70,10 +70,7 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast, onDismiss: () => void }
         }
     }
 
-    const getLocationGradient = () => {
-        // Subtle background gradient based on type
-        return 'var(--bg-elevated)' // Keeping it simple/clean for now, using borders instead
-    }
+
 
     return (
         <div style={{

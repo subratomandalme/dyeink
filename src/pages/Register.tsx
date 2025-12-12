@@ -1,6 +1,5 @@
 import { useState, FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../store'
 import { settingsService } from '../services/settingsService'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
@@ -8,7 +7,6 @@ import GlareHover from '../components/common/GlareHover'
 
 export default function Register() {
     const navigate = useNavigate()
-    const { setUser } = useAuthStore()
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

@@ -4,10 +4,7 @@ import {
     Home,
     Globe,
     FileText,
-    Users,
     Settings,
-    ChevronDown,
-    PenSquare,
     LogOut,
     BarChart2
 } from 'lucide-react'
@@ -16,15 +13,14 @@ import { useThemeStore } from '../../store/themeStore' // Added import
 import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ThemeToggle'
 import LetterGlitch from '../common/LetterGlitch'
-import { ToastContainer } from '../common/Toast'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
     const navigate = useNavigate()
     const location = useLocation()
-    const [isProfileOpen, setIsProfileOpen] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false) // New state for logout animation
-    const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name || 'User')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [displayName, setDisplayName] = useState((user as any)?.user_metadata?.full_name || 'User')
     const [isCreateHovered, setIsCreateHovered] = useState(false)
     const { theme } = useThemeStore()
 
@@ -51,8 +47,8 @@ export default function AdminLayout() {
             const settings = await settingsService.getSettings()
             if (settings?.siteName) {
                 setDisplayName(settings.siteName)
-            } else if (user?.user_metadata?.full_name) {
-                setDisplayName(user.user_metadata.full_name)
+            } else if ((user as any)?.user_metadata?.full_name) {
+                setDisplayName((user as any).user_metadata.full_name)
             }
         }
         loadSettings()

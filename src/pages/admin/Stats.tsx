@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { ChevronDown, BarChart2, Users, Mail, Share2 } from 'lucide-react'
+import { BarChart2, Users, Share2 } from 'lucide-react'
 import { postService } from '../../services/postService'
 import type { Post } from '../../types'
 
 const Stats: React.FC = () => {
-    const [timeRange, setTimeRange] = useState('7 days') // Default 7 days
     const [activeTab, setActiveTab] = useState('Traffic')
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
@@ -106,11 +105,11 @@ const Stats: React.FC = () => {
             }
 
             <style>{`
-                @keyframes fadeIn {
+@keyframes fadeIn {
                     from { opacity: 0; transform: translateY(5px); }
                     to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
+}
+`}</style>
         </div >
     )
 }

@@ -4,7 +4,6 @@ import ShinyText from '../components/common/ShinyText'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import PixelCard from '../components/common/PixelCard'
-import GradientText from '../components/common/GradientText'
 
 export default function Landing() {
     return (

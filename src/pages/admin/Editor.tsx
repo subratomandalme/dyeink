@@ -17,7 +17,7 @@ import { useAuthStore } from '../../store'
 export default function Editor() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { logout, user } = useAuthStore()
+    const { logout } = useAuthStore()
     const { theme } = useThemeStore()
 
     // State
@@ -28,7 +28,6 @@ export default function Editor() {
     const [saving, setSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false) // New state for loading screen
     const [lastSaved, setLastSaved] = useState<Date | null>(null)
-    const [initialPublished, setInitialPublished] = useState(false)
     const [isContinueHovered, setIsContinueHovered] = useState(false)
 
     // Load Data if Edit Mode
@@ -43,7 +42,6 @@ export default function Editor() {
                     setTitle(post.title)
                     setExcerpt(post.excerpt || '')
                     setCoverImage(post.coverImage || '')
-                    setInitialPublished(post.published)
                     if (contentRef.current) {
                         contentRef.current.innerHTML = post.content
                     }
@@ -81,7 +79,6 @@ export default function Editor() {
         try {
             // Get HTML content from the div
             const contentHtml = contentRef.current?.innerHTML || ''
-            const startTime = Date.now()
 
             const [result] = await Promise.all([
                 id

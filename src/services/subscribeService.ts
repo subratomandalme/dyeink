@@ -46,7 +46,7 @@ export const subscribeService = {
     // This method would realistically be called by a server-side trigger or Cron job
     // simulating the "Send Email" functionality requested.
     async broadcastNewPost(postTitle: string, postLink: string) {
-        console.log(`[Email Service] Broadcasting: "${postTitle}" to all active subscribers.`)
+        console.log(`[Email Service] Broadcasting: "${postTitle}" with link ${postLink} to all active subscribers.`)
         // In a real deployment, this would call a Supabase Edge Function:
         // await supabase.functions.invoke('send-email-notification', { body: { title: postTitle, link: postLink } })
     }
