@@ -90,11 +90,11 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast, onDismiss: () => void }
             overflow: 'hidden'
         }}>
             <style>{`
-                @keyframes slideIn {
+@keyframes slideIn {
                     from { opacity: 0; transform: translateY(20px); }
                     to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
+}
+`}</style>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{getIcon()}</div>
 
