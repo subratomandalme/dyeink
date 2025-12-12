@@ -1,0 +1,145 @@
+import React, { useState, useEffect } from 'react'
+import { ChevronDown, BarChart2, Users, Mail, Share2 } from 'lucide-react'
+import { postService } from '../../services/postService'
+import type { Post } from '../../types'
+
+const Stats: React.FC = () => {
+    const [timeRange, setTimeRange] = useState('7 days') // Default 7 days
+    const [activeTab, setActiveTab] = useState('Traffic')
+    const [posts, setPosts] = useState<Post[]>([])
+    const [loading, setLoading] = useState(true)
+
+    // Only keeping requested tabs
+    const tabs = ['Traffic', 'Audience', 'Sharing']
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const fetchedPosts = await postService.getPosts()
+                setPosts(fetchedPosts)
+            } catch (error) {
+                console.error('Failed to fetch stats:', error)
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchStats()
+    }, [])
+
+    // Derived Stats
+    const totalPosts = posts.length
+    const publishedPosts = posts.filter(p => p.published).length
+    const estimatedViews = totalPosts * 12 // Mock multiplier for "Traffic" score
+    const totalWords = posts.reduce((acc, post) => acc + (post.content?.split(' ').length || 0), 0)
+
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'Traffic':
+                return (
+                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                            <StatCard label="Total Views (Est.)" value={estimatedViews.toLocaleString()} icon={<BarChart2 size={20} />} />
+                            <StatCard label="Posts Published" value={publishedPosts.toString()} />
+                            <StatCard label="Words Written" value={totalWords.toLocaleString()} />
+                        </div>
+                    </div>
+                )
+            case 'Audience':
+                return (
+                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                            <StatCard label="Total Subscribers" value="0" icon={<Users size={20} />} />
+                        </div>
+                    </div>
+                )
+
+            case 'Sharing':
+                return (
+                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+                            <StatCard label="Total Shares" value="0" icon={<Share2 size={20} />} />
+                        </div>
+                    </div>
+                )
+            default:
+                return null
+        }
+    }
+
+    return (
+        <div style={{ padding: '0', color: 'var(--text-primary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Stats</h1>
+            </div>
+
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', paddingBottom: '0' }}>
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '0.75rem 1rem',
+                            color: activeTab === tab ? 'var(--text-primary)' : 'var(--text-secondary)',
+                            fontWeight: activeTab === tab ? 600 : 400,
+                            cursor: 'pointer',
+                            borderBottom: activeTab === tab ? '2px solid var(--text-primary)' : '2px solid transparent',
+                            marginBottom: '-1px', // Sit on the line
+                            transition: 'all 0.2s',
+                            fontSize: '0.95rem'
+                        }}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Tab Content */}
+            {
+                loading ? (
+                    <div style={{ color: 'var(--text-muted)' }}>Loading stats...</div>
+                ) : (
+                    renderTabContent()
+                )
+            }
+
+            <style>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `}</style>
+        </div >
+    )
+}
+
+function StatCard({ label, value, subValue, icon }: { label: string, value: string, subValue?: string, icon?: React.ReactNode }) {
+    return (
+        <div style={{
+            padding: '1.5rem 0', // No border/bg, just vertical padding if needed, or 0
+            // border: '1px solid var(--border-color)', // Removed
+            // borderRadius: '8px', // Removed
+            // background: 'var(--bg-elevated)', // Removed
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem'
+        }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                {icon && <span style={{ opacity: 0.7 }}>{icon}</span>}
+                {label}
+            </div>
+            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {value}
+            </div>
+            {subValue && (
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    {subValue}
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default Stats

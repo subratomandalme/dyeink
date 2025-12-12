@@ -1,0 +1,535 @@
+import React, { useState, useEffect } from 'react'
+import { settingsService } from '../../services/settingsService'
+import { supabase } from '../../lib/supabase'
+import { useThemeStore } from '../../store/themeStore'
+import { Loader2, Globe, AlertTriangle } from 'lucide-react'
+import { useToast } from '../../components/common/Toast'
+
+const Settings: React.FC = () => {
+    const [activeTab, setActiveTab] = useState('Basics')
+    const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
+    const { addToast } = useToast()
+    const { theme } = useThemeStore() // Get theme
+
+    // Hover states for Neumorphic buttons
+    const [hoverDeletePosts, setHoverDeletePosts] = useState(false)
+    const [hoverDeleteAccount, setHoverDeleteAccount] = useState(false)
+
+    // Settings State
+    const [pubName, setPubName] = useState("Subrato's Substack")
+    const [description, setDescription] = useState("My personal Substack")
+    const [customDomain, setCustomDomain] = useState("")
+    const [subdomain, setSubdomain] = useState("")
+    const [twitterLink, setTwitterLink] = useState("")
+    const [linkedinLink, setLinkedinLink] = useState("")
+    const [githubLink, setGithubLink] = useState("")
+    const [websiteLink, setWebsiteLink] = useState("")
+
+    // Delete Modal State
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [deleteType, setDeleteType] = useState<'posts' | 'publication' | null>(null)
+    const [deleteConfirmation, setDeleteConfirmation] = useState("")
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    // Helper for Neumorphic Shadows (Reused from AdminLayout)
+    const getNeumorphicShadows = (isHovered: boolean) => {
+        const isDark = theme === 'dark'
+        if (isHovered) {
+            if (isDark) {
+                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5)'
+            }
+            return '-1px -1px 5px rgba(255,255,255,0.6), 1px 1px 5px rgba(0,0,0,0.3), inset -2px -2px 5px rgba(255,255,255,1), inset 2px 2px 4px rgba(0,0,0,0.3)'
+        } else {
+            if (isDark) {
+                return '-5px -5px 10px rgba(255,255,255,0.1), 5px 5px 10px rgba(255,255,255,0.03)'
+            }
+            return '-5px -5px 10px rgba(255,255,255,0.8), 5px 5px 10px rgba(0,0,0,0.25)'
+        }
+    }
+
+    const tabs = [
+        { id: 'Basics', label: 'Basics' },
+        { id: 'Publication', label: 'Publication' },
+        { id: 'Danger', label: 'Danger Zone', danger: true },
+    ]
+
+    useEffect(() => {
+        loadSettings()
+    }, [])
+
+    const loadSettings = async () => {
+        setLoading(true)
+        try {
+            const settings = await settingsService.getSettings()
+            if (settings) {
+                setPubName(settings.siteName || "Subrato's Substack")
+                setDescription(settings.siteDescription || "My personal Substack")
+                setCustomDomain(settings.customDomain || "")
+                setSubdomain(settings.subdomain || "")
+                setTwitterLink(settings.twitterLink || "")
+                setLinkedinLink(settings.linkedinLink || "")
+                setGithubLink(settings.githubLink || "")
+                setWebsiteLink(settings.websiteLink || "")
+            }
+        } catch (error) {
+            console.error('Failed to load settings', error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleSave = async () => {
+        setSaving(true)
+        try {
+            const updated = await settingsService.saveSettings({
+                siteName: pubName,
+                siteDescription: description,
+                customDomain: customDomain || null,
+                subdomain: subdomain || null,
+                twitterLink: twitterLink || null,
+                linkedinLink: linkedinLink || null,
+                githubLink: githubLink || null,
+                websiteLink: websiteLink || null
+            })
+            if (updated) {
+                setSubdomain(updated.subdomain || "")
+
+                // Sync with Supabase Auth Metadata as requested
+                const { error: authError } = await supabase.auth.updateUser({
+                    data: {
+                        name: pubName,
+                        full_name: pubName
+                    }
+                })
+                if (authError) console.error("Failed to sync auth user name:", authError)
+
+                addToast({
+                    type: 'success',
+                    message: 'Settings saved successfully'
+                })
+            }
+        } catch (error: any) {
+            console.error('Save error:', error)
+            const isSchemaError = error.message?.includes('column') || error.message?.includes('schema')
+
+            addToast({
+                type: 'error',
+                message: isSchemaError
+                    ? 'Database update required. New social features need a schema update.'
+                    : `Failed to save: ${error.message || 'Unknown error'}`,
+                duration: isSchemaError ? 10000 : 4000,
+                action: isSchemaError ? {
+                    label: 'Copy Fix SQL',
+                    onClick: () => {
+                        const sql = "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS twitter_link TEXT, ADD COLUMN IF NOT EXISTS linkedin_link TEXT, ADD COLUMN IF NOT EXISTS github_link TEXT, ADD COLUMN IF NOT EXISTS website_link TEXT;"
+                        navigator.clipboard.writeText(sql)
+                        alert('SQL copied! Run this in Supabase SQL Editor.')
+                    }
+                } : undefined
+            })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+                <style>{`
+                    @keyframes spin { 100% { transform: rotate(360deg); } }
+                `}</style>
+                <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--text-muted)' }} />
+            </div>
+        )
+    }
+
+    return (
+        <div style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Settings</h1>
+            </div>
+
+            {/* Horizontal Tabs */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '0.75rem 1rem',
+                            color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                            fontWeight: activeTab === tab.id ? 600 : 400,
+                            cursor: 'pointer',
+                            borderBottom: activeTab === tab.id ? '2px solid var(--text-primary)' : '2px solid transparent',
+                            marginBottom: '-1px', // Sit on the line
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s',
+                            ...(tab.danger ? { color: activeTab === tab.id ? '#ef4444' : 'var(--text-secondary)' } : {})
+                        }}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Content Area */}
+            <div style={{ paddingBottom: '4rem' }}>
+                {activeTab === 'Basics' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Publication name</h3>
+                            <input
+                                type="text"
+                                value={pubName}
+                                onChange={(e) => setPubName(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'transparent',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    color: 'inherit',
+                                    fontSize: '1rem'
+                                }}
+                            />
+                        </div>
+
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Email Address</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Contact email for your blog.</p>
+                            <input
+                                type="email"
+                                placeholder="hello@example.com"
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'transparent',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    color: 'inherit',
+                                    fontSize: '1rem'
+                                }}
+                            />
+                        </div>
+
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Social Links</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Display links on your blog sidebar.</p>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Twitter / X Link"
+                                    value={twitterLink}
+                                    onChange={(e) => setTwitterLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="LinkedIn Profile"
+                                    value={linkedinLink}
+                                    onChange={(e) => setLinkedinLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="GitHub Profile"
+                                    value={githubLink}
+                                    onChange={(e) => setGithubLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Website / Portfolio"
+                                    value={websiteLink}
+                                    onChange={(e) => setWebsiteLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="btn btn-primary"
+                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                {saving ? 'Saving...' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Publication' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        {/* Custom Domain Section - Default Address Removed */}
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Custom Domain</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Connect your own domain (e.g. blog.yourname.com).</p>
+
+                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                <Globe size={18} style={{ color: 'var(--text-secondary)' }} />
+                                <input
+                                    type="text"
+                                    placeholder="yourdomain.com"
+                                    value={customDomain}
+                                    onChange={(e) => setCustomDomain(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="btn btn-primary"
+                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                {saving ? 'Saving...' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Danger' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div style={{ border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete post archive</h3>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete all posts on this publication.</p>
+                                <button
+                                    onMouseEnter={() => setHoverDeletePosts(true)}
+                                    onMouseLeave={() => setHoverDeletePosts(false)}
+                                    onClick={() => {
+                                        setDeleteType('posts')
+                                        setDeleteConfirmation('')
+                                        setShowDeleteModal(true)
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '50px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        color: hoverDeletePosts ? 'var(--error)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: getNeumorphicShadows(hoverDeletePosts)
+                                    }}
+                                >
+                                    Delete all posts
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete Account</h3>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete your account, posts, subscriber list, and all other content.</p>
+                                <button
+                                    onMouseEnter={() => setHoverDeleteAccount(true)}
+                                    onMouseLeave={() => setHoverDeleteAccount(false)}
+                                    onClick={() => {
+                                        setDeleteType('publication')
+                                        setDeleteConfirmation('')
+                                        setShowDeleteModal(true)
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '50px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        color: hoverDeleteAccount ? 'var(--error)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: getNeumorphicShadows(hoverDeleteAccount)
+                                    }}
+                                >
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Secure Delete Modal */}
+            {
+                showDeleteModal && (
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 9999,
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        backdropFilter: 'blur(4px)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '1rem'
+                    }}>
+                        <div style={{
+                            width: '100%',
+                            maxWidth: '480px',
+                            backgroundColor: 'var(--bg-elevated)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '12px',
+                            padding: '2rem',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#ef4444' }}>
+                                <AlertTriangle size={32} />
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                                    {deleteType === 'posts' ? 'Delete Archive' : 'Delete Account'}
+                                </h2>
+                            </div>
+
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                {deleteType === 'posts'
+                                    ? 'This action sends all your posts to the void. There is no undo button.'
+                                    : 'This action will permanently delete your account, posts, and settings. This cannot be undone.'
+                                }
+                            </p>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+                                    Type <span style={{ fontFamily: 'monospace', background: 'var(--bg-secondary)', padding: '2px 6px', borderRadius: '4px' }}>I consent of delete</span> to confirm:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder="I consent of delete"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'var(--bg-primary)',
+                                        color: 'var(--text-primary)',
+                                        fontSize: '1rem',
+                                        outline: 'none'
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'transparent',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        fontWeight: 500
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    disabled={deleteConfirmation !== 'I consent of delete' || isDeleting}
+                                    onClick={async () => {
+                                        setIsDeleting(true)
+                                        try {
+                                            if (deleteType === 'posts') {
+                                                const { postService } = await import('../../services/postService')
+                                                await postService.deleteAllPosts()
+                                                alert('All posts deleted.')
+                                            } else {
+                                                // Mock Account Deletion (Clear Data & Logout)
+                                                const { postService } = await import('../../services/postService')
+                                                // settingsService removed as it was unused
+                                                const { useAuthStore } = await import('../../store')
+
+                                                await postService.deleteAllPosts()
+                                                // Ideally destroy settings too
+                                                await useAuthStore.getState().logout()
+                                                window.location.href = '/' // Hard redirect
+                                            }
+                                            setShowDeleteModal(false)
+                                        } catch (e) {
+                                            alert('Failed to delete.')
+                                            console.error(e)
+                                        } finally {
+                                            setIsDeleting(false)
+                                        }
+                                    }}
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        borderRadius: '6px',
+                                        border: 'none',
+                                        background: deleteConfirmation === 'I consent of delete' ? '#ef4444' : 'var(--bg-secondary)',
+                                        color: deleteConfirmation === 'I consent of delete' ? '#fff' : 'var(--text-muted)',
+                                        cursor: deleteConfirmation === 'I consent of delete' ? 'pointer' : 'not-allowed',
+                                        fontWeight: 600,
+                                        opacity: isDeleting ? 0.7 : 1
+                                    }}
+                                >
+                                    {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
+    )
+}
+
+export default Settings
