@@ -139,7 +139,7 @@ export default function Posts() {
                                                 }}
                                                 title="Edit"
                                             >
-                                                <PenSquare size={16} />
+                                                <Edit2 size={16} />
                                             </Link>
                                             <button
                                                 onClick={() => initiateDelete(post.id)}
