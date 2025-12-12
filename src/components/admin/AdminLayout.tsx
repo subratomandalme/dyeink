@@ -19,8 +19,7 @@ export default function AdminLayout() {
     const navigate = useNavigate()
     const location = useLocation()
     const [isLoggingOut, setIsLoggingOut] = useState(false) // New state for logout animation
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [displayName, setDisplayName] = useState((user as any)?.user_metadata?.full_name || 'User')
+    const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name || 'User')
     const [isCreateHovered, setIsCreateHovered] = useState(false)
     const { theme } = useThemeStore()
 
@@ -47,8 +46,8 @@ export default function AdminLayout() {
             const settings = await settingsService.getSettings()
             if (settings?.siteName) {
                 setDisplayName(settings.siteName)
-            } else if ((user as any)?.user_metadata?.full_name) {
-                setDisplayName((user as any).user_metadata.full_name)
+            } else if (user?.user_metadata?.full_name) {
+                setDisplayName(user.user_metadata.full_name)
             }
         }
         loadSettings()

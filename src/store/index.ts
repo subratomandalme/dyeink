@@ -10,6 +10,10 @@ export interface User {
     isAdmin: boolean
     createdAt: string
     updatedAt: string
+    user_metadata?: {
+        full_name?: string
+        [key: string]: any
+    }
 }
 
 interface AuthState {
