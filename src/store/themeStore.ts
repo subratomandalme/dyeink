@@ -12,7 +12,7 @@ interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
     persist(
         (set) => ({
-            theme: 'light', // Default to light for admin panel consistency initially
+            theme: 'dark', // Default to dark as requested
             toggleTheme: () => set((state) => {
                 const newTheme = state.theme === 'light' ? 'dark' : 'light'
                 updateDomTheme(newTheme)

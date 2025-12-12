@@ -82,29 +82,19 @@ export default function Dashboard() {
                 }}>
                     {/* Top Stats Row */}
                     <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-                        {/* Stat 1 */}
-                        {/* Stat 1 */}
+                        {/* Stat 1: Total Views (Est) */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Total Posts
+                                Total Views
                             </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.totalPosts}</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{(stats.totalPosts * 12).toLocaleString()}</div>
                         </div>
-                        {/* Stat 2 */}
-                        {/* Stat 2 */}
+                        {/* Stat 2: Published */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                                 Published
                             </div>
                             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.publishedPosts}</div>
-                        </div>
-                        {/* Stat 3 */}
-                        {/* Stat 3 */}
-                        <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Activity
-                            </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-muted)' }}>{graphData.reduce((a, b) => a + b.posts, 0)}</div>
                         </div>
                     </div>
 
