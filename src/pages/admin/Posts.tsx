@@ -5,6 +5,7 @@ import type { Post } from '../../types'
 import { format } from 'date-fns'
 import { Trash2, Edit2 } from 'lucide-react'
 import { useToast } from '../../components/common/Toast'
+import GlareHover from '../../components/common/GlareHover'
 
 export default function Posts() {
     const [posts, setPosts] = useState<Post[]>([])
@@ -67,7 +68,7 @@ export default function Posts() {
                 <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Manage your live content.</p>
             </div>
 
-            {/* Table */}
+            {/* List (Card View with Glare) */}
             {loading ? (
                 <div style={{ padding: '2rem', color: 'var(--text-muted)' }}>Loading...</div>
             ) : filteredPosts.length === 0 ? (
@@ -81,85 +82,99 @@ export default function Posts() {
                     No published posts yet.
                 </div>
             ) : (
-                <div style={{
-                    borderRadius: '8px',
-                    overflow: 'hidden'
-                }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                            <tr>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Title</th>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Status</th>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Date</th>
-                                <th style={{ padding: '1rem', width: '50px' }}></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredPosts.map((post) => (
-                                <tr key={post.id} className="hover-row">
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle', maxWidth: '300px' }}>
-                                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                            <Link to={`/admin/posts/${post.id}/edit`} style={{ color: 'inherit', textDecoration: 'none' }} title={post.title}>
-                                                {post.title}
-                                            </Link>
-                                        </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {/* Header Row (Hidden on mobile, flex on desktop) */}
+                    <div style={{ display: 'flex', padding: '0 1.5rem', marginBottom: '0.5rem' }}>
+                        <div style={{ flex: 2, fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Title</div>
+                        <div style={{ flex: 1, fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Status</div>
+                        <div style={{ flex: 1, fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Date</div>
+                        <div style={{ width: '80px' }}></div>
+                    </div>
 
-                                    </td>
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle' }}>
-                                        <span style={{
-                                            display: 'inline-flex',
+                    {filteredPosts.map((post) => (
+                        <GlareHover
+                            key={post.id}
+                            width="100%"
+                            height="auto"
+                            background="var(--bg-elevated)" // Dark/Elevated
+                            borderColor="var(--border-color)"
+                            glareColor="#ffffff" // White glare
+                            borderRadius="16px"
+                            style={{ padding: '1.25rem 1.5rem', display: 'flex', alignItems: 'center' }}
+                        >
+                            <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+                                {/* Title Column */}
+                                <div style={{ flex: 2, paddingRight: '1rem' }}>
+                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        <Link to={`/admin/posts/${post.id}/edit`} style={{ color: 'inherit', textDecoration: 'none' }} title={post.title}>
+                                            {post.title}
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                {/* Status Column */}
+                                <div style={{ flex: 1 }}>
+                                    <span style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        padding: '0.25rem 0.6rem',
+                                        borderRadius: '12px',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 500,
+                                        backgroundColor: post.published ? 'var(--success-bg)' : 'var(--warning-bg)',
+                                        color: post.published ? 'var(--success)' : 'var(--warning)',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.025em'
+                                    }}>
+                                        {post.published ? 'Published' : 'Draft'}
+                                    </span>
+                                </div>
+
+                                {/* Date Column */}
+                                <div style={{ flex: 1, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                    {format(new Date(post.createdAt), 'MMM d, yyyy')}
+                                </div>
+
+                                {/* Actions Column */}
+                                <div style={{ width: '80px', display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                    <Link
+                                        to={`/admin/posts/${post.id}/edit`}
+                                        style={{
+                                            padding: '0.4rem',
+                                            color: 'var(--text-muted)',
+                                            borderRadius: '4px',
+                                            display: 'flex',
                                             alignItems: 'center',
-                                            padding: '0.25rem 0.6rem',
-                                            borderRadius: '12px',
-                                            fontSize: '0.75rem',
-                                            fontWeight: 500,
-                                            backgroundColor: post.published ? 'var(--success-bg)' : 'var(--warning-bg)',
-                                            color: post.published ? 'var(--success)' : 'var(--warning)',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.025em'
-                                        }}>
-                                            {post.published ? 'Published' : 'Draft'}
-                                        </span>
-                                    </td>
-                                    <td style={{ padding: '1.25rem 1rem', color: 'var(--text-muted)', fontSize: '0.9rem', verticalAlign: 'middle' }}>
-                                        {format(new Date(post.createdAt), 'MMM d, yyyy')}
-                                    </td>
-                                    <td style={{ padding: '1.25rem 1rem', textAlign: 'right', verticalAlign: 'middle' }}>
-                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                            <Link
-                                                to={`/admin/posts/${post.id}/edit`}
-                                                style={{
-                                                    padding: '0.4rem',
-                                                    color: 'var(--text-muted)',
-                                                    borderRadius: '4px',
-                                                    display: 'flex',
-                                                    alignItems: 'center'
-                                                }}
-                                                title="Edit"
-                                            >
-                                                <Edit2 size={16} />
-                                            </Link>
-                                            <button
-                                                onClick={() => initiateDelete(post.id)}
-                                                style={{
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    padding: '0.4rem',
-                                                    color: 'var(--error)',
-                                                    cursor: 'pointer',
-                                                    display: 'flex',
-                                                    alignItems: 'center'
-                                                }}
-                                                title="Delete"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                                            zIndex: 10 // Ensure clickable above glare
+                                        }}
+                                        title="Edit"
+                                        onClick={(e) => e.stopPropagation()} // Prevent glare interference if needed
+                                    >
+                                        <Edit2 size={16} />
+                                    </Link>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            initiateDelete(post.id);
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            padding: '0.4rem',
+                                            color: 'var(--error)',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            zIndex: 10
+                                        }}
+                                        title="Delete"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                            </div>
+                        </GlareHover>
+                    ))}
                 </div>
             )}
 
