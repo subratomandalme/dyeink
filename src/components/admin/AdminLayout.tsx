@@ -13,6 +13,7 @@ import { useThemeStore } from '../../store/themeStore'
 import { useAdminStore } from '../../store/adminStore'
 import { settingsService } from '../../services/settingsService' // Keeping for default creation logic if needed, or moving logic to store
 import ThemeToggle from '../common/ThemeToggle'
+import DecryptedText from '../common/DecryptedText'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
@@ -113,9 +114,17 @@ export default function AdminLayout() {
                             lineHeight: 1.2,
                             wordBreak: 'break-word',
                             fontFamily: 'var(--font-sans)',
-                            fontWeight: 700
+                            fontWeight: 700,
+                            display: 'block',
+                            minHeight: '2.2rem'
                         }}>
-                            {settingsLoading && !settings ? '...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
+                            <DecryptedText
+                                text={settingsLoading && !settings ? 'Fetching...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
+                                speed={80}
+                                maxIterations={10}
+                                animateOn="view"
+                                revealDirection="start"
+                            />
                         </span>
                     </div>
                 </div>
