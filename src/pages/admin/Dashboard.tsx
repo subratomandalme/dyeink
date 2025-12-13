@@ -13,11 +13,14 @@ import {
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { settingsService } from '../../services/settingsService'
-
-// ... existing imports
+import { postService } from '../../services/postService'
+import { Post } from '../../types'
+import { useThemeStore } from '../../store/themeStore'
 
 export default function Dashboard() {
+    const { theme } = useThemeStore()
     const [subdomain, setSubdomain] = useState<string | null>(null)
+    const [siteName, setSiteName] = useState<string>('')
     const [stats, setStats] = useState({
         totalPosts: 0,
         publishedPosts: 0,
@@ -30,7 +33,10 @@ export default function Dashboard() {
         const loadRequests = async () => {
             // Load Settings for Subdomain
             const settings = await settingsService.getSettings()
-            if (settings?.subdomain) setSubdomain(settings.subdomain)
+            if (settings) {
+                if (settings.subdomain) setSubdomain(settings.subdomain)
+                if (settings.siteName) setSiteName(settings.siteName)
+            }
 
             // Load Posts
             const posts = await postService.getPosts()
@@ -71,7 +77,7 @@ export default function Dashboard() {
         <div style={{ paddingBottom: '4rem' }}>
             {/* Page Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Home</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Overview</h1>
             </div>
 
             {/* Overview Section */}
@@ -153,13 +159,16 @@ export default function Dashboard() {
 
             {/* Bottom Section: Latest Post */}
             <div style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Latest Post</h2>
+
                 {stats.latestPost ? (
                     <Link
                         to={subdomain ? `/${subdomain}` : "/blog"}
+                        className="latest-post-card"
                         style={{
                             display: 'block',
                             borderRadius: '16px', // Premium rounded
-                            padding: '1.5rem', // Compact
+                            padding: '1.5rem 0', // No horizontal padding for strict left alignment
                             background: 'transparent',
                             boxShadow: 'none',
                             border: 'none',
@@ -169,33 +178,17 @@ export default function Dashboard() {
                             position: 'relative',
                             overflow: 'hidden'
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow = theme === 'dark'
-                                ? '0 0 20px rgba(255, 255, 255, 0.15)'
-                                : '0 0 20px rgba(0, 0, 0, 0.2)'
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = 'none'
-                        }}
                     >
-                        {/* Corner Dots */}
-                        <div style={{ position: 'absolute', top: '12px', left: '12px', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--text-primary)', opacity: 0.8 }} />
-                        <div style={{ position: 'absolute', top: '12px', right: '12px', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--text-primary)', opacity: 0.8 }} />
-                        <div style={{ position: 'absolute', bottom: '12px', left: '12px', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--text-primary)', opacity: 0.8 }} />
-                        <div style={{ position: 'absolute', bottom: '12px', right: '12px', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--text-primary)', opacity: 0.8 }} />
+                        <style>{`
+                            .latest-post-card:hover .glow-text {
+                                text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
+                            }
+                            .glow-text {
+                                transition: text-shadow 0.3s ease;
+                            }
+                        `}</style>
 
-                        <div style={{
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            letterSpacing: '0.1em',
-                            color: 'var(--text-muted)',
-                            textTransform: 'uppercase',
-                            marginBottom: '1rem'
-                        }}>
-                            Latest Post
-                        </div>
-
-                        <h3 style={{
+                        <h3 className="glow-text" style={{
                             fontSize: '1.25rem',
                             fontWeight: 700,
                             margin: '0 0 0.5rem 0',
@@ -213,7 +206,7 @@ export default function Dashboard() {
                         </h3>
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.5rem' }}>
-                            <span style={{
+                            <span className="glow-text" style={{
                                 fontSize: '0.9rem',
                                 color: 'var(--text-secondary)',
                                 fontFamily: 'var(--font-mono)' // Tech/Data feel for date
@@ -221,7 +214,7 @@ export default function Dashboard() {
                                 {new Date(stats.latestPost.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}
                             </span>
 
-                            <span style={{
+                            <span className="glow-text" style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',

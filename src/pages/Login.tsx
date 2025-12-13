@@ -98,7 +98,7 @@ export default function Login() {
                 glareColor="#ffffff"
                 glareOpacity={0.15}
                 style={{
-                    maxWidth: '400px',
+                    maxWidth: '360px',
                     zIndex: 10,
                     display: 'block',
                     padding: '2.5rem'
@@ -109,8 +109,8 @@ export default function Login() {
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', marginTop: '1.5rem' }}>
                         <img src="/Di.png" alt="Logo" className="logo-adaptive" style={{ height: '60px', width: 'auto' }} />
                     </div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Welcome back</h1>
-                    <p style={{ color: 'var(--text-secondary)' }}>Sign in to continue to your dashboard</p>
+
+
                 </div>
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -132,6 +132,19 @@ export default function Login() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <label className="form-label" style={{ marginBottom: 0 }}>Password</label>
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                            <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                            <input
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                style={{ paddingLeft: '2.75rem', width: '100%', paddingRight: '1rem', paddingTop: '0.75rem', paddingBottom: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                                placeholder="••••••••"
+                            />
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.25rem' }}>
                             <button
                                 type="button"
                                 onClick={() => setShowForgotModal(true)}
@@ -146,17 +159,6 @@ export default function Login() {
                             >
                                 Forgot password?
                             </button>
-                        </div>
-                        <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-                            <input
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{ paddingLeft: '2.75rem', width: '100%', paddingRight: '1rem', paddingTop: '0.75rem', paddingBottom: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
-                                placeholder="••••••••"
-                            />
                         </div>
                     </div>
 
@@ -205,7 +207,7 @@ export default function Login() {
                                     setForgotSuccess(false)
                                     setForgotEmail('')
                                 }}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '1.25rem' }}
                             >
                                 ✕
                             </button>
@@ -236,7 +238,7 @@ export default function Login() {
                         ) : (
                             <form onSubmit={handleForgotPassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>
-                                    Enter your email address_ to receive a magic login link. You can change your password in settings after logging in.
+                                    Enter your email address to receive a login link. You can change your password in settings after logging in.
                                 </p>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

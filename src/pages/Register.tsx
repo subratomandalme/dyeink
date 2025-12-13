@@ -76,7 +76,7 @@ export default function Register() {
                 glareColor="#ffffff"
                 glareOpacity={0.15}
                 style={{
-                    maxWidth: '400px', // Changed maxWidth
+                    maxWidth: '360px', // Changed maxWidth
                     zIndex: 10,
                     display: 'block',
                     padding: '2.5rem' // Changed padding
@@ -84,8 +84,9 @@ export default function Register() {
                 className="animate-fade-in"
             >
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Create account</h1> {/* Added title */}
-                    <p style={{ color: 'var(--text-secondary)' }}>Start your publishing journey today</p> {/* Added subtitle */}
+                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', marginTop: '1.5rem' }}>
+                        <img src="/Di.png" alt="Logo" className="logo-adaptive" style={{ height: '60px', width: 'auto' }} />
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit}>

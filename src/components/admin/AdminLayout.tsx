@@ -95,23 +95,25 @@ export default function AdminLayout() {
                 transition: 'transform 0.3s ease-in-out',
                 // transform: 'translateX(0)' // For now, static
             }}>
-                {/* Logo Area */}
-                <div style={{ padding: '2rem 1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '12px',
-                        backgroundColor: 'var(--bg-primary)',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        boxShadow: theme === 'dark'
-                            ? 'inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.05)'
-                            : 'inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.8)'
+                {/* Greeting Area (Replacement for Logo) */}
+                <div style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{
+                        fontSize: '1.25rem',
+                        color: 'var(--text-secondary)',
+                        fontWeight: 400,
+                        fontFamily: '"Mochiy Pop One", sans-serif'
+                    }}>Hi,</span>
+                    <span style={{
+                        fontSize: '1.75rem',
+                        fontWeight: 400,
+                        letterSpacing: '0.02em',
+                        color: 'var(--text-primary)',
+                        lineHeight: 1.2,
+                        wordBreak: 'break-word',
+                        fontFamily: '"Mochiy Pop One", sans-serif'
                     }}>
-                        <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-primary)' }}>D</span>
-                    </div>
-                    <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.03em' }}>DyeInk</span>
+                        {displayName.length > 20 ? `${displayName.slice(0, 20)}...` : displayName}
+                    </span>
                 </div>
 
                 {/* Create New Post Button */}
@@ -126,7 +128,7 @@ export default function AdminLayout() {
                             alignItems: 'center',
                             gap: '0.5rem',
                             padding: '0.85rem',
-                            borderRadius: '12px',
+                            borderRadius: '50px',
                             backgroundColor: 'var(--bg-primary)',
                             color: 'var(--accent-primary)',
                             fontWeight: 700,
@@ -135,7 +137,7 @@ export default function AdminLayout() {
                             boxShadow: getNeumorphicShadows()
                         }}
                     >
-                        <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>+</span> New Post
+                        New Post
                     </Link>
                 </div>
 
