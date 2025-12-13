@@ -11,7 +11,7 @@ import { supabase } from '../lib/supabase'
 
 export default function Login() {
     const navigate = useNavigate()
-    const { login } = useAuthStore()
+    // const { login } = useAuthStore() // Removed as not exposed
     const { addToast } = useToast()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -27,9 +27,16 @@ export default function Login() {
         e.preventDefault()
         setLoading(true)
         try {
-            await login(email, password)
-            // Navigation handled by router/store usually, but we can force it or let AuthWrapper handle it
-            // navigate('/admin') 
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+
+            if (error) throw error
+
+            if (data.user) {
+                navigate('/admin')
+            }
         } catch (error: any) {
             console.error('Login failed:', error)
             addToast({
