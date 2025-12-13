@@ -24,11 +24,13 @@ export default function AdminLayout() {
     const { settings, fetchSettings, updateSettingsInCache, settingsLoading } = useAdminStore()
 
     // Derived state
-    const displayName = settings?.siteName || user?.user_metadata?.full_name || 'User'
+    const greetingName = user?.user_metadata?.full_name || 'User'
+    const displayName = settings?.siteName || greetingName
     const subdomain = settings?.subdomain || null
 
     // UI Logic
     const [isCreateHovered, setIsCreateHovered] = useState(false)
+    const [isLoggingOut, setIsLoggingOut] = useState(false)
     const { theme } = useThemeStore()
 
     const getNeumorphicShadows = () => {
@@ -79,8 +81,47 @@ export default function AdminLayout() {
     const isActive = (path: string) => location.pathname === path
 
     const handleSignOut = async () => {
-        await logout()
-        navigate('/')
+        setIsLoggingOut(true)
+        // Wait for animation
+        setTimeout(async () => {
+            await logout()
+            navigate('/')
+        }, 2200)
+    }
+
+    if (isLoggingOut) {
+        return (
+            <div style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: '#000000',
+                zIndex: 9999,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff'
+            }}>
+                <div style={{ fontSize: '2rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+                    <DecryptedText
+                        text={`Goodbye, ${greetingName}.`}
+                        speed={80}
+                        maxIterations={30}
+                        animateOn="view"
+                        revealDirection="center"
+                    />
+                </div>
+                <div style={{ marginTop: '1rem', opacity: 0.5, fontSize: '0.9rem', fontFamily: 'var(--font-mono)' }}>
+                    <DecryptedText
+                        text="TERMINATING SESSION..."
+                        speed={50}
+                        maxIterations={15}
+                        animateOn="view"
+                        revealDirection="end"
+                    />
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -119,9 +160,9 @@ export default function AdminLayout() {
                             minHeight: '2.2rem'
                         }}>
                             <DecryptedText
-                                text={settingsLoading && !settings ? 'Fetching...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
-                                speed={80}
-                                maxIterations={10}
+                                text={greetingName.length > 18 ? `${greetingName.slice(0, 18)}...` : greetingName}
+                                speed={100}
+                                maxIterations={20}
                                 animateOn="view"
                                 revealDirection="start"
                             />

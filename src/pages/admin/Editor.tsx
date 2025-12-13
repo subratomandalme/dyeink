@@ -158,7 +158,7 @@ export default function Editor() {
     return (
         <div className="editor-page" style={{
             color: 'var(--text-primary)',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+            fontFamily: "'Roboto', sans-serif"
         }}>
             {/* Top Navigation & Toolbar */}
             <nav style={{
@@ -285,12 +285,12 @@ export default function Editor() {
                         width: '100%',
                         border: 'none',
                         outline: 'none',
-                        fontSize: '5rem', // Increased size as requested
+                        fontSize: '3.5rem',
                         fontWeight: 700,
                         color: 'var(--text-primary)',
                         marginBottom: '1rem',
                         background: 'transparent',
-                        fontFamily: 'serif'
+                        fontFamily: 'inherit'
                     }}
                 />
 
@@ -306,11 +306,11 @@ export default function Editor() {
                         width: '100%',
                         minHeight: '60vh',
                         outline: 'none',
-                        fontSize: '1.35rem', // Increased size
+                        fontSize: '1.2rem',
                         lineHeight: '1.6',
                         color: 'var(--text-primary)',
                         background: 'transparent',
-                        fontFamily: 'serif',
+                        fontFamily: 'inherit',
                         whiteSpace: 'pre-wrap'
                     }}
                     onKeyDown={(e) => {
@@ -329,6 +329,16 @@ export default function Editor() {
                     content: attr(data-placeholder);
                     color: var(--text-muted);
                     pointer-events: none;
+                }
+                .editor-title-input::placeholder {
+                    font-size: 6rem;
+                    opacity: 0.3;
+                    font-weight: 900;
+                    color: var(--text-muted);
+                    transition: all 0.3s ease;
+                }
+                .editor-title-input:focus::placeholder {
+                    opacity: 0.5;
                 }
             `}</style>
         </div>
