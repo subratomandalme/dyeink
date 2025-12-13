@@ -21576,7 +21576,6 @@ var require_react_dom_development = __commonJS({
 // node_modules/react-dom/index.js
 var require_react_dom = __commonJS({
   "node_modules/react-dom/index.js"(exports, module) {
-    "use strict";
     if (false) {
       checkDCE();
       module.exports = null;
@@ -21626,4 +21625,4 @@ react-dom/cjs/react-dom.development.js:
    * @license Modernizr 3.0.0pre (Custom Build) | MIT
    *)
 */
-//# sourceMappingURL=chunk-UHINIFCJ.js.map
+//# sourceMappingURL=chunk-BLBKUI5W.js.map

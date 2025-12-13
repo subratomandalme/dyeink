@@ -60,6 +60,13 @@ const Settings: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState("")
 
     useEffect(() => {
+        // Auto-select tab from URL (e.g. ?tab=Security)
+        const params = new URLSearchParams(window.location.search)
+        const tabParam = params.get('tab')
+        if (tabParam && tabs.some(t => t.id === tabParam)) {
+            setActiveTab(tabParam)
+        }
+
         loadSettings()
     }, [])
 
