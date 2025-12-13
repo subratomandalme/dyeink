@@ -274,7 +274,7 @@ export default function Editor() {
             </nav>
 
             {/* Main Editor Area */}
-            <div style={{ maxWidth: '720px', margin: '0 auto', padding: '8rem 1.5rem 3rem 1.5rem' }}>
+            <div style={{ maxWidth: '720px', margin: '0 auto', padding: '12rem 1.5rem 3rem 1.5rem' }}>
                 <input
                     type="text"
                     placeholder="Title"
