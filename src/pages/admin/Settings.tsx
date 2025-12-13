@@ -419,7 +419,7 @@ const Settings: React.FC = () => {
                             <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Custom Domain</h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Connect your own domain (e.g. blog.yourname.com).</p>
 
-                            {!customDomain ? (
+                            {!settings?.customDomain ? (
                                 /* Connect New Domain */
                                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                                     <Globe size={18} style={{ color: 'var(--text-secondary)' }} />
