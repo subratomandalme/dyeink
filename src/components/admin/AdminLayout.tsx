@@ -39,12 +39,12 @@ export default function AdminLayout() {
         const isDark = theme === 'dark'
         if (isCreateHovered) {
             if (isDark) {
-                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5)'
+                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px rgba(255, 255, 255, 0.2)'
             }
             return '-1px -1px 5px rgba(255,255,255,0.6), 1px 1px 5px rgba(0,0,0,0.3), inset -2px -2px 5px rgba(255,255,255,1), inset 2px 2px 4px rgba(0,0,0,0.3)'
         } else {
             if (isDark) {
-                return '-5px -5px 10px rgba(255,255,255,0.1), 5px 5px 10px rgba(255,255,255,0.03)'
+                return '-5px -5px 10px rgba(255,255,255,0.1), 5px 5px 10px rgba(255,255,255,0.03), 0 0 25px rgba(255, 255, 255, 0.3)'
             }
             return '-5px -5px 10px rgba(255,255,255,0.8), 5px 5px 10px rgba(0,0,0,0.25)'
         }
@@ -143,7 +143,7 @@ export default function AdminLayout() {
                 // transform: 'translateX(0)' // For now, static
             }}>
                 {/* Greeting Area (Replacement for Logo) */}
-                <div style={{ padding: '3.5rem 1.25rem 1rem 1.25rem' }}>
+                <div style={{ padding: '2rem 1.25rem 1rem 1.25rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                         <span style={{
                             fontSize: '1.5rem',
@@ -151,7 +151,7 @@ export default function AdminLayout() {
                             opacity: 0.8,
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 500,
-                            textShadow: '0 0 12px rgba(255, 255, 255, 0.3)'
+                            textShadow: '0 0 25px rgba(255, 255, 255, 0.8)'
                         }}>Hi,</span>
                         <span style={{
                             fontSize: '1.8rem',
@@ -161,7 +161,7 @@ export default function AdminLayout() {
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 700,
                             display: 'block',
-                            textShadow: '0 0 20px rgba(255, 255, 255, 0.6)',
+                            textShadow: '0 0 25px rgba(255, 255, 255, 0.8)',
                             minHeight: '2.2rem'
                         }}>
                             <DecryptedText
@@ -187,7 +187,7 @@ export default function AdminLayout() {
                             alignItems: 'center',
                             gap: '0.5rem',
                             padding: '0.85rem',
-                            borderRadius: '12px',
+                            borderRadius: '50px',
                             backgroundColor: 'var(--bg-primary)',
                             color: 'var(--accent-primary)',
                             fontWeight: 700,
@@ -205,21 +205,23 @@ export default function AdminLayout() {
                     <div style={{
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        color: 'var(--text-muted)',
+                        color: 'var(--text-secondary)',
                         marginBottom: '0.5rem',
                         paddingLeft: '0.75rem',
-                        letterSpacing: '0.05em'
+                        letterSpacing: '0.05em',
+                        textShadow: '0 0 15px rgba(255, 255, 255, 0.6)'
                     }}>
                         MENU
                     </div>
 
                     <Link
                         to="/admin"
+                        className="sidebar-item"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.75rem',
-                            padding: '0.5rem 0.75rem',
+                            padding: '0.6rem 0.75rem',
                             borderRadius: '6px',
                             color: isActive('/admin') ? 'var(--text-primary)' : 'var(--text-secondary)',
                             backgroundColor: isActive('/admin') ? 'var(--bg-tertiary)' : 'transparent',
@@ -234,11 +236,12 @@ export default function AdminLayout() {
                     <Link
                         to={subdomain ? `/${subdomain}` : "/blog"}
                         target="_blank"
+                        className="sidebar-item"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.75rem',
-                            padding: '0.5rem 0.75rem',
+                            padding: '0.6rem 0.75rem',
                             borderRadius: '6px',
                             color: 'var(--text-secondary)',
                             textDecoration: 'none',
@@ -250,11 +253,12 @@ export default function AdminLayout() {
 
                     <Link
                         to="/admin/posts"
+                        className="sidebar-item"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
                             gap: '0.75rem',
-                            padding: '0.5rem 0.75rem',
+                            padding: '0.6rem 0.75rem',
                             borderRadius: '6px',
                             color: isActive('/admin/posts') ? 'var(--text-primary)' : 'var(--text-secondary)',
                             backgroundColor: isActive('/admin/posts') ? 'var(--bg-tertiary)' : 'transparent',
@@ -280,11 +284,12 @@ export default function AdminLayout() {
                         </div>
                         <Link
                             to="/admin/stats"
+                            className="sidebar-item"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.75rem',
-                                padding: '0.5rem 0.75rem',
+                                padding: '0.6rem 0.75rem',
                                 borderRadius: '6px',
                                 color: isActive('/admin/stats') ? 'var(--text-primary)' : 'var(--text-secondary)',
                                 backgroundColor: isActive('/admin/stats') ? 'var(--bg-tertiary)' : 'transparent',
@@ -311,11 +316,12 @@ export default function AdminLayout() {
                         </div>
                         <Link
                             to="/admin/settings"
+                            className="sidebar-item"
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.75rem',
-                                padding: '0.5rem 0.75rem',
+                                padding: '0.6rem 0.75rem',
                                 borderRadius: '6px',
                                 color: isActive('/admin/settings') ? 'var(--text-primary)' : 'var(--text-secondary)',
                                 backgroundColor: isActive('/admin/settings') ? 'var(--bg-tertiary)' : 'transparent',
@@ -333,6 +339,7 @@ export default function AdminLayout() {
                 <div style={{ padding: '1.25rem' }}>
                     <button
                         onClick={handleSignOut}
+                        className="btn-signout"
                         style={{
                             display: 'flex',
                             alignItems: 'center',
