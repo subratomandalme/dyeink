@@ -108,7 +108,7 @@ export default function Register() {
                     </div>
                 </div>
 
-                </div>
+
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                     <button
@@ -134,7 +134,7 @@ export default function Register() {
                         <Github size={20} />
                         Continue with GitHub
                     </button>
-                    
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                         <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
                         OR
@@ -197,49 +197,49 @@ export default function Register() {
                 </p>
             </GlareHover >
 
-        {/* Success Modal */ }
-    {
-        showSuccessModal && (
-            <div style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 9999,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                backdropFilter: 'blur(4px)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '1rem'
-            }}>
-                <div style={{
-                    width: '100%',
-                    maxWidth: '400px',
-                    backgroundColor: 'var(--bg-elevated)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '16px',
-                    padding: '2rem',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                    animation: 'fadeIn 0.2s ease-out',
-                    textAlign: 'center'
-                }}>
-                    <div style={{ color: '#22c55e', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-                        <CheckCircle2 size={48} />
+            {/* Success Modal */}
+            {
+                showSuccessModal && (
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 9999,
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        backdropFilter: 'blur(4px)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '1rem'
+                    }}>
+                        <div style={{
+                            width: '100%',
+                            maxWidth: '400px',
+                            backgroundColor: 'var(--bg-elevated)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '16px',
+                            padding: '2rem',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                            animation: 'fadeIn 0.2s ease-out',
+                            textAlign: 'center'
+                        }}>
+                            <div style={{ color: '#22c55e', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                                <CheckCircle2 size={48} />
+                            </div>
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Account created!</h2>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+                                Please check your email for verification instructions (if enabled) or log in to continue.
+                            </p>
+                            <Link
+                                to="/login"
+                                className="btn btn-primary"
+                                style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
+                            >
+                                Sign In Now
+                            </Link>
+                        </div>
                     </div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Account created!</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                        Please check your email for verification instructions (if enabled) or log in to continue.
-                    </p>
-                    <Link
-                        to="/login"
-                        className="btn btn-primary"
-                        style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
-                    >
-                        Sign In Now
-                    </Link>
-                </div>
-            </div>
-        )
-    }
+                )
+            }
         </div >
     )
 }
