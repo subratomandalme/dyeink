@@ -13,7 +13,11 @@ import { useCodeCopy } from '../hooks/useCodeCopy'
 import SubscribeModal from '../components/common/SubscribeModal'
 import UpvoteButton from '../components/common/UpvoteButton'
 
-export default function Blog() {
+interface BlogProps {
+    isCustomDomain?: boolean
+}
+
+export default function Blog({ isCustomDomain = false }: BlogProps) {
     const { slug, subdomain } = useParams()
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
@@ -44,44 +48,53 @@ export default function Blog() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // strict data isolation: specific user or nothing
-                if (subdomain) {
-                    // Fetch User Settings
-                    const userConfig = await settingsService.getSettingsBySubdomain(subdomain)
+                let userConfig = null
 
-                    if (userConfig) {
-                        const { settings, userId } = userConfig
+                if (isCustomDomain) {
+                    // Custom Domain Strategy
+                    const hostname = window.location.hostname
+                    userConfig = await settingsService.getSettingsByCustomDomain(hostname)
+                } else if (subdomain) {
+                    // Subdomain Strategy
+                    userConfig = await settingsService.getSettingsBySubdomain(subdomain)
+                }
 
-                        // Apply User Branding
-                        if (settings.siteName) setBlogTitle(settings.siteName)
-                        setTwitterLink(settings.twitterLink || null)
-                        setLinkedinLink(settings.linkedinLink || null)
-                        setGithubLink(settings.githubLink || null)
-                        setWebsiteLink(settings.websiteLink || null)
-                        setNewsletterEmail(settings.newsletterEmail || null)
-                        setBlogId(settings.id || null) // Set blogId here
+                if (userConfig) {
+                    const { settings, userId } = userConfig
 
-                        // Fetch Posts for THIS user only
-                        const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
-                        setPosts(fetchedPosts)
+                    // Apply User Branding
+                    if (settings.siteName) setBlogTitle(settings.siteName)
+                    setTwitterLink(settings.twitterLink || null)
+                    setLinkedinLink(settings.linkedinLink || null)
+                    setGithubLink(settings.githubLink || null)
+                    setWebsiteLink(settings.websiteLink || null)
+                    setNewsletterEmail(settings.newsletterEmail || null)
+                    setBlogId(settings.id || null)
 
-                        // High-Scale View Tracking (Single Post Only)
-                        if (slug && fetchedPosts.length > 0) {
-                            const activePost = fetchedPosts.find(p => p.slug === slug)
-                            if (activePost) {
-                                analyticsService.viewPost(activePost.id.toString()) // Wait 8s logic is in service
-                            }
+                    // Fetch Posts for THIS user only
+                    const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
+                    setPosts(fetchedPosts)
+
+                    // High-Scale View Tracking (Single Post Only)
+                    if (slug && fetchedPosts.length > 0) {
+                        const activePost = fetchedPosts.find(p => p.slug === slug)
+                        if (activePost) {
+                            analyticsService.viewPost(activePost.id.toString())
                         }
-                    } else {
-                        // Subdomain not found
-                        setBlogTitle('User Not Found')
-                        // Optional: Navigate to 404
                     }
                 } else {
-                    // No subdomain = No context for "View Blog". 
-                    // Redirect to Landing or Admin if logged in, but for safety, Landing.
-                    navigate('/')
-                    return
+                    // Not found logic
+                    if (isCustomDomain || subdomain) {
+                        setBlogTitle('User Not Found')
+                        // Optional: Navigate to 404
+                    } else {
+                        // No context provided (e.g. /blog route without subdomain param and not custom domain mode?)
+                        // Actually /blog maps to 'All Posts' or global feed in some concepts, 
+                        // but here it seems strict tenant.
+                        // For now, if no config found, we just show empty or redirect.
+                        navigate('/')
+                        return
+                    }
                 }
 
             } catch (error) {
@@ -91,7 +104,7 @@ export default function Blog() {
             }
         }
         loadData()
-    }, [subdomain, navigate])
+    }, [subdomain, navigate, isCustomDomain, slug])
 
     // Search & Pagination Logic - Filter by Search AND Published status
     const filteredPosts = posts.filter(post => {

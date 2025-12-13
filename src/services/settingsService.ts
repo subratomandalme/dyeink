@@ -11,6 +11,7 @@ export interface SiteSettings {
     githubLink?: string | null
     websiteLink?: string | null
     newsletterEmail?: string | null
+    domainStatus?: 'pending' | 'verified' | 'active' | 'failed' | null
 }
 
 export const settingsService = {
@@ -94,7 +95,9 @@ export const settingsService = {
                 linkedinLink: data.linkedin_link,
                 githubLink: data.github_link,
                 websiteLink: data.website_link,
-                newsletterEmail: data.newsletter_email
+                websiteLink: data.website_link,
+                newsletterEmail: data.newsletter_email,
+                domainStatus: data.domain_status
             },
             userId: data.user_id
         }

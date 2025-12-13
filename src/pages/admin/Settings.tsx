@@ -42,7 +42,8 @@ const Settings: React.FC = () => {
     const [githubLink, setGithubLink] = useState("")
     const [websiteLink, setWebsiteLink] = useState("")
     const [email, setEmail] = useState("") // Newsletter Email
-    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null) // Logged in user email for reference
+    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null) // Logged in user reference
+    const [domainStatus, setDomainStatus] = useState<'pending' | 'verified' | 'active' | 'failed' | null>(null)
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -107,7 +108,9 @@ const Settings: React.FC = () => {
             setLinkedinLink(settings.linkedinLink || "")
             setGithubLink(settings.githubLink || "")
             setWebsiteLink(settings.websiteLink || "")
+            setWebsiteLink(settings.websiteLink || "")
             setEmail(settings.newsletterEmail || "")
+            setDomainStatus(settings.domainStatus || null)
         }
     }, [settings])
 
@@ -416,24 +419,133 @@ const Settings: React.FC = () => {
                             <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Custom Domain</h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Connect your own domain (e.g. blog.yourname.com).</p>
 
-                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                                <Globe size={18} style={{ color: 'var(--text-secondary)' }} />
-                                <input
-                                    type="text"
-                                    placeholder="yourdomain.com"
-                                    value={customDomain}
-                                    onChange={(e) => setCustomDomain(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        background: 'transparent',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '6px',
-                                        color: 'inherit',
-                                        fontSize: '1rem'
-                                    }}
-                                />
-                            </div>
+                            {!customDomain ? (
+                                /* Connect New Domain */
+                                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                    <Globe size={18} style={{ color: 'var(--text-secondary)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="blog.yourname.com"
+                                        value={customDomain}
+                                        onChange={(e) => setCustomDomain(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            background: 'transparent',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '6px',
+                                            color: 'inherit',
+                                            fontSize: '1rem'
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                /* Existing Domain Management */
+                                <div style={{
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
+                                    padding: '1.5rem',
+                                    backgroundColor: 'var(--bg-secondary)'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                            <Globe size={20} />
+                                            <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{customDomain}</span>
+                                        </div>
+                                        <div style={{
+                                            padding: '0.25rem 0.75rem',
+                                            borderRadius: '20px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 600,
+                                            backgroundColor: domainStatus === 'active' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                                            color: domainStatus === 'active' ? '#22c55e' : '#eab308',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {domainStatus || 'Pending'}
+                                        </div>
+                                    </div>
+
+                                    {/* Instructions for Pending Domains */}
+                                    {domainStatus !== 'active' && (
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Set the following record in your DNS provider:</p>
+                                            <div style={{
+                                                display: 'grid',
+                                                gridTemplateColumns: '1fr 1fr 1fr',
+                                                gap: '1px',
+                                                backgroundColor: 'var(--border-color)',
+                                                border: '1px solid var(--border-color)',
+                                                borderRadius: '6px',
+                                                overflow: 'hidden'
+                                            }}>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Type</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Name</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Value</div>
+
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600 }}>CNAME</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600 }}>{customDomain.split('.')[0] || 'blog'}</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace' }}>cname.vercel-dns.com</div>
+                                            </div>
+                                            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
+                                                <button onClick={handleSave} style={{
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 600,
+                                                    background: 'var(--text-primary)',
+                                                    color: 'var(--bg-primary)',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}>
+                                                    Verify Logic (Save)
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        // remove logic placeholder
+                                                        setCustomDomain("")
+                                                        setDomainStatus(null)
+                                                        handleSave()
+                                                    }}
+                                                    style={{
+                                                        padding: '0.5rem 1rem',
+                                                        fontSize: '0.9rem',
+                                                        background: 'transparent',
+                                                        color: '#ef4444',
+                                                        border: '1px solid #ef4444',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer'
+                                                    }}>
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {domainStatus === 'active' && (
+                                        <div>
+                                            <p style={{ fontSize: '0.9rem', color: '#22c55e' }}>✓ Domain is active and serving your blog.</p>
+                                            <button
+                                                onClick={() => {
+                                                    setCustomDomain("")
+                                                    setDomainStatus(null)
+                                                    handleSave()
+                                                }}
+                                                style={{
+                                                    marginTop: '1rem',
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.9rem',
+                                                    background: 'transparent',
+                                                    color: '#ef4444',
+                                                    border: '1px solid #ef4444',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}>
+                                                Disconnect
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         <div style={{ marginTop: '2rem' }}>
