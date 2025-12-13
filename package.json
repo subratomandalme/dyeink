@@ -12,6 +12,7 @@
     "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@supabase/supabase-js": "^2.87.1",
     "@upstash/redis": "^1.35.8",
+    "@vercel/node": "^5.5.15",
     "axios": "^1.6.2",
     "date-fns": "^3.0.0",
     "framer-motion": "^12.23.26",

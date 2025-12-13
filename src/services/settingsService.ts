@@ -72,6 +72,36 @@ export const settingsService = {
         }
     },
 
+    async getSettingsByCustomDomain(domain: string): Promise<{ settings: SiteSettings; userId: string } | null> {
+        const { data, error } = await supabase
+            .from('site_settings')
+            .select('*, user_id')
+            .eq('custom_domain', domain)
+            .single()
+
+        if (error) {
+            console.error('Error fetching settings by custom domain:', error)
+            return null
+        }
+
+        return {
+            settings: {
+                id: data.id,
+                siteName: data.site_name,
+                siteDescription: data.site_description,
+                customDomain: data.custom_domain,
+                subdomain: data.subdomain,
+                twitterLink: data.twitter_link,
+                linkedinLink: data.linkedin_link,
+                githubLink: data.github_link,
+                websiteLink: data.website_link,
+                newsletterEmail: data.newsletter_email,
+                domainStatus: data.domain_status
+            },
+            userId: data.user_id
+        }
+    },
+
     async getSettingsBySubdomain(subdomain: string): Promise<{ settings: SiteSettings; userId: string } | null> {
         const { data, error } = await supabase
             .from('site_settings')
@@ -94,7 +124,6 @@ export const settingsService = {
                 twitterLink: data.twitter_link,
                 linkedinLink: data.linkedin_link,
                 githubLink: data.github_link,
-                websiteLink: data.website_link,
                 websiteLink: data.website_link,
                 newsletterEmail: data.newsletter_email,
                 domainStatus: data.domain_status
