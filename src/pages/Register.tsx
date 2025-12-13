@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Github } from 'lucide-react'
 import WaveLoader from '../components/common/WaveLoader'
 import { useToast } from '../components/common/Toast'
 
@@ -17,6 +17,24 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [showSuccessModal, setShowSuccessModal] = useState(false)
+
+    const handleGithubLogin = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: `${window.location.origin}/admin`
+                }
+            })
+            if (error) throw error
+        } catch (error: any) {
+            console.error('GitHub login error:', error)
+            addToast({
+                type: 'error',
+                message: error.message || 'Failed to login with GitHub'
+            })
+        }
+    }
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -90,6 +108,40 @@ export default function Register() {
                     </div>
                 </div>
 
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <button
+                        onClick={handleGithubLogin}
+                        type="button"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.75rem',
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '8px',
+                            border: '1px solid var(--border-color)',
+                            background: 'var(--bg-tertiary)',
+                            color: 'var(--text-primary)',
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Github size={20} />
+                        Continue with GitHub
+                    </button>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                        OR
+                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                    </div>
+                </div>
+
                 <form onSubmit={handleSubmit}>
 
                     {/* Removed Name field */}
@@ -143,49 +195,51 @@ export default function Register() {
                 <p style={{ textAlign: 'center', marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                     Already have an account? <Link to="/login">Sign in</Link>
                 </p>
-            </GlareHover>
+            </GlareHover >
 
-            {/* Success Modal */}
-            {showSuccessModal && (
+        {/* Success Modal */ }
+    {
+        showSuccessModal && (
+            <div style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(4px)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '1rem'
+            }}>
                 <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    zIndex: 9999,
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    backdropFilter: 'blur(4px)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '1rem'
+                    width: '100%',
+                    maxWidth: '400px',
+                    backgroundColor: 'var(--bg-elevated)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '16px',
+                    padding: '2rem',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                    animation: 'fadeIn 0.2s ease-out',
+                    textAlign: 'center'
                 }}>
-                    <div style={{
-                        width: '100%',
-                        maxWidth: '400px',
-                        backgroundColor: 'var(--bg-elevated)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '16px',
-                        padding: '2rem',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-                        animation: 'fadeIn 0.2s ease-out',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ color: '#22c55e', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-                            <CheckCircle2 size={48} />
-                        </div>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Account created!</h2>
-                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                            Please check your email for verification instructions (if enabled) or log in to continue.
-                        </p>
-                        <Link
-                            to="/login"
-                            className="btn btn-primary"
-                            style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
-                        >
-                            Sign In Now
-                        </Link>
+                    <div style={{ color: '#22c55e', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+                        <CheckCircle2 size={48} />
                     </div>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Account created!</h2>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
+                        Please check your email for verification instructions (if enabled) or log in to continue.
+                    </p>
+                    <Link
+                        to="/login"
+                        className="btn btn-primary"
+                        style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
+                    >
+                        Sign In Now
+                    </Link>
                 </div>
-            )}
-        </div>
+            </div>
+        )
+    }
+        </div >
     )
 }

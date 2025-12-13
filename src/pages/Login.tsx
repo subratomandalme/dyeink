@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
-import { Mail, Lock, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, CheckCircle2, Github } from 'lucide-react'
 import WaveLoader from '../components/common/WaveLoader'
 import { useToast } from '../components/common/Toast'
 
@@ -21,6 +21,24 @@ export default function Login() {
     const [forgotEmail, setForgotEmail] = useState('')
     const [forgotLoading, setForgotLoading] = useState(false)
     const [forgotSuccess, setForgotSuccess] = useState(false)
+
+    const handleGithubLogin = async () => {
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    redirectTo: `${window.location.origin}/admin`
+                }
+            })
+            if (error) throw error
+        } catch (error: any) {
+            console.error('GitHub login error:', error)
+            addToast({
+                type: 'error',
+                message: error.message || 'Failed to login with GitHub'
+            })
+        }
+    }
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault()
@@ -112,6 +130,38 @@ export default function Login() {
                     </div>
 
 
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <button
+                        onClick={handleGithubLogin}
+                        type="button"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '0.75rem',
+                            width: '100%',
+                            padding: '0.75rem',
+                            borderRadius: '8px',
+                            border: '1px solid var(--border-color)',
+                            background: 'var(--bg-tertiary)',
+                            color: 'var(--text-primary)',
+                            fontSize: '1rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                    >
+                        <Github size={20} />
+                        Continue with GitHub
+                    </button>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                        OR
+                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                    </div>
                 </div>
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
