@@ -69,9 +69,11 @@ function App() {
                     </PublicRoute>
                 } />
 
-                {/* Public Route (Always accessible) */}
+                {/* Public Route (Global Feed) */}
                 <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<Blog />} />
+                {/* User Profile / Blog Routes */}
+                <Route path="/:subdomain" element={<Blog />} />
+                <Route path="/:subdomain/:slug" element={<Blog />} />
                 {/* PostView route removed */}
 
                 {/* Auth Routes (PublicOnly?) - Keeping accessible for now, or could wrap in PublicRoute */}

@@ -68,6 +68,34 @@ export const settingsService = {
         }
     },
 
+    async getSettingsBySubdomain(subdomain: string): Promise<{ settings: SiteSettings; userId: string } | null> {
+        const { data, error } = await supabase
+            .from('site_settings')
+            .select('*, user_id') // We need user_id to fetch their posts
+            .eq('subdomain', subdomain)
+            .single()
+
+        if (error) {
+            console.error('Error fetching settings by subdomain:', error)
+            return null
+        }
+
+        return {
+            settings: {
+                id: data.id,
+                siteName: data.site_name,
+                siteDescription: data.site_description,
+                customDomain: data.custom_domain,
+                subdomain: data.subdomain,
+                twitterLink: data.twitter_link,
+                linkedinLink: data.linkedin_link,
+                githubLink: data.github_link,
+                websiteLink: data.website_link
+            },
+            userId: data.user_id
+        }
+    },
+
     async saveSettings(settings: SiteSettings): Promise<SiteSettings | null> {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('User not authenticated')

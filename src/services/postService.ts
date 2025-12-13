@@ -106,11 +106,17 @@ export const postService = {
         return mapResponseToPost(data)
     },
 
-    async getPosts(): Promise<Post[]> {
-        const { data, error } = await supabase
+    async getPosts(options: { userId?: string } = {}): Promise<Post[]> {
+        let query = supabase
             .from('posts')
             .select('*')
             .order('created_at', { ascending: false })
+
+        if (options.userId) {
+            query = query.eq('user_id', options.userId)
+        }
+
+        const { data, error } = await query
 
         if (error) {
             console.error('Error fetching posts:', error)
@@ -119,6 +125,7 @@ export const postService = {
 
         return data.map(mapResponseToPost)
     },
+
     async deletePost(id: number): Promise<void> {
         const { error } = await supabase
             .from('posts')
