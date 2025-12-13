@@ -15,12 +15,12 @@ import { Link } from 'react-router-dom'
 import { settingsService } from '../../services/settingsService'
 import { postService } from '../../services/postService'
 import { Post } from '../../types'
-import { useThemeStore } from '../../store/themeStore'
+
 
 export default function Dashboard() {
-    const { theme } = useThemeStore()
+    // theme removed
     const [subdomain, setSubdomain] = useState<string | null>(null)
-    const [siteName, setSiteName] = useState<string>('')
+    // siteName removed
     const [stats, setStats] = useState({
         totalPosts: 0,
         publishedPosts: 0,
@@ -35,7 +35,6 @@ export default function Dashboard() {
             const settings = await settingsService.getSettings()
             if (settings) {
                 if (settings.subdomain) setSubdomain(settings.subdomain)
-                if (settings.siteName) setSiteName(settings.siteName)
             }
 
             // Load Posts

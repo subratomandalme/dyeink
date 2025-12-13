@@ -9,16 +9,14 @@ import {
     BarChart2
 } from 'lucide-react'
 import { useAuthStore } from '../../store'
-import { useThemeStore } from '../../store/themeStore' // Added import
+import { useThemeStore } from '../../store/themeStore'
 import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ThemeToggle'
-import LetterGlitch from '../common/LetterGlitch'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
     const navigate = useNavigate()
     const location = useLocation()
-    const [isLoggingOut, setIsLoggingOut] = useState(false) // New state for logout animation
     const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name || 'User')
     const [subdomain, setSubdomain] = useState<string | null>(null)
     const [isCreateHovered, setIsCreateHovered] = useState(false)
@@ -75,7 +73,6 @@ export default function AdminLayout() {
     const isActive = (path: string) => location.pathname === path
 
     const handleSignOut = async () => {
-        setIsLoggingOut(true)
         await logout()
         navigate('/login')
     }
