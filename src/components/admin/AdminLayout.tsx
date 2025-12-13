@@ -21,11 +21,11 @@ export default function AdminLayout() {
     const location = useLocation()
 
     // Store integration
-    const { settings, fetchSettings, updateSettingsInCache, settingsLoading } = useAdminStore()
+    const { settings, fetchSettings, updateSettingsInCache } = useAdminStore()
 
     // Derived state
     const greetingName = user?.user_metadata?.full_name || 'User'
-    const displayName = settings?.siteName || greetingName
+
     const subdomain = settings?.subdomain || null
 
     // UI Logic
