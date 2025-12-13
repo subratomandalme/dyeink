@@ -42,7 +42,13 @@ export default function AdminLayout() {
         const loadSettings = async () => {
             if (!user) return
 
-            let settings = await settingsService.getSettings()
+            let settings = null
+            try {
+                settings = await settingsService.getSettings()
+            } catch (error) {
+                console.error("Skipping settings init due to fetch error", error)
+                return
+            }
 
             // If no settings exist (first time user), create defaults
             if (!settings) {

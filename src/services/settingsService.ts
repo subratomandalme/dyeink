@@ -27,7 +27,7 @@ export const settingsService = {
         if (error) {
             if (error.code === 'PGRST116') return null
             console.error('Error fetching settings:', error)
-            return null
+            throw error
         }
 
         return {
