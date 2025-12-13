@@ -169,65 +169,56 @@ export default function Dashboard() {
                 {stats.latestPost ? (
                     <Link
                         to={subdomain ? `/${subdomain}` : "/blog"}
-                        className="latest-post-card"
                         style={{
                             display: 'block',
-                            borderRadius: '16px', // Premium rounded
-                            padding: '1.5rem 0', // No horizontal padding for strict left alignment
-                            background: 'transparent',
-                            boxShadow: 'none',
-                            border: 'none',
+                            marginTop: '1rem',
                             textDecoration: 'none',
                             color: 'inherit',
-                            transition: 'all 0.3s ease',
-                            position: 'relative',
-                            overflow: 'hidden'
+                            padding: '2rem',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '12px',
+                            transition: 'all 0.2s',
+                            background: 'transparent'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--text-primary)'
+                            e.currentTarget.style.transform = 'translateY(-2px)'
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--border-color)'
+                            e.currentTarget.style.transform = 'translateY(0)'
                         }}
                     >
-                        <style>{`
-                            .latest-post-card:hover .glow-text {
-                                text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.5);
-                            }
-                            .glow-text {
-                                transition: text-shadow 0.3s ease;
-                            }
-                        `}</style>
-
-                        <h3 className="glow-text" style={{
-                            fontSize: '1.25rem',
-                            fontWeight: 700,
-                            margin: '0 0 0.5rem 0',
-                            fontFamily: 'var(--font-display)', // Use display font for impact
+                        <h3 style={{
+                            fontSize: '2rem',
+                            fontWeight: 800,
+                            margin: '0 0 2.5rem 0',
+                            fontFamily: 'var(--font-display)',
                             color: 'var(--text-primary)',
-                            lineHeight: 1.2,
-                            overflowWrap: 'anywhere',
-                            wordBreak: 'break-word',
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden'
+                            lineHeight: 1.1,
+                            letterSpacing: '-0.03em'
                         }}>
                             {stats.latestPost.title}
                         </h3>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '1.5rem' }}>
-                            <span className="glow-text" style={{
-                                fontSize: '0.9rem',
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{
+                                fontSize: '0.85rem',
                                 color: 'var(--text-secondary)',
-                                fontFamily: 'var(--font-mono)' // Tech/Data feel for date
+                                fontFamily: 'var(--font-mono)'
                             }}>
-                                {new Date(stats.latestPost.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                                {new Date(stats.latestPost.createdAt).toLocaleDateString('en-US')}
                             </span>
 
-                            <span className="glow-text" style={{
+                            <span style={{
+                                fontSize: '0.9rem',
+                                color: 'var(--text-primary)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem',
-                                fontSize: '0.95rem',
-                                fontWeight: 500,
-                                color: 'var(--text-primary)'
+                                fontWeight: 500
                             }}>
-                                View Post <ArrowRight size={18} />
+                                View Post <ArrowRight size={16} />
                             </span>
                         </div>
                     </Link>

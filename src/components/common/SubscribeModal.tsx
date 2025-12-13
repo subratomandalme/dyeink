@@ -48,24 +48,26 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
         <div style={{
             position: 'fixed',
             inset: 0,
-            zIndex: 2147483647, // Max z-index
+            zIndex: 9999,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-            backdropFilter: 'blur(8px)',
-            animation: 'fadeIn 0.2s ease-out'
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(12px)',
+            animation: 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
         }}>
             <div style={{
                 width: '100%',
-                maxWidth: '400px',
-                padding: '2rem',
+                maxWidth: '420px',
+                padding: '2.5rem 2rem',
                 backgroundColor: 'var(--bg-elevated)',
-                borderRadius: '24px',
+                borderRadius: '28px',
                 border: '1px solid var(--border-color)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                boxShadow: '0 0 50px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255,255,255,0.05)',
                 position: 'relative',
-                margin: '1rem'
+                margin: '1rem',
+                transform: 'translateY(0)',
+                animation: 'slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}>
                 <button
                     onClick={onClose}
@@ -73,44 +75,74 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
                         position: 'absolute',
                         top: '1rem',
                         right: '1rem',
-                        background: 'none',
+                        background: 'rgba(255,255,255,0.05)',
                         border: 'none',
                         cursor: 'pointer',
-                        color: 'var(--text-secondary)'
+                        color: 'var(--text-secondary)',
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+                        e.currentTarget.style.color = 'var(--text-primary)'
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                        e.currentTarget.style.color = 'var(--text-secondary)'
                     }}
                 >
-                    <X size={20} />
+                    <X size={16} />
                 </button>
 
                 {success ? (
-                    <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                    <div style={{ textAlign: 'center', padding: '1.5rem 0' }}>
                         <div style={{
                             display: 'inline-flex',
-                            padding: '1rem',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '70px',
+                            height: '70px',
                             borderRadius: '50%',
-                            background: 'rgba(34, 197, 94, 0.1)',
+                            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.05))',
                             color: '#22c55e',
-                            marginBottom: '1rem'
+                            marginBottom: '1.25rem',
+                            boxShadow: '0 0 25px rgba(34, 197, 94, 0.2)'
                         }}>
-                            <CheckCircle size={48} />
+                            <CheckCircle size={36} />
                         </div>
-                        <h3 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0', fontFamily: 'var(--font-display)' }}>Subscribed!</h3>
-                        <p style={{ color: 'var(--text-secondary)' }}>You'll receive updates on new posts.</p>
+                        <h3 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 0.5rem 0', fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+                            You're in.
+                        </h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>Welcome to the inner circle.</p>
                     </div>
                 ) : (
                     <>
-                        <div style={{ marginBottom: '2rem', textAlign: 'center' }}>
-
-                            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.5rem 0', fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+                        <div style={{ marginBottom: '2.5rem', textAlign: 'center' }}>
+                            <h3 style={{
+                                fontSize: '1.8rem',
+                                fontWeight: 800,
+                                margin: '0 0 0.75rem 0',
+                                fontFamily: 'var(--font-display)',
+                                letterSpacing: '-0.03em',
+                                background: 'linear-gradient(to bottom right, var(--text-primary) 0%, var(--text-secondary) 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                lineHeight: 1.1
+                            }}>
                                 Stay in the loop
                             </h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                                Receive clarity and silence directly to your inbox. No spam, ever.
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6, maxWidth: '95%', margin: '0 auto' }}>
+                                Receive clarity and silence directly to your inbox. <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>No spam, ever.</span>
                             </p>
                         </div>
 
                         <form onSubmit={handleSubscribe}>
-                            <div style={{ marginBottom: '1.5rem' }}>
+                            <div style={{ position: 'relative', width: '100%' }}>
                                 <input
                                     type="email"
                                     placeholder="your@email.com"
@@ -119,46 +151,57 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
                                     required
                                     style={{
                                         width: '100%',
-                                        padding: '1rem',
-                                        borderRadius: '12px',
+                                        height: '48px',
+                                        padding: '0 130px 0 1.25rem',
+                                        borderRadius: '9999px',
                                         border: '1px solid var(--border-color)',
-                                        background: 'var(--bg-primary)',
+                                        background: 'var(--bg-tertiary)',
                                         color: 'var(--text-primary)',
-                                        fontSize: '1rem',
+                                        fontSize: '0.95rem',
                                         outline: 'none',
-                                        transition: 'all 0.2s',
+                                        transition: 'all 0.3s ease',
                                         boxSizing: 'border-box'
                                     }}
-                                    onFocus={(e) => e.target.style.borderColor = 'var(--text-primary)'}
-                                    onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = 'var(--text-primary)'
+                                        e.target.style.background = 'var(--bg-primary)'
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(255,255,255,0.05)'
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = 'var(--border-color)'
+                                        e.target.style.background = 'var(--bg-tertiary)'
+                                        e.target.style.boxShadow = 'none'
+                                    }}
                                 />
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '4px',
+                                        top: '4px',
+                                        bottom: '4px',
+                                        padding: '0 1.5rem',
+                                        borderRadius: '9999px',
+                                        background: 'var(--text-primary)',
+                                        color: 'var(--bg-primary)',
+                                        border: 'none',
+                                        fontSize: '0.9rem',
+                                        fontWeight: 700,
+                                        cursor: loading ? 'not-allowed' : 'pointer',
+                                        opacity: loading ? 0.8 : 1,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        transition: 'transform 0.2s, background 0.2s',
+                                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                                    }}
+                                    onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = 'scale(1.02)')}
+                                    onMouseLeave={(e) => !loading && (e.currentTarget.style.transform = 'scale(1)')}
+                                >
+                                    {loading ? <WaveLoader size={18} color="var(--bg-primary)" /> : 'Subscribe'}
+                                </button>
                             </div>
-
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                style={{
-                                    width: '100%',
-                                    padding: '1rem',
-                                    borderRadius: '50px',
-                                    background: 'var(--text-primary)',
-                                    color: 'var(--bg-primary)',
-                                    border: 'none',
-                                    fontSize: '1rem',
-                                    fontWeight: 700,
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    opacity: loading ? 0.7 : 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '0.5rem',
-                                    transition: 'transform 0.2s'
-                                }}
-                                onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = 'scale(1.02)')}
-                                onMouseLeave={(e) => !loading && (e.currentTarget.style.transform = 'scale(1)')}
-                            >
-                                {loading ? <WaveLoader size={24} /> : 'Subscribe'}
-                            </button>
                         </form>
                     </>
                 )}
@@ -167,6 +210,10 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
                 @keyframes fadeIn {
                     from { opacity: 0; }
                     to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
         </div>,

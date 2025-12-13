@@ -26,7 +26,7 @@ export default function AdminLayout() {
     const { settings, fetchSettings, updateSettingsInCache } = useAdminStore()
 
     // Derived state
-    const greetingName = settings?.siteName || user?.user_metadata?.full_name || 'User'
+    const greetingName = settings?.siteName || user?.name || 'User'
 
     const subdomain = settings?.subdomain || null
 
@@ -88,7 +88,7 @@ export default function AdminLayout() {
         setTimeout(async () => {
             await logout()
             navigate('/')
-        }, 2200)
+        }, 3000)
     }
 
     if (isLoggingOut) {

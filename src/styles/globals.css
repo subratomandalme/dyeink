@@ -284,6 +284,12 @@ textarea::placeholder {
   border-radius: 6px;
 }
 
+.btn-signout:hover {
+  color: #ef4444 !important;
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
 .github-btn {
   display: flex;
   align-items: center;

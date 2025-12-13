@@ -35,7 +35,8 @@ const mapSupabaseUser = (supabaseUser: SupabaseUser | null): User | null => {
         name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
         isAdmin: supabaseUser.user_metadata?.is_admin || false,
         createdAt: supabaseUser.created_at || new Date().toISOString(),
-        updatedAt: supabaseUser.updated_at || new Date().toISOString()
+        updatedAt: supabaseUser.updated_at || new Date().toISOString(),
+        user_metadata: supabaseUser.user_metadata
     }
 }
 
