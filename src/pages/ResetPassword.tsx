@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Lock, Loader2, CheckCircle2 } from 'lucide-react'
 
@@ -13,7 +13,7 @@ export default function ResetPassword() {
     useEffect(() => {
         // Optional: Check if we have a session (the link should log them in)
         // If supabase redirects with #access_token, the client handles it automatically usually.
-        supabase.auth.onAuthStateChange(async (event, session) => {
+        supabase.auth.onAuthStateChange(async (event) => {
             if (event === 'PASSWORD_RECOVERY') {
                 // User is in recovery mode
             }
