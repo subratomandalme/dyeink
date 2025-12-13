@@ -57,7 +57,7 @@ export default function Blog() {
                         setWebsiteLink(settings.websiteLink || null)
 
                         // Fetch Posts for THIS user only
-                        const fetchedPosts = await postService.getPosts({ userId })
+                        const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
                         setPosts(fetchedPosts)
                     } else {
                         // Subdomain not found
