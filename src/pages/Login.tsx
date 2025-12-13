@@ -4,6 +4,7 @@ import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
 import { Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
+import CircularLoader from '../components/common/CircularLoader'
 import { useToast } from '../components/common/Toast'
 
 import { supabase } from '../lib/supabase'
@@ -165,8 +166,8 @@ export default function Login() {
                     <NeumorphismButton
                         text={loading ? 'Signing in...' : 'Sign In'}
                         type="submit"
-                        style={{ width: '100%', justifyContent: 'center' }}
-                        icon={loading ? <Loader2 className="animate-spin" /> : null}
+                        style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700 }}
+                        icon={loading ? <CircularLoader size={20} /> : null}
                     />
                 </form>
 

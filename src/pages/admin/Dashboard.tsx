@@ -61,7 +61,8 @@ export default function Dashboard() {
 
             const chartData = last7Days.map(date => ({
                 name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-                posts: counts[date] || 0
+                posts: counts[date] || 0,
+                views: (counts[date] || 0) * 12 + Math.floor(Math.random() * 10) // Mock views data
             }))
 
             setGraphData(chartData)
@@ -118,6 +119,10 @@ export default function Dashboard() {
                                         <stop offset="5%" stopColor="#ff5e00" stopOpacity={0.2} />
                                         <stop offset="95%" stopColor="#ff5e00" stopOpacity={0} />
                                     </linearGradient>
+                                    <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
+                                        <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
+                                    </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                                 <XAxis
@@ -144,11 +149,21 @@ export default function Dashboard() {
                                 />
                                 <Area
                                     type="monotone"
+                                    dataKey="views"
+                                    stroke="var(--accent-secondary)" // Or hardcoded cyan
+                                    strokeWidth={2}
+                                    fillOpacity={1}
+                                    fill="url(#colorViews)"
+                                    style={{ stroke: '#00cbff' }}
+                                />
+                                <Area
+                                    type="monotone"
                                     dataKey="posts"
-                                    stroke="var(--accent-primary)"
+                                    stroke="var(--accent-primary)" // Or hardcoded orange
                                     strokeWidth={2}
                                     fillOpacity={1}
                                     fill="url(#colorPosts)"
+                                    style={{ stroke: '#ff5e00' }}
                                 />
                             </AreaChart>
                         </ResponsiveContainer>

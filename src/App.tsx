@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from './store'
 import { useThemeStore } from './store/themeStore'
 import { supabase } from './lib/supabase'
-import { Loader2 } from 'lucide-react'
+
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -27,10 +27,12 @@ interface ProtectedRouteProps {
     children: React.ReactNode
 }
 
+import CircularLoader from './components/common/CircularLoader'
+
 function FullScreenLoader() {
     return (
         <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
-            <Loader2 className="animate-spin" size={32} style={{ color: 'var(--text-primary)' }} />
+            <CircularLoader size={48} style={{ color: 'var(--text-primary)' }} />
         </div>
     )
 }

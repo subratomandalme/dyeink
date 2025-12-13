@@ -19,6 +19,7 @@ export default function AdminLayout() {
     const location = useLocation()
     const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name || 'User')
     const [subdomain, setSubdomain] = useState<string | null>(null)
+    const [isLoadingName, setIsLoadingName] = useState(true)
     const [isCreateHovered, setIsCreateHovered] = useState(false)
     const { theme } = useThemeStore()
 
@@ -66,6 +67,7 @@ export default function AdminLayout() {
             } else if (user?.user_metadata?.full_name) {
                 setDisplayName(user.user_metadata.full_name)
             }
+            setIsLoadingName(false)
         }
         loadSettings()
     }, [user])
@@ -74,7 +76,7 @@ export default function AdminLayout() {
 
     const handleSignOut = async () => {
         await logout()
-        navigate('/login')
+        navigate('/')
     }
 
     return (
@@ -93,24 +95,22 @@ export default function AdminLayout() {
                 // transform: 'translateX(0)' // For now, static
             }}>
                 {/* Greeting Area (Replacement for Logo) */}
-                <div style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                    <span style={{
-                        fontSize: '1.25rem',
-                        color: 'var(--text-secondary)',
-                        fontWeight: 400,
-                        fontFamily: '"Mochiy Pop One", sans-serif'
-                    }}>Hi,</span>
-                    <span style={{
-                        fontSize: '1.75rem',
-                        fontWeight: 400,
-                        letterSpacing: '0.02em',
-                        color: 'var(--text-primary)',
-                        lineHeight: 1.2,
-                        wordBreak: 'break-word',
-                        fontFamily: '"Mochiy Pop One", sans-serif'
-                    }}>
-                        {displayName.length > 20 ? `${displayName.slice(0, 20)}...` : displayName}
-                    </span>
+                <div style={{ padding: '2rem 1.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                        <span className="font-heading-logo" style={{
+                            fontSize: '1.5rem',
+                            color: 'var(--text-secondary)',
+                            opacity: 0.8
+                        }}>Hi,</span>
+                        <span className="font-heading-logo" style={{
+                            fontSize: '1.8rem',
+                            color: 'var(--text-primary)',
+                            lineHeight: 1.2,
+                            wordBreak: 'break-word'
+                        }}>
+                            {isLoadingName ? '...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Create New Post Button */}

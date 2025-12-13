@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart2, Users, Share2 } from 'lucide-react'
 import { postService } from '../../services/postService'
+import CircularLoader from '../../components/common/CircularLoader'
 import type { Post } from '../../types'
 
 const Stats: React.FC = () => {
@@ -98,7 +99,9 @@ const Stats: React.FC = () => {
             {/* Tab Content */}
             {
                 loading ? (
-                    <div style={{ color: 'var(--text-muted)' }}>Loading stats...</div>
+                    <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                        <CircularLoader size={32} />
+                    </div>
                 ) : (
                     renderTabContent()
                 )

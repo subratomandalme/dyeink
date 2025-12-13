@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useSearchParams, useParams } from 'react-router-dom'
+import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
 import type { Post } from '../types'
@@ -36,18 +36,18 @@ export default function Blog() {
     const itemsPerPage = 5
     const currentPage = parseInt(searchParams.get('page') || '1')
 
+    const navigate = useNavigate()
+
     useEffect(() => {
         const loadData = async () => {
             try {
-                let currentUserId: string | undefined = undefined
-
-                // 1. Determine Context (User Profile vs Global Feed)
+                // strict data isolation: specific user or nothing
                 if (subdomain) {
                     // Fetch User Settings
                     const userConfig = await settingsService.getSettingsBySubdomain(subdomain)
+
                     if (userConfig) {
                         const { settings, userId } = userConfig
-                        currentUserId = userId
 
                         // Apply User Branding
                         if (settings.siteName) setBlogTitle(settings.siteName)
@@ -55,20 +55,21 @@ export default function Blog() {
                         setLinkedinLink(settings.linkedinLink || null)
                         setGithubLink(settings.githubLink || null)
                         setWebsiteLink(settings.websiteLink || null)
+
+                        // Fetch Posts for THIS user only
+                        const fetchedPosts = await postService.getPosts({ userId })
+                        setPosts(fetchedPosts)
                     } else {
-                        // Handle 404 - User not found (Optional: Redirect or Show Error)
+                        // Subdomain not found
                         setBlogTitle('User Not Found')
+                        // Optional: Navigate to 404
                     }
                 } else {
-                    // Global Feed: Fetch Platform Settings (DyeInk)
-                    const settings = await settingsService.getPublicSettings()
-                    if (settings && settings.siteName) setBlogTitle(settings.siteName)
-                    // Reset links for global feed or keep generic
+                    // No subdomain = No context for "View Blog". 
+                    // Redirect to Landing or Admin if logged in, but for safety, Landing.
+                    navigate('/')
+                    return
                 }
-
-                // 2. Fetch Posts (Filtered by User if in Subdomain mode)
-                const fetchedPosts = await postService.getPosts(currentUserId ? { userId: currentUserId } : {})
-                setPosts(fetchedPosts)
 
             } catch (error) {
                 console.error('Failed to load data:', error)
@@ -77,7 +78,7 @@ export default function Blog() {
             }
         }
         loadData()
-    }, [subdomain]) // Re-run if subdomain changes
+    }, [subdomain, navigate])
 
     // Search & Pagination Logic - Filter by Search AND Published status
     const filteredPosts = posts.filter(post => {

@@ -5,6 +5,7 @@ import type { Post } from '../../types'
 import { format } from 'date-fns'
 import { Trash2, Edit2 } from 'lucide-react'
 import { useToast } from '../../components/common/Toast'
+import CircularLoader from '../../components/common/CircularLoader'
 
 export default function Posts() {
     const [posts, setPosts] = useState<Post[]>([])
@@ -69,7 +70,9 @@ export default function Posts() {
 
             {/* Table */}
             {loading ? (
-                <div style={{ padding: '2rem', color: 'var(--text-muted)' }}>Loading...</div>
+                <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                    <CircularLoader size={32} />
+                </div>
             ) : filteredPosts.length === 0 ? (
                 <div style={{
                     padding: '4rem',

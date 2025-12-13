@@ -282,7 +282,7 @@ export default function Editor() {
                         width: '100%',
                         border: 'none',
                         outline: 'none',
-                        fontSize: '3.5rem', // Increased size
+                        fontSize: '5rem', // Increased size as requested
                         fontWeight: 700,
                         color: 'var(--text-primary)',
                         marginBottom: '1rem',
