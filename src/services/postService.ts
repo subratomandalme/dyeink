@@ -39,7 +39,15 @@ export const postService = {
             throw new Error('Failed to create post: No data returned')
         }
 
-        return mapResponseToPost(data[0])
+        const newPost = data[0]
+
+        // Fire-and-forget email broadcast
+        // We don't await this to keep UI snappy
+        supabase.functions.invoke('broadcast-post', {
+            body: { postId: newPost.id }
+        }).catch(err => console.error('Failed to trigger email broadcast:', err))
+
+        return mapResponseToPost(newPost)
     },
 
     async updatePost(id: number, post: UpdatePostInput): Promise<Post | null> {
