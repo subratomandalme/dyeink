@@ -8,18 +8,9 @@ export const subscribeService = {
             throw new Error('Invalid email address')
         }
 
-        // Check if already subscribed
-        const { data: existing } = await supabase
-            .from('subscribers')
-            .select('id')
-            .eq('email', email)
-            .single()
-
-        if (existing) {
-            throw new Error('This email is already subscribed.')
-        }
-
-        // Insert new subscriber
+        // Insert new subscriber directly
+        // Note: We rely on the DB Unique Constraint to catch duplicates
+        // because RLS prevents 'anon' from querying the subscribers table.
         const { error } = await supabase
             .from('subscribers')
             .insert({
@@ -29,6 +20,10 @@ export const subscribeService = {
             })
 
         if (error) {
+            // Check for Postgres Unique Violation Code
+            if (error.code === '23505') {
+                throw new Error('This email is already subscribed.')
+            }
             console.error('Error subscribing:', error)
             throw new Error('Failed to subscribe. Please try again.')
         }

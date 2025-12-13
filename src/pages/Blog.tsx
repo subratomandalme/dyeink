@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
+import { analyticsService } from '../services/api'
 import type { Post } from '../types'
 import { format } from 'date-fns'
 // import ColorBends from '../components/common/ColorBends'
@@ -59,6 +60,14 @@ export default function Blog() {
                         // Fetch Posts for THIS user only
                         const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
                         setPosts(fetchedPosts)
+
+                        // High-Scale View Tracking (Single Post Only)
+                        if (slug && fetchedPosts.length > 0) {
+                            const activePost = fetchedPosts.find(p => p.slug === slug)
+                            if (activePost) {
+                                analyticsService.viewPost(activePost.id.toString()) // Wait 8s logic is in service
+                            }
+                        }
                     } else {
                         // Subdomain not found
                         setBlogTitle('User Not Found')
@@ -131,7 +140,7 @@ export default function Blog() {
 
                 {/* Sidebar (Left) */}
                 <aside style={{ position: 'sticky', top: '4rem', height: 'fit-content' }}>
-                    <div style={{ marginBottom: '3rem' }}>
+                    <div style={{ marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <Link to="/" style={{
                                 fontFamily: 'var(--font-display)',
@@ -175,7 +184,7 @@ export default function Blog() {
                         </button>
 
                         {!slug && (
-                            <div style={{ margin: '1rem 0' }}>
+                            <div style={{ margin: '0.5rem 0' }}>
                                 <input
                                     type="text"
                                     placeholder="Search here..."
@@ -325,7 +334,7 @@ export default function Blog() {
                                         paddingTop: 0 // Removed padding and border
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                            <UpvoteButton postId={post.id} />
+                                            <UpvoteButton postId={post.id} initialCount={(post as any).likes || 0} />
 
                                             <button
                                                 onClick={() => {

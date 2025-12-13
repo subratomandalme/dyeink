@@ -1,24 +1,27 @@
-
 import { useState, useEffect } from 'react'
 import { ThumbsUp } from 'lucide-react'
-import { voteService } from '../../services/voteService'
+import { analyticsService } from '../../services/api'
 
 interface UpvoteButtonProps {
     postId: number
+    initialCount?: number // Pass from parent
 }
 
-export default function UpvoteButton({ postId }: UpvoteButtonProps) {
-    const [count, setCount] = useState(0)
+export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonProps) {
+    const [count, setCount] = useState(initialCount)
     const [hasVoted, setHasVoted] = useState(false)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [animating, setAnimating] = useState(false)
 
     // Decrypting Effect State
-    const [displayCount, setDisplayCount] = useState<string>('0')
+    const [displayCount, setDisplayCount] = useState<string>(initialCount.toString())
 
     useEffect(() => {
-        loadStatus()
-    }, [postId])
+        // Check local state for anonymous like
+        const voted = localStorage.getItem(`liked_${postId}`)
+        if (voted) setHasVoted(true)
+        setCount(initialCount) // Sync with prop if it updates
+    }, [postId, initialCount])
 
     // Effect to run decryption animation when count changes
     useEffect(() => {
@@ -45,40 +48,32 @@ export default function UpvoteButton({ postId }: UpvoteButtonProps) {
         return () => clearInterval(interval)
     }, [count, loading])
 
-    const loadStatus = async () => {
-        try {
-            const status = await voteService.getVoteStatus(postId)
-            setCount(status.count)
-            setHasVoted(status.hasVoted)
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setLoading(false)
-        }
-    }
-
     const handleVote = async () => {
-        // Optimistic UI Update
-        const previousVoted = hasVoted
-        const previousCount = count
+        if (hasVoted || loading) return
 
-        setHasVoted(!previousVoted)
-        setCount(previousVoted ? previousCount - 1 : previousCount + 1)
+        setLoading(true)
+
+        // Optimistic UI
+        setHasVoted(true)
+        setCount(prev => prev + 1)
+        localStorage.setItem(`liked_${postId}`, 'true')
+
         setAnimating(true)
-        setTimeout(() => setAnimating(false), 500) // Longer for glitch
+        setTimeout(() => setAnimating(false), 500)
 
-        // Actual API Call
-        try {
-            const result = await voteService.toggleVote(postId)
-            // Sync with server truth
-            setHasVoted(result.has_voted)
-            setCount(result.count)
-        } catch (e) {
-            // Revert on error
-            setHasVoted(previousVoted)
-            setCount(previousCount)
-            console.error('Vote failed')
+        const { ok, error } = await analyticsService.likePost(postId.toString())
+
+        if (!ok) {
+            console.error('Like failed:', error)
+            // If strictly ensuring server truth, revert here. 
+            // But "Already liked" is fine, we just keep it liked.
+            if (error !== 'Already liked') {
+                setHasVoted(false)
+                setCount(prev => prev - 1)
+                localStorage.removeItem(`liked_${postId}`)
+            }
         }
+        setLoading(false)
     }
 
     // Dynamic Glitch Styles
@@ -96,7 +91,7 @@ export default function UpvoteButton({ postId }: UpvoteButtonProps) {
     return (
         <button
             onClick={handleVote}
-            disabled={loading}
+            disabled={hasVoted || loading}
             style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -105,7 +100,7 @@ export default function UpvoteButton({ postId }: UpvoteButtonProps) {
                 background: 'transparent', // No background
                 border: 'none', // No border requested
                 color: hasVoted ? 'var(--text-primary)' : 'var(--text-secondary)',
-                cursor: 'pointer',
+                cursor: hasVoted ? 'default' : 'pointer',
                 transition: 'color 0.3s ease',
                 position: 'relative',
                 overflow: 'hidden'
@@ -147,7 +142,7 @@ export default function UpvoteButton({ postId }: UpvoteButtonProps) {
                 minWidth: '2ch', // Prevent jumping
                 letterSpacing: '-0.05em'
             }}>
-                {loading ? '-' : displayCount}
+                {loading && !hasVoted ? '-' : displayCount}
             </span>
         </button>
     )

@@ -37,6 +37,57 @@ api.interceptors.response.use(
     }
 )
 
+// Analytics Service calling Edge Functions
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
+
+const fpPromise = FingerprintJS.load()
+
+export const analyticsService = {
+    async viewPost(postId: string) {
+        // 8-second delay to prevent bounce counting (Client Logic)
+        setTimeout(async () => {
+            try {
+                const fp = await fpPromise
+                const result = await fp.get()
+
+                await fetch('/api/view', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        postId,
+                        fingerprint: result.visitorId
+                    })
+                })
+            } catch (error) {
+                console.error('Analytics View Error:', error)
+            }
+        }, 8000)
+    },
+
+    async likePost(postId: string): Promise<{ ok: boolean, error?: string }> {
+        try {
+            const fp = await fpPromise
+            const result = await fp.get()
+
+            const response = await fetch('/api/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    postId,
+                    fingerprint: result.visitorId
+                })
+            })
+
+            const data = await response.json()
+            if (!response.ok) return { ok: false, error: data.error }
+            return { ok: true }
+        } catch (error) {
+            console.error('Analytics Like Error:', error)
+            return { ok: false, error: 'Network error' }
+        }
+    }
+}
+
 export const postsApi = {
     list: async (page = 1, limit = 10): Promise<PostListResponse> => {
         const { data } = await api.get(`/posts?page=${page}&limit=${limit}`)
