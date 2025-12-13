@@ -478,13 +478,13 @@ const Settings: React.FC = () => {
                                                 borderRadius: '6px',
                                                 overflow: 'hidden'
                                             }}>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Type</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Name</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Value</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Type</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Name</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Value</div>
 
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600 }}>CNAME</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600 }}>{customDomain.split('.')[0] || 'blog'}</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace' }}>cname.vercel-dns.com</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.85rem' }}>CNAME</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.85rem' }}>{customDomain.split('.')[0] || 'blog'}</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.85rem' }}>cname.vercel-dns.com</div>
                                             </div>
                                             <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
                                                 <button onClick={handleSave} style={{

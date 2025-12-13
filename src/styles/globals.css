@@ -284,11 +284,38 @@ textarea::placeholder {
   border-radius: 6px;
 }
 
-.btn-signout:hover {
-  color: #ff4d4d !important;
-  text-shadow: 0 0 12px rgba(255, 77, 77, 0.6), 0 0 20px rgba(255, 77, 77, 0.4);
-  background-color: transparent !important;
-  box-shadow: none;
+.github-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0 1rem;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 50px;
+  border: none;
+  background: var(--neu-bg);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    -5px -5px 10px var(--neu-shadow-1),
+    5px 5px 10px var(--neu-shadow-2);
+}
+
+.github-btn:hover {
+  color: var(--neu-text-hover);
+  transform: translateY(1px);
+  box-shadow:
+    -1px -1px 5px var(--neu-shadow-1),
+    1px 1px 5px var(--neu-shadow-2),
+    inset -2px -2px 5px var(--neu-shadow-inset-1),
+    inset 2px 2px 4px var(--neu-shadow-inset-2);
 }
 
 .card {
@@ -532,11 +559,30 @@ textarea::placeholder {
 /* Adaptive Logo (Black Logo Source) */
 .logo-adaptive {
   filter: invert(1);
-  transition: filter var(--transition-fast);
+  transition: filter var(--transition-fast), transform var(--transition-fast);
 }
 
 [data-theme='light'] .logo-adaptive {
   filter: none;
+}
+
+/* Logo Link Wrapper & Glow */
+.logo-link {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  text-decoration: none;
+}
+
+.logo-link:hover {
+  transform: scale(1.05);
+}
+
+.logo-link:hover .logo-adaptive {
+  filter: invert(1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+}
+
+[data-theme='light'] .logo-link:hover .logo-adaptive {
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.4));
 }
 
 /* Stronger Content Formatter for Blog Posts */

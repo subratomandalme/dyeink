@@ -104,39 +104,15 @@ export default function Register() {
             >
                 <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem', marginTop: '1.5rem' }}>
-                        <img src="/Di.png" alt="Logo" className="logo-adaptive" style={{ height: '60px', width: 'auto' }} />
+                        <Link to="/" className="logo-link">
+                            <img src="/Di.png" alt="Logo" className="logo-adaptive" style={{ height: '60px', width: 'auto' }} />
+                        </Link>
                     </div>
                 </div>
 
 
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-                    <button
-                        onClick={handleGithubLogin}
-                        type="button"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.75rem',
-                            width: '100%',
-                            padding: '0.875rem',
-                            borderRadius: '8px',
-                            border: '1px solid var(--border-color)',
-                            background: 'var(--bg-tertiary)',
-                            color: 'var(--text-primary)',
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'all 0.2s'
-                        }}
-                    >
-                        <Github size={20} />
-                        Continue with GitHub
-                    </button>
 
-
-                </div>
 
                 <form onSubmit={handleSubmit}>
 
@@ -185,6 +161,17 @@ export default function Register() {
                             style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700 }}
                             icon={loading ? <WaveLoader size={24} /> : null}
                         />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem' }}>
+                        <button
+                            onClick={handleGithubLogin}
+                            type="button"
+                            className="github-btn"
+                        >
+                            <Github size={20} />
+                            Continue with GitHub
+                        </button>
                     </div>
                 </form>
 

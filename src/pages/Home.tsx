@@ -20,14 +20,9 @@ export default function Home() {
                 zIndex: 100,
                 background: 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%)'
             }}>
-                <span style={{
-                    fontSize: '1.75rem',
-                    fontWeight: 800,
-                    color: '#ffffff',
-                    letterSpacing: '-0.02em'
-                }}>
-                    Dyeink
-                </span>
+                <Link to="/" className="logo-link">
+                    <img src="/Di.png" alt="Dyeink" className="logo-adaptive" style={{ height: '40px', width: 'auto' }} />
+                </Link>
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                     {isAuthenticated ? (
                         <Link to="/admin" style={{ color: '#ffffff', textDecoration: 'none', fontWeight: 500 }}>Dashboard</Link>
