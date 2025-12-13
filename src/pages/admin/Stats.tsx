@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart2, Users, Share2 } from 'lucide-react'
 
-import CircularLoader from '../../components/common/CircularLoader'
+import WaveLoader from '../../components/common/WaveLoader'
 import { useAdminStore } from '../../store/adminStore'
 
 const Stats: React.FC = () => {
@@ -92,7 +92,7 @@ const Stats: React.FC = () => {
             {
                 showLoader ? (
                     <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
-                        <CircularLoader size={32} />
+                        <WaveLoader />
                     </div>
                 ) : (
                     renderTabContent()

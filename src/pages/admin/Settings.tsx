@@ -4,7 +4,8 @@ import { supabase } from '../../lib/supabase'
 import { useThemeStore } from '../../store/themeStore'
 import { useAdminStore } from '../../store/adminStore'
 import { Globe, AlertTriangle } from 'lucide-react'
-import CircularLoader from '../../components/common/CircularLoader'
+
+import WaveLoader from '../../components/common/WaveLoader'
 import { useToast } from '../../components/common/Toast'
 
 const Settings: React.FC = () => {
@@ -166,7 +167,7 @@ const Settings: React.FC = () => {
     if (settingsLoading && !settings) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <CircularLoader size={40} />
+                <WaveLoader />
             </div>
         )
     }

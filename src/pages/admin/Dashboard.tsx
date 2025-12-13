@@ -10,68 +10,59 @@ import {
 import {
     ArrowRight
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { settingsService } from '../../services/settingsService'
-import { postService } from '../../services/postService'
-import { Post } from '../../types'
+import { useAdminStore } from '../../store/adminStore'
+import WaveLoader from '../../components/common/WaveLoader'
 
 
 export default function Dashboard() {
-    // theme removed
-    const [subdomain, setSubdomain] = useState<string | null>(null)
-    // siteName removed
-    const [stats, setStats] = useState({
-        totalPosts: 0,
-        publishedPosts: 0,
-        latestPost: null as Post | null
-    })
-    const [graphData, setGraphData] = useState<any[]>([])
-    // ...
+    const { posts, settings, fetchPosts, fetchSettings, postsLoading } = useAdminStore()
 
     useEffect(() => {
-        const loadRequests = async () => {
-            // Load Settings for Subdomain
-            const settings = await settingsService.getSettings()
-            if (settings) {
-                if (settings.subdomain) setSubdomain(settings.subdomain)
-            }
-
-            // Load Posts
-            const posts = await postService.getPosts()
-            // ... (keep existing stats calculation)
-            setStats({
-                totalPosts: posts.length,
-                publishedPosts: posts.filter(p => p.published).length,
-                latestPost: posts[0] || null
-            })
-            // ... (keep existing graph data logic)
-            // Calculate Graph Data (Posts per Day for last 7 days)
-            const last7Days = Array.from({ length: 7 }, (_, i) => {
-                const d = new Date()
-                d.setDate(d.getDate() - (6 - i))
-                return d.toISOString().split('T')[0] // YYYY-MM-DD
-            })
-
-            const counts = posts.reduce((acc, post) => {
-                const date = new Date(post.createdAt).toISOString().split('T')[0]
-                acc[date] = (acc[date] || 0) + 1
-                return acc
-            }, {} as Record<string, number>)
-
-            const chartData = last7Days.map(date => ({
-                name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-                posts: counts[date] || 0,
-                views: (counts[date] || 0) * 12 + Math.floor(Math.random() * 10) // Mock views data
-            }))
-
-            setGraphData(chartData)
-
-        }
-        loadRequests()
+        fetchPosts()
+        fetchSettings()
     }, [])
 
-    // ...
+    const subdomain = settings?.subdomain || null
+
+    const stats = useMemo(() => {
+        const safePosts = posts || []
+        return {
+            totalPosts: safePosts.length,
+            publishedPosts: safePosts.filter(p => p.published).length,
+            latestPost: safePosts[0] || null
+        }
+    }, [posts])
+
+    const graphData = useMemo(() => {
+        const safePosts = posts || []
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date()
+            d.setDate(d.getDate() - (6 - i))
+            return d.toISOString().split('T')[0]
+        })
+
+        const counts = safePosts.reduce((acc, post) => {
+            const date = new Date(post.createdAt).toISOString().split('T')[0]
+            acc[date] = (acc[date] || 0) + 1
+            return acc
+        }, {} as Record<string, number>)
+
+        return last7Days.map(date => ({
+            name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+            posts: counts[date] || 0,
+            views: (counts[date] || 0) * 12 + Math.floor(Math.random() * 10)
+        }))
+    }, [posts])
+
+    if (postsLoading && !posts) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+                <WaveLoader />
+            </div>
+        )
+    }
 
     return (
         <div style={{ paddingBottom: '4rem' }}>
