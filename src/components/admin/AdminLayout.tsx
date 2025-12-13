@@ -95,7 +95,7 @@ export default function AdminLayout() {
                 // transform: 'translateX(0)' // For now, static
             }}>
                 {/* Greeting Area (Replacement for Logo) */}
-                <div style={{ padding: '2rem 1.5rem' }}>
+                <div style={{ padding: '1.5rem 1.25rem 1rem 1.25rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                         <span style={{
                             fontSize: '1.5rem',
@@ -118,7 +118,7 @@ export default function AdminLayout() {
                 </div>
 
                 {/* Create New Post Button */}
-                <div style={{ padding: '0 1.25rem 2rem 1.25rem' }}>
+                <div style={{ padding: '0 1.25rem 1.5rem 1.25rem' }}>
                     <Link
                         to="/admin/posts/new"
                         onMouseEnter={() => setIsCreateHovered(true)}
