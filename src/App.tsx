@@ -6,6 +6,8 @@ import { useThemeStore } from './store/themeStore'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Blog from './pages/Blog'
 // PostView removed
 import Dashboard from './pages/admin/Dashboard'
@@ -86,6 +88,15 @@ function App() {
                     <PublicRoute>
                         <Register />
                     </PublicRoute>
+                } />
+                <Route path="/forgot-password" element={
+                    <PublicRoute>
+                        <ForgotPassword />
+                    </PublicRoute>
+                } />
+                <Route path="/reset-password" element={
+                    // Recovery link will point here
+                    <ResetPassword />
                 } />
 
                 {/* Admin Routes */}

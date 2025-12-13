@@ -51,8 +51,13 @@ const Settings: React.FC = () => {
     const tabs = [
         { id: 'Basics', label: 'Basics' },
         { id: 'Publication', label: 'Publication' },
+        { id: 'Security', label: 'Security' }, // New Tab
         { id: 'Danger', label: 'Danger Zone', danger: true },
     ]
+
+    // Security State
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
 
     useEffect(() => {
         loadSettings()
@@ -332,6 +337,82 @@ const Settings: React.FC = () => {
                                 style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
                             >
                                 {saving ? 'Saving...' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Security' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Change Password</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Ensure your account is using a long, random password to stay secure.</p>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <input
+                                    type="password"
+                                    placeholder="New Password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="password"
+                                    placeholder="Confirm New Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <button
+                                onClick={async () => {
+                                    if (newPassword.length < 6) {
+                                        addToast({ type: 'error', message: 'Password must be at least 6 characters.' })
+                                        return
+                                    }
+                                    if (newPassword !== confirmPassword) {
+                                        addToast({ type: 'error', message: 'Passwords do not match.' })
+                                        return
+                                    }
+
+                                    setSaving(true)
+                                    try {
+                                        const { error } = await supabase.auth.updateUser({ password: newPassword })
+                                        if (error) throw error
+                                        addToast({ type: 'success', message: 'Password updated successfully.' })
+                                        setNewPassword("")
+                                        setConfirmPassword("")
+                                    } catch (err: any) {
+                                        console.error('Update password failed', err)
+                                        addToast({ type: 'error', message: err.message || 'Failed to update password.' })
+                                    } finally {
+                                        setSaving(false)
+                                    }
+                                }}
+                                disabled={saving}
+                                className="btn btn-primary"
+                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                {saving ? 'Updating...' : 'Update Password'}
                             </button>
                         </div>
                     </div>
