@@ -27,12 +27,12 @@ interface ProtectedRouteProps {
     children: React.ReactNode
 }
 
-import CircularLoader from './components/common/CircularLoader'
+import WaveLoader from './components/common/WaveLoader'
 
 function FullScreenLoader() {
     return (
         <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
-            <CircularLoader size={48} style={{ color: 'var(--text-primary)' }} />
+            <WaveLoader />
         </div>
     )
 }

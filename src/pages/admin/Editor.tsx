@@ -8,7 +8,7 @@ import {
     Bold,
     Italic,
 } from 'lucide-react'
-import CircularLoader from '../../components/common/CircularLoader'
+import WaveLoader from '../../components/common/WaveLoader'
 import LetterGlitch from '../../components/common/LetterGlitch'
 import { useThemeStore } from '../../store/themeStore'
 
@@ -133,7 +133,7 @@ export default function Editor() {
                 alignItems: 'center',
                 backgroundColor: 'var(--bg-primary)'
             }}>
-                <CircularLoader size={32} />
+                <WaveLoader />
             </div>
         )
     }

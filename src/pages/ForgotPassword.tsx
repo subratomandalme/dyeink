@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
-import CircularLoader from '../components/common/CircularLoader'
+import WaveLoader from '../components/common/WaveLoader'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
@@ -191,7 +191,7 @@ export default function ForgotPassword() {
                                 marginTop: '0.5rem'
                             }}
                         >
-                            {loading ? <CircularLoader size={20} /> : 'Send Reset Link'}
+                            {loading ? <WaveLoader size={24} /> : 'Send Reset Link'}
                         </button>
                     </form>
                 )}

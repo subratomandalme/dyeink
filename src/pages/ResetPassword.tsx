@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Lock, CheckCircle2 } from 'lucide-react'
-import CircularLoader from '../components/common/CircularLoader'
+import WaveLoader from '../components/common/WaveLoader'
 
 export default function ResetPassword() {
     const [password, setPassword] = useState('')
@@ -197,7 +197,7 @@ export default function ResetPassword() {
                                 marginTop: '0.5rem'
                             }}
                         >
-                            {loading ? <CircularLoader size={20} /> : 'Update Password'}
+                            {loading ? <WaveLoader size={24} /> : 'Update Password'}
                         </button>
                     </form>
                 )}

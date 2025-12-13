@@ -1,7 +1,16 @@
 
 
-export default function WaveLoader() {
-    // Generates the bars for a wave div
+
+interface WaveLoaderProps {
+    size?: number;
+    color?: string; // Prepared for future, though complex to implement with current CSS
+}
+
+export default function WaveLoader({ size }: WaveLoaderProps) {
+    const baseSize = 220
+    const currentSize = size || baseSize
+    const scale = currentSize / baseSize
+
     const renderBars = () => (
         Array.from({ length: 24 }).map((_, i) => (
             <div key={i} className="wave-loader-bar"></div>
@@ -9,8 +18,13 @@ export default function WaveLoader() {
     )
 
     return (
-        <div className="wave-loader-wrapper">
-            <div className="wave-loader-container">
+        <div className="wave-loader-wrapper" style={{ width: `${currentSize}px`, height: `${currentSize}px` }}>
+            <div className="wave-loader-container" style={{
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                width: `${baseSize}px`,
+                height: `${baseSize}px`
+            }}>
                 <div className="wave-loader-wave">
                     {renderBars()}
                 </div>
@@ -29,18 +43,14 @@ export default function WaveLoader() {
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    width: 100%;
-                    height: 100%;
-                    min-height: 300px; /* Ensure visibility */
+                    overflow: hidden; /* Ensure no spillover */
                 }
 
                 .wave-loader-container {
                     padding: 0;
-                    margin: 0 auto;
+                    margin: 0;
                     box-sizing: border-box;
                     position: relative;
-                    width: 220px;
-                    height: 220px;
                     border-radius: 50%;
                     overflow: hidden;
                 }

@@ -4,7 +4,7 @@ import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
 import { CheckCircle2 } from 'lucide-react'
-import CircularLoader from '../components/common/CircularLoader'
+import WaveLoader from '../components/common/WaveLoader'
 import { useToast } from '../components/common/Toast'
 
 import { supabase } from '../lib/supabase'
@@ -135,7 +135,7 @@ export default function Register() {
                             text={loading ? 'Creating Account...' : 'Sign Up'} // Changed button text
                             type="submit"
                             style={{ width: '100%', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700 }}
-                            icon={loading ? <CircularLoader size={20} /> : null}
+                            icon={loading ? <WaveLoader size={24} /> : null}
                         />
                     </div>
                 </form>
