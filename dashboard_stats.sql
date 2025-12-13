@@ -28,12 +28,12 @@ begin
   ),
   daily_views as (
       select 
-        (v.viewed_at at time zone 'utc')::date as day,
+        (v.created_at at time zone 'utc')::date as day,
         count(*) as count
       from public.post_views v
       join public.posts p on v.post_id = p.id
       where p.user_id = get_dashboard_stats.user_id
-        and v.viewed_at >= (now() - interval '7 days')
+        and v.created_at >= (now() - interval '7 days')
       group by 1
   ),
   daily_likes as (
