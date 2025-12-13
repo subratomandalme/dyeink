@@ -97,16 +97,20 @@ export default function AdminLayout() {
                 {/* Greeting Area (Replacement for Logo) */}
                 <div style={{ padding: '2rem 1.5rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        <span className="font-heading-logo" style={{
+                        <span style={{
                             fontSize: '1.5rem',
                             color: 'var(--text-secondary)',
-                            opacity: 0.8
+                            opacity: 0.8,
+                            fontFamily: 'var(--font-sans)',
+                            fontWeight: 500
                         }}>Hi,</span>
-                        <span className="font-heading-logo" style={{
+                        <span style={{
                             fontSize: '1.8rem',
                             color: 'var(--text-primary)',
                             lineHeight: 1.2,
-                            wordBreak: 'break-word'
+                            wordBreak: 'break-word',
+                            fontFamily: 'var(--font-sans)',
+                            fontWeight: 700
                         }}>
                             {isLoadingName ? '...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
                         </span>
