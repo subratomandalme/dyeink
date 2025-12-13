@@ -9,7 +9,19 @@ const Settings: React.FC = () => {
     const [activeTab, setActiveTab] = useState('Basics')
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
+    const [schemaError, setSchemaError] = useState<string | null>(null) // New Error State
     const { addToast } = useToast()
+
+    // ... (rest of state)
+
+    // ... (rest of logic)
+
+    // Wait, I need to verify where to insert the UI render.
+    // I can't use replace_file_content to insert in the middle without seeing the whole file content or a large chunk.
+    // I will use multi_replace for this to be precise, or just replace the header section to include the alert.
+
+    // Let's do the state first.
+
     const { theme } = useThemeStore() // Get theme
 
     // Hover states for Neumorphic buttons
@@ -95,6 +107,7 @@ const Settings: React.FC = () => {
 
     const handleSave = async () => {
         setSaving(true)
+        setSchemaError(null)
         try {
             const updated = await settingsService.saveSettings({
                 siteName: pubName,
@@ -126,22 +139,18 @@ const Settings: React.FC = () => {
             }
         } catch (error: any) {
             console.error('Save error:', error)
-            const isSchemaError = error.message?.includes('column') || error.message?.includes('schema')
+            const isSchemaError = error.message?.includes('column') || error.message?.includes('schema') || error.code === '42703'
+
+            if (isSchemaError) {
+                setSchemaError('Missing database column. Please run the generated SQL migration.')
+            }
 
             addToast({
                 type: 'error',
                 message: isSchemaError
-                    ? 'Database update required. New social features need a schema update.'
+                    ? 'Database update required. See alert above.'
                     : `Failed to save: ${error.message || 'Unknown error'}`,
-                duration: isSchemaError ? 10000 : 4000,
-                action: isSchemaError ? {
-                    label: 'Copy Fix SQL',
-                    onClick: () => {
-                        const sql = "ALTER TABLE site_settings ADD COLUMN IF NOT EXISTS twitter_link TEXT, ADD COLUMN IF NOT EXISTS linkedin_link TEXT, ADD COLUMN IF NOT EXISTS github_link TEXT, ADD COLUMN IF NOT EXISTS website_link TEXT;"
-                        navigator.clipboard.writeText(sql)
-                        alert('SQL copied! Run this in Supabase SQL Editor.')
-                    }
-                } : undefined
+                duration: isSchemaError ? 10000 : 4000
             })
         } finally {
             setSaving(false)
@@ -165,6 +174,55 @@ const Settings: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Settings</h1>
             </div>
+
+            {/* Schema Error Alert */}
+            {schemaError && (
+                <div style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '2rem'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', color: '#ef4444' }}>
+                        <AlertTriangle size={20} />
+                        <h4 style={{ margin: 0, fontWeight: 700 }}>Database Update Required</h4>
+                    </div>
+                    <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                        The <code>newsletter_email</code> column is missing in your database. Please run this SQL command in your Supabase SQL Editor:
+                    </p>
+                    <div style={{
+                        backgroundColor: 'var(--bg-secondary)',
+                        padding: '0.75rem',
+                        borderRadius: '4px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.85rem',
+                        marginBottom: '0.75rem',
+                        overflowX: 'auto',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
+                    </div>
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText("ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;")
+                            addToast({ type: 'success', message: 'SQL copied to clipboard!' })
+                        }}
+                        style={{
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 600
+                        }}
+                    >
+                        Copy SQL Command
+                    </button>
+                </div>
+            )}
 
             {/* Horizontal Tabs */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
