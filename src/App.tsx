@@ -21,6 +21,7 @@ import Stats from './pages/admin/Stats'
 import AdminLayout from './components/admin/AdminLayout'
 import './styles/globals.css'
 import { ToastContainer } from './components/common/Toast'
+import { SimpleErrorBoundary } from './components/common/SimpleErrorBoundary'
 
 interface ProtectedRouteProps {
     children: React.ReactNode
@@ -137,7 +138,9 @@ function App() {
                     path="/admin"
                     element={
                         <ProtectedRoute>
-                            <AdminLayout />
+                            <SimpleErrorBoundary>
+                                <AdminLayout />
+                            </SimpleErrorBoundary>
                         </ProtectedRoute>
                     }
                 >
