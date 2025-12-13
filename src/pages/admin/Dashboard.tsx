@@ -10,19 +10,38 @@ import {
 import {
     ArrowRight
 } from 'lucide-react'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminStore } from '../../store/adminStore'
+import { useAuthStore } from '../../store' // Import from index
+import { supabase } from '../../lib/supabase'
 import WaveLoader from '../../components/common/WaveLoader'
 
 
 export default function Dashboard() {
     const { posts, settings, fetchPosts, fetchSettings, postsLoading } = useAdminStore()
+    const { user } = useAuthStore() // Get user
+    const [realStats, setRealStats] = useState<{
+        totalViews: number;
+        totalLikes: number;
+        graphData: any[];
+    } | null>(null)
 
     useEffect(() => {
         fetchPosts()
         fetchSettings()
     }, [])
+
+    useEffect(() => {
+        const loadStats = async () => {
+            if (!user?.id) return
+            const { data, error } = await supabase.rpc('get_dashboard_stats', { user_id: user.id })
+            if (!error && data) {
+                setRealStats(data)
+            }
+        }
+        loadStats()
+    }, [user?.id])
 
     const subdomain = settings?.subdomain || null
 
@@ -35,28 +54,22 @@ export default function Dashboard() {
         }
     }, [posts])
 
+    // Use fetched graph data or fallback to 7-day zero data to ensure graph always renders
     const graphData = useMemo(() => {
-        const safePosts = posts || []
-        const last7Days = Array.from({ length: 7 }, (_, i) => {
+        if (realStats?.graphData && realStats.graphData.length > 0) {
+            return realStats.graphData
+        }
+        // Fallback: Last 7 days with 0 data
+        return Array.from({ length: 7 }, (_, i) => {
             const d = new Date()
             d.setDate(d.getDate() - (6 - i))
-            return d.toISOString().split('T')[0]
+            return {
+                name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                views: 0,
+                likes: 0
+            }
         })
-
-        const counts = safePosts.reduce((acc, post) => {
-            const date = new Date(post.createdAt).toISOString().split('T')[0]
-            acc[date] = (acc[date] || 0) + 1
-            return acc
-        }, {} as Record<string, number>)
-
-        return last7Days.map(date => ({
-            name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-            posts: counts[date] || 0,
-            views: (counts[date] || 0) * 12 + Math.floor(Math.random() * 10)
-        }))
-    }, [posts])
-
-    // Loader moved to graph specific container
+    }, [realStats])
 
     return (
         <div style={{ paddingBottom: '4rem' }}>
@@ -79,33 +92,44 @@ export default function Dashboard() {
                 }}>
                     {/* Top Stats Row */}
                     <div style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-                        {/* Stat 1: Total Views (Est) */}
+                        {/* Stat 1: Total Views (Real) */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                                 Total Views
                             </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{(stats.totalPosts * 12).toLocaleString()}</div>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                {(realStats?.totalViews || 0).toLocaleString()}
+                            </div>
                         </div>
-                        {/* Stat 2: Published */}
+                        {/* Stat 2: Total Likes (Real) */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Published
+                                Total Likes
+                            </div>
+                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                {(realStats?.totalLikes || 0).toLocaleString()}
+                            </div>
+                        </div>
+                        {/* Stat 3: Published (Keep functionality) */}
+                        <div style={{ flex: 1, padding: '1.5rem 0' }}>
+                            <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                                Published Posts
                             </div>
                             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.publishedPosts}</div>
                         </div>
                     </div>
 
                     {/* Graph Area */}
-                    <div style={{ height: '300px', padding: '1rem 1rem 0 0', marginLeft: '-2rem', background: 'transparent', position: 'relative' }}>
-                        {postsLoading ? (
+                    <div style={{ height: '300px', padding: '1rem 0', background: 'transparent', position: 'relative' }}>
+                        {!realStats && postsLoading ? (
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
                                 <WaveLoader size={48} />
                             </div>
                         ) : (
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                     <defs>
-                                        <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="colorLikes" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#ff5e00" stopOpacity={0.2} />
                                             <stop offset="95%" stopColor="#ff5e00" stopOpacity={0} />
                                         </linearGradient>
@@ -140,7 +164,7 @@ export default function Dashboard() {
                                     <Area
                                         type="monotone"
                                         dataKey="views"
-                                        stroke="var(--accent-secondary)" // Or hardcoded cyan
+                                        stroke="var(--accent-secondary)" // Cyan
                                         strokeWidth={2}
                                         fillOpacity={1}
                                         fill="url(#colorViews)"
@@ -148,11 +172,11 @@ export default function Dashboard() {
                                     />
                                     <Area
                                         type="monotone"
-                                        dataKey="posts"
-                                        stroke="var(--accent-primary)" // Or hardcoded orange
+                                        dataKey="likes"
+                                        stroke="var(--accent-primary)" // Orange
                                         strokeWidth={2}
                                         fillOpacity={1}
-                                        fill="url(#colorPosts)"
+                                        fill="url(#colorLikes)"
                                         style={{ stroke: '#ff5e00' }}
                                     />
                                 </AreaChart>

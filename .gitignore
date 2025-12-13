@@ -91,3 +91,5 @@ public
 # Dist
 dist
 dist-ssr
+.vercel
+.env*.local

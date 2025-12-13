@@ -3,10 +3,14 @@ import { BarChart2, Users, Share2 } from 'lucide-react'
 
 import WaveLoader from '../../components/common/WaveLoader'
 import { useAdminStore } from '../../store/adminStore'
+import { useAuthStore } from '../../store'
+import { supabase } from '../../lib/supabase'
 
 const Stats: React.FC = () => {
     const { posts, fetchPosts, postsLoading } = useAdminStore()
+    const { user } = useAuthStore()
     const [activeTab, setActiveTab] = useState('Traffic')
+    const [realStats, setRealStats] = useState<any>(null)
 
     // Only keeping requested tabs
     const tabs = ['Traffic', 'Audience', 'Sharing']
@@ -15,13 +19,21 @@ const Stats: React.FC = () => {
         fetchPosts()
     }, [])
 
+    useEffect(() => {
+        const loadStats = async () => {
+            if (!user?.id) return
+            const { data } = await supabase.rpc('get_dashboard_stats', { user_id: user.id })
+            if (data) setRealStats(data)
+        }
+        loadStats()
+    }, [user?.id])
+
     const safePosts = posts || []
     const showLoader = postsLoading && !posts
 
     // Derived Stats
     const totalPosts = safePosts.length
     const publishedPosts = safePosts.filter(p => p.published).length
-    const estimatedViews = totalPosts * 12 // Mock multiplier for "Traffic" score
     const totalWords = safePosts.reduce((acc, post) => acc + (post.content?.split(' ').length || 0), 0)
 
     const renderTabContent = () => {
@@ -30,9 +42,9 @@ const Stats: React.FC = () => {
                 return (
                     <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Views (Est.)" value={estimatedViews.toLocaleString()} icon={<BarChart2 size={20} />} />
+                            <StatCard label="Total Views" value={(realStats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
                             <StatCard label="Posts Published" value={publishedPosts.toString()} />
-                            <StatCard label="Words Written" value={totalWords.toLocaleString()} />
+                            <StatCard label="Total Likes" value={(realStats?.totalLikes || 0).toLocaleString()} />
                         </div>
                     </div>
                 )
