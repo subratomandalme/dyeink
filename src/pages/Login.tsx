@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
-import { Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, CheckCircle2 } from 'lucide-react'
 import CircularLoader from '../components/common/CircularLoader'
 import { useToast } from '../components/common/Toast'
 
@@ -261,7 +261,7 @@ export default function Login() {
                                     className="btn btn-primary"
                                     style={{ width: '100%' }}
                                 >
-                                    {forgotLoading ? <Loader2 className="animate-spin" /> : 'Send Login Link'}
+                                    {forgotLoading ? <CircularLoader size={20} /> : 'Send Login Link'}
                                 </button>
                             </form>
                         )}

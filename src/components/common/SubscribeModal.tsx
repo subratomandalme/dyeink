@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Loader2, CheckCircle } from 'lucide-react'
+import { X, CheckCircle } from 'lucide-react'
+import CircularLoader from './CircularLoader'
 import { subscribeService } from '../../services/subscribeService'
 import { useToast } from './Toast'
 
@@ -156,7 +157,7 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
                                 onMouseEnter={(e) => !loading && (e.currentTarget.style.transform = 'scale(1.02)')}
                                 onMouseLeave={(e) => !loading && (e.currentTarget.style.transform = 'scale(1)')}
                             >
-                                {loading ? <Loader2 className="animate-spin" size={20} /> : 'Subscribe'}
+                                {loading ? <CircularLoader size={20} /> : 'Subscribe'}
                             </button>
                         </form>
                     </>

@@ -38,7 +38,7 @@ serve(async (req) => {
         // 2. Get Blog Settings via User ID
         const { data: settings, error: settingsError } = await supabaseClient
             .from('site_settings')
-            .select('id, site_name, newsletter_email, subdomain')
+            .select('id, site_name, newsletter_email, subdomain, custom_domain')
             .eq('user_id', post.user_id)
             .single()
 
@@ -76,10 +76,15 @@ serve(async (req) => {
         const resend = new Resend(resendApiKey)
         const results = []
 
-        // Batching: sending individually for now to personalize or avoid 'to' field leakage
-        // For scale, use Bcc or Resend's batch API.
-        // Iterating for simplicity in MVP.
-        const postLink = `https://${settings.subdomain ? `${settings.subdomain}.dyeink.com` : 'dyeink.com'}/blog/${post.slug}` // Adjust domain logic as needed
+        // Determine correct URL
+        let postLink = ''
+        if (settings.custom_domain) {
+            postLink = `https://${settings.custom_domain}/blog/${post.slug}`
+        } else if (settings.subdomain) {
+            postLink = `https://${settings.subdomain}.dyeink.com/blog/${post.slug}`
+        } else {
+            postLink = `https://dyeink.com/blog/${post.slug}`
+        }
 
         const emailSubject = `New Post on ${settings.site_name}: ${post.title}`
         const emailHtml = `

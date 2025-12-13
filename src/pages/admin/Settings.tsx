@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { settingsService } from '../../services/settingsService'
 import { supabase } from '../../lib/supabase'
 import { useThemeStore } from '../../store/themeStore'
-import { Loader2, Globe, AlertTriangle } from 'lucide-react'
+import { Globe, AlertTriangle } from 'lucide-react'
+import CircularLoader from '../../components/common/CircularLoader'
 import { useToast } from '../../components/common/Toast'
 
 const Settings: React.FC = () => {
@@ -169,7 +170,7 @@ const Settings: React.FC = () => {
                 <style>{`
                     @keyframes spin { 100% { transform: rotate(360deg); } }
                 `}</style>
-                <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--text-muted)' }} />
+                <CircularLoader size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--text-muted)' }} />
             </div>
         )
     }

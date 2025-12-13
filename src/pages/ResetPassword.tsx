@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Lock, Loader2, CheckCircle2 } from 'lucide-react'
+import { Lock, CheckCircle2 } from 'lucide-react'
+import CircularLoader from '../components/common/CircularLoader'
 
 export default function ResetPassword() {
     const [password, setPassword] = useState('')
@@ -196,7 +197,7 @@ export default function ResetPassword() {
                                 marginTop: '0.5rem'
                             }}
                         >
-                            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Update Password'}
+                            {loading ? <CircularLoader size={20} /> : 'Update Password'}
                         </button>
                     </form>
                 )}

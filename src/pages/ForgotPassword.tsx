@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Mail, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react'
+import { Mail, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import CircularLoader from '../components/common/CircularLoader'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
@@ -190,7 +191,7 @@ export default function ForgotPassword() {
                                 marginTop: '0.5rem'
                             }}
                         >
-                            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Send Reset Link'}
+                            {loading ? <CircularLoader size={20} /> : 'Send Reset Link'}
                         </button>
                     </form>
                 )}

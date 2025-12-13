@@ -7,8 +7,8 @@ import {
     Redo,
     Bold,
     Italic,
-    Loader2
 } from 'lucide-react'
+import CircularLoader from '../../components/common/CircularLoader'
 import LetterGlitch from '../../components/common/LetterGlitch'
 import { useThemeStore } from '../../store/themeStore'
 
@@ -133,7 +133,7 @@ export default function Editor() {
                 alignItems: 'center',
                 backgroundColor: 'var(--bg-primary)'
             }}>
-                <Loader2 className="animate-spin" size={32} />
+                <CircularLoader size={32} />
             </div>
         )
     }
