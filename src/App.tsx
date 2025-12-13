@@ -52,11 +52,28 @@ function ThemeInit() {
 }
 
 function App() {
-    const initializeAuth = useAuthStore((state) => state.initialize)
+    const initialize = useAuthStore((state) => state.initialize)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        initializeAuth()
-    }, [initializeAuth])
+        // Initialize auth store
+        const initAuth = async () => {
+            await initialize()
+        }
+        initAuth()
+
+        // Global Auth Listener for redirects
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+            // Handle Password Recovery / Magic Link flow
+            if (event === 'PASSWORD_RECOVERY') {
+                navigate('/admin/settings?tab=Security')
+            }
+        })
+
+        return () => {
+            authListener.subscription.unsubscribe()
+        }
+    }, [initialize, navigate])
 
     return (
         <BrowserRouter>
