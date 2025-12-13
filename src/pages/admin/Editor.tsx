@@ -13,12 +13,14 @@ import LetterGlitch from '../../components/common/LetterGlitch'
 import { useThemeStore } from '../../store/themeStore'
 
 import { useAuthStore } from '../../store'
+import { useAdminStore } from '../../store/adminStore'
 
 export default function Editor() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const { logout } = useAuthStore()
     const { theme } = useThemeStore()
+    const { settings } = useAdminStore()
 
     // State
     const [title, setTitle] = useState('')
