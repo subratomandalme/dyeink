@@ -166,8 +166,8 @@ export default function AdminLayout() {
                         }}>
                             <DecryptedText
                                 text={greetingName.length > 18 ? `${greetingName.slice(0, 18)}...` : greetingName}
-                                speed={100}
-                                maxIterations={20}
+                                speed={50}
+                                maxIterations={50}
                                 animateOn="view"
                                 revealDirection="start"
                             />

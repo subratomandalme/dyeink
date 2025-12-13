@@ -174,7 +174,7 @@ export default function Dashboard() {
                             marginTop: '1rem',
                             textDecoration: 'none',
                             color: 'inherit',
-                            padding: '2rem',
+                            padding: '1.5rem',
                             border: '1px solid var(--border-color)',
                             borderRadius: '12px',
                             transition: 'all 0.2s',
@@ -190,12 +190,12 @@ export default function Dashboard() {
                         }}
                     >
                         <h3 style={{
-                            fontSize: '2rem',
+                            fontSize: '1.75rem',
                             fontWeight: 800,
-                            margin: '0 0 2.5rem 0',
+                            margin: '0 0 1.5rem 0',
                             fontFamily: 'var(--font-display)',
                             color: 'var(--text-primary)',
-                            lineHeight: 1.1,
+                            lineHeight: 1.2,
                             letterSpacing: '-0.03em'
                         }}>
                             {stats.latestPost.title}
@@ -203,7 +203,7 @@ export default function Dashboard() {
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{
-                                fontSize: '0.85rem',
+                                fontSize: '0.8rem',
                                 color: 'var(--text-secondary)',
                                 fontFamily: 'var(--font-mono)'
                             }}>
@@ -211,11 +211,11 @@ export default function Dashboard() {
                             </span>
 
                             <span style={{
-                                fontSize: '0.9rem',
+                                fontSize: '0.85rem',
                                 color: 'var(--text-primary)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '0.5rem',
+                                gap: '0.4rem',
                                 fontWeight: 500
                             }}>
                                 View Post <ArrowRight size={16} />
