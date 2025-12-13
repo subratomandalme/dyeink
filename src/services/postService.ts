@@ -29,14 +29,17 @@ export const postService = {
                 user_id: userId
             })
             .select()
-            .single()
 
         if (error) {
             console.error('Error creating post:', error)
             throw error
         }
 
-        return mapResponseToPost(data)
+        if (!data || data.length === 0) {
+            throw new Error('Failed to create post: No data returned')
+        }
+
+        return mapResponseToPost(data[0])
     },
 
     async updatePost(id: number, post: UpdatePostInput): Promise<Post | null> {
@@ -66,14 +69,19 @@ export const postService = {
             .update(updates)
             .eq('id', id)
             .select()
-            .single()
 
         if (error) {
             console.error('Error updating post:', error)
             throw error
         }
 
-        return mapResponseToPost(data)
+        if (!data || data.length === 0) {
+            // This happens if RLS filters the row or ID doesn't exist
+            console.error('Update returned no rows. Possible RLS violation or invalid ID.')
+            throw new Error('Post not found or permission denied.')
+        }
+
+        return mapResponseToPost(data[0])
     },
 
     async getPostById(id: string): Promise<Post | null> {
@@ -106,14 +114,33 @@ export const postService = {
         return mapResponseToPost(data)
     },
 
-    async getPosts(options: { userId?: string } = {}): Promise<Post[]> {
+    async getPosts(options: { userId?: string, publishedOnly?: boolean } = {}): Promise<Post[]> {
         let query = supabase
             .from('posts')
             .select('*')
             .order('created_at', { ascending: false })
 
         if (options.userId) {
+            // Specific user requested (e.g. Public Blog View)
             query = query.eq('user_id', options.userId)
+        } else {
+            // No specific user requested. Assume Admin/Dashboard usage.
+            // Check for authenticated session to scope data.
+            const { data: { user } } = await supabase.auth.getUser()
+
+            if (user) {
+                query = query.eq('user_id', user.id)
+            } else {
+                // Security: If not logged in and no user specified, return nothing.
+                // Do NOT return all posts from the database.
+                console.warn('getPosts called without context (no userId and no session). Returning empty.')
+                return []
+            }
+        }
+
+        // Filter by Published status if requested
+        if (options.publishedOnly) {
+            query = query.eq('published', true)
         }
 
         const { data, error } = await query
