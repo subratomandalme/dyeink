@@ -43,7 +43,27 @@ export default function AdminLayout() {
 
     useEffect(() => {
         const loadSettings = async () => {
-            const settings = await settingsService.getSettings()
+            if (!user) return
+
+            let settings = await settingsService.getSettings()
+
+            // If no settings exist (first time user), create defaults
+            if (!settings) {
+                const defaultSubdomain = `blog-${user.id.slice(0, 8)}`
+                const defaultName = user.user_metadata?.full_name || 'My DyeInk Blog'
+
+                try {
+                    settings = await settingsService.saveSettings({
+                        siteName: defaultName,
+                        siteDescription: 'Welcome to my new blog',
+                        customDomain: null,
+                        subdomain: defaultSubdomain
+                    })
+                } catch (err) {
+                    console.error('Failed to create default settings:', err)
+                }
+            }
+
             if (settings) {
                 if (settings.siteName) setDisplayName(settings.siteName)
                 if (settings.subdomain) setSubdomain(settings.subdomain)
