@@ -1,6 +1,26 @@
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useAuthStore } from './store'
+import { useThemeStore } from './store/themeStore'
+import { supabase } from './lib/supabase'
 import { Loader2 } from 'lucide-react'
 
-// ... imports remain the same
+import Landing from './pages/Landing'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import Blog from './pages/Blog'
+// PostView removed
+import Dashboard from './pages/admin/Dashboard'
+import Posts from './pages/admin/Posts'
+import Editor from './pages/admin/Editor'
+import Domains from './pages/admin/Domains'
+import Settings from './pages/admin/Settings'
+import Stats from './pages/admin/Stats'
+import AdminLayout from './components/admin/AdminLayout'
+import './styles/globals.css'
+import { ToastContainer } from './components/common/Toast'
 
 interface ProtectedRouteProps {
     children: React.ReactNode
