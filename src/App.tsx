@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuthStore } from './store'
 import { useThemeStore } from './store/themeStore'
-// import ColorBends from './components/common/ColorBends'
+import { supabase } from './lib/supabase'
+
 import Landing from './pages/Landing'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -51,20 +52,14 @@ function ThemeInit() {
     return null
 }
 
-function App() {
-    const initialize = useAuthStore((state) => state.initialize)
+function AuthListener() {
     const navigate = useNavigate()
+    const initialize = useAuthStore((state) => state.initialize)
 
     useEffect(() => {
-        // Initialize auth store
-        const initAuth = async () => {
-            await initialize()
-        }
-        initAuth()
+        initialize()
 
-        // Global Auth Listener for redirects
-        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-            // Handle Password Recovery / Magic Link flow
+        const { data: authListener } = supabase.auth.onAuthStateChange(async (event, _session) => {
             if (event === 'PASSWORD_RECOVERY') {
                 navigate('/admin/settings?tab=Security')
             }
@@ -75,11 +70,15 @@ function App() {
         }
     }, [initialize, navigate])
 
+    return null
+}
+
+function App() {
     return (
         <BrowserRouter>
             <ThemeInit />
+            <AuthListener />
             <ToastContainer />
-            {/* Background removed for stability - relying on CSS in globals.css */}
             <Routes>
                 {/* Public Only Route (Landing) */}
                 <Route path="/" element={
@@ -95,7 +94,7 @@ function App() {
                 <Route path="/:subdomain/:slug" element={<Blog />} />
                 {/* PostView route removed */}
 
-                {/* Auth Routes (PublicOnly?) - Keeping accessible for now, or could wrap in PublicRoute */}
+                {/* Auth Routes */}
                 <Route path="/login" element={
                     <PublicRoute>
                         <Login />
@@ -112,7 +111,6 @@ function App() {
                     </PublicRoute>
                 } />
                 <Route path="/reset-password" element={
-                    // Recovery link will point here
                     <ResetPassword />
                 } />
 
@@ -132,7 +130,7 @@ function App() {
                     <Route path="domains" element={<Domains />} />
                 </Route>
 
-                {/* Editor Routes (Distraction Free - No Sidebar) */}
+                {/* Editor Routes */}
                 <Route
                     path="/admin/posts/new"
                     element={
