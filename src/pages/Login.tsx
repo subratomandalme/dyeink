@@ -4,8 +4,8 @@ import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
 import { Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
-import { useAuthStore } from '../store/authStore'
-import { useToast } from '../components/common/ToastProvider'
+import { useAuthStore } from '../store'
+import { useToast } from '../components/common/Toast'
 
 import { supabase } from '../lib/supabase'
 
