@@ -13,7 +13,7 @@ import SubscribeModal from '../components/common/SubscribeModal'
 import UpvoteButton from '../components/common/UpvoteButton'
 
 export default function Blog() {
-    const { slug } = useParams()
+    const { slug, subdomain } = useParams()
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
     const [searchParams, setSearchParams] = useSearchParams()
@@ -39,39 +39,45 @@ export default function Blog() {
     useEffect(() => {
         const loadData = async () => {
             try {
-                // Critical: Load posts
-                const fetchedPosts = await postService.getPosts()
+                let currentUserId: string | undefined = undefined
+
+                // 1. Determine Context (User Profile vs Global Feed)
+                if (subdomain) {
+                    // Fetch User Settings
+                    const userConfig = await settingsService.getSettingsBySubdomain(subdomain)
+                    if (userConfig) {
+                        const { settings, userId } = userConfig
+                        currentUserId = userId
+
+                        // Apply User Branding
+                        if (settings.siteName) setBlogTitle(settings.siteName)
+                        setTwitterLink(settings.twitterLink || null)
+                        setLinkedinLink(settings.linkedinLink || null)
+                        setGithubLink(settings.githubLink || null)
+                        setWebsiteLink(settings.websiteLink || null)
+                    } else {
+                        // Handle 404 - User not found (Optional: Redirect or Show Error)
+                        setBlogTitle('User Not Found')
+                    }
+                } else {
+                    // Global Feed: Fetch Platform Settings (DyeInk)
+                    const settings = await settingsService.getPublicSettings()
+                    if (settings && settings.siteName) setBlogTitle(settings.siteName)
+                    // Reset links for global feed or keep generic
+                }
+
+                // 2. Fetch Posts (Filtered by User if in Subdomain mode)
+                const fetchedPosts = await postService.getPosts(currentUserId ? { userId: currentUserId } : {})
                 setPosts(fetchedPosts)
+
             } catch (error) {
-                console.error('Failed to load posts:', error)
+                console.error('Failed to load data:', error)
             } finally {
                 setLoading(false)
             }
-
-            try {
-                // Non-critical: Load settings (failsafe)
-                const settings = await settingsService.getPublicSettings()
-                if (settings && settings.siteName) {
-                    setBlogTitle(settings.siteName)
-                }
-                if (settings && settings.twitterLink) {
-                    setTwitterLink(settings.twitterLink)
-                }
-                if (settings && settings.linkedinLink) {
-                    setLinkedinLink(settings.linkedinLink)
-                }
-                if (settings && settings.githubLink) {
-                    setGithubLink(settings.githubLink)
-                }
-                if (settings && settings.websiteLink) {
-                    setWebsiteLink(settings.websiteLink)
-                }
-            } catch (error) {
-                console.error('Failed to load public settings:', error)
-            }
         }
         loadData()
-    }, [])
+    }, [subdomain]) // Re-run if subdomain changes
 
     // Search & Pagination Logic - Filter by Search AND Published status
     const filteredPosts = posts.filter(post => {
@@ -142,11 +148,13 @@ export default function Blog() {
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {slug ? (
-                            <Link to="/blog" className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <ArrowLeft size={16} /> All Posts
+                            <Link to={subdomain ? `/${subdomain}` : "/blog"} className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <ArrowLeft size={16} /> {subdomain ? 'Back to Blog' : 'All Posts'}
                             </Link>
                         ) : (
-                            <Link to="/admin" className="sidebar-link" style={{ fontSize: '0.95rem' }}>Home</Link>
+                            <Link to={subdomain ? `/${subdomain}` : "/admin"} className="sidebar-link" style={{ fontSize: '0.95rem' }}>
+                                {subdomain ? 'Home' : 'Admin'}
+                            </Link>
                         )}
 
                         <button
@@ -290,7 +298,7 @@ export default function Blog() {
                                             overflowWrap: 'anywhere',
                                             wordBreak: 'break-word'
                                         }}>
-                                            {slug ? post.title : <Link to={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{post.title}</Link>}
+                                            {slug ? post.title : <Link to={subdomain ? `/${subdomain}/${post.slug}` : `/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{post.title}</Link>}
                                         </h2>
                                     </header>
 
@@ -320,7 +328,8 @@ export default function Blog() {
 
                                             <button
                                                 onClick={() => {
-                                                    const permalink = window.location.origin + '/blog/' + post.slug
+                                                    const path = subdomain ? `/${subdomain}/${post.slug}` : `/blog/${post.slug}`
+                                                    const permalink = window.location.origin + path
                                                     navigator.clipboard.writeText(permalink)
                                                     addToast({
                                                         type: 'success',
