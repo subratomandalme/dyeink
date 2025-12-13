@@ -1,36 +1,28 @@
 import React, { useState, useEffect } from 'react'
 import { BarChart2, Users, Share2 } from 'lucide-react'
-import { postService } from '../../services/postService'
+
 import CircularLoader from '../../components/common/CircularLoader'
-import type { Post } from '../../types'
+import { useAdminStore } from '../../store/adminStore'
 
 const Stats: React.FC = () => {
+    const { posts, fetchPosts, postsLoading } = useAdminStore()
     const [activeTab, setActiveTab] = useState('Traffic')
-    const [posts, setPosts] = useState<Post[]>([])
-    const [loading, setLoading] = useState(true)
 
     // Only keeping requested tabs
     const tabs = ['Traffic', 'Audience', 'Sharing']
 
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const fetchedPosts = await postService.getPosts()
-                setPosts(fetchedPosts)
-            } catch (error) {
-                console.error('Failed to fetch stats:', error)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchStats()
+        fetchPosts()
     }, [])
 
+    const safePosts = posts || []
+    const showLoader = postsLoading && !posts
+
     // Derived Stats
-    const totalPosts = posts.length
-    const publishedPosts = posts.filter(p => p.published).length
+    const totalPosts = safePosts.length
+    const publishedPosts = safePosts.filter(p => p.published).length
     const estimatedViews = totalPosts * 12 // Mock multiplier for "Traffic" score
-    const totalWords = posts.reduce((acc, post) => acc + (post.content?.split(' ').length || 0), 0)
+    const totalWords = safePosts.reduce((acc, post) => acc + (post.content?.split(' ').length || 0), 0)
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -98,7 +90,7 @@ const Stats: React.FC = () => {
 
             {/* Tab Content */}
             {
-                loading ? (
+                showLoader ? (
                     <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
                         <CircularLoader size={32} />
                     </div>

@@ -10,16 +10,23 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '../../store'
 import { useThemeStore } from '../../store/themeStore'
-import { settingsService } from '../../services/settingsService'
+import { useAdminStore } from '../../store/adminStore'
+import { settingsService } from '../../services/settingsService' // Keeping for default creation logic if needed, or moving logic to store
 import ThemeToggle from '../common/ThemeToggle'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
     const navigate = useNavigate()
     const location = useLocation()
-    const [displayName, setDisplayName] = useState(user?.user_metadata?.full_name || 'User')
-    const [subdomain, setSubdomain] = useState<string | null>(null)
-    const [isLoadingName, setIsLoadingName] = useState(true)
+
+    // Store integration
+    const { settings, fetchSettings, updateSettingsInCache, settingsLoading } = useAdminStore()
+
+    // Derived state
+    const displayName = settings?.siteName || user?.user_metadata?.full_name || 'User'
+    const subdomain = settings?.subdomain || null
+
+    // UI Logic
     const [isCreateHovered, setIsCreateHovered] = useState(false)
     const { theme } = useThemeStore()
 
@@ -42,38 +49,28 @@ export default function AdminLayout() {
         const loadSettings = async () => {
             if (!user) return
 
-            let settings = null
-            try {
-                settings = await settingsService.getSettings()
-            } catch (error) {
-                console.error("Skipping settings init due to fetch error", error)
-                return
-            }
+            await fetchSettings()
+
+            // Check directly from store state to see if we need defaults
+            const currentSettings = useAdminStore.getState().settings
 
             // If no settings exist (first time user), create defaults
-            if (!settings) {
+            if (!currentSettings) {
                 const defaultSubdomain = `blog-${user.id.slice(0, 8)}`
                 const defaultName = user.user_metadata?.full_name || 'My DyeInk Blog'
 
                 try {
-                    settings = await settingsService.saveSettings({
+                    const newSettings = await settingsService.saveSettings({
                         siteName: defaultName,
                         siteDescription: 'Welcome to my new blog',
                         customDomain: null,
                         subdomain: defaultSubdomain
                     })
+                    if (newSettings) updateSettingsInCache(newSettings)
                 } catch (err) {
                     console.error('Failed to create default settings:', err)
                 }
             }
-
-            if (settings) {
-                if (settings.siteName) setDisplayName(settings.siteName)
-                if (settings.subdomain) setSubdomain(settings.subdomain)
-            } else if (user?.user_metadata?.full_name) {
-                setDisplayName(user.user_metadata.full_name)
-            }
-            setIsLoadingName(false)
         }
         loadSettings()
     }, [user])
@@ -118,7 +115,7 @@ export default function AdminLayout() {
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 700
                         }}>
-                            {isLoadingName ? '...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
+                            {settingsLoading && !settings ? '...' : (displayName.length > 18 ? `${displayName.slice(0, 18)}...` : displayName)}
                         </span>
                     </div>
                 </div>

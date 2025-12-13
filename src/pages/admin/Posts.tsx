@@ -1,32 +1,22 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { postService } from '../../services/postService'
-import type { Post } from '../../types'
 import { format } from 'date-fns'
 import { Trash2, Edit2 } from 'lucide-react'
 import { useToast } from '../../components/common/Toast'
 import CircularLoader from '../../components/common/CircularLoader'
+import { useAdminStore } from '../../store/adminStore'
 
 export default function Posts() {
-    const [posts, setPosts] = useState<Post[]>([])
-    const [loading, setLoading] = useState(true)
-
+    const { posts, fetchPosts, postsLoading, deletePostFromCache } = useAdminStore()
 
     useEffect(() => {
         fetchPosts()
     }, [])
 
-    const fetchPosts = async () => {
-        setLoading(true)
-        try {
-            const fetchedPosts = await postService.getPosts()
-            setPosts(fetchedPosts)
-        } catch (error) {
-            console.error('Failed to fetch posts:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
+    // Only show full page loader if we have no data at all
+    const showLoader = postsLoading && !posts
+    const safePosts = posts || []
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -44,7 +34,7 @@ export default function Posts() {
         setIsDeleting(true)
         try {
             await postService.deletePost(postToDelete)
-            setPosts(posts.filter(p => p.id !== postToDelete))
+            deletePostFromCache(postToDelete)
             // Only show toast if useToast is available, managing safe failure
             try { addToast({ type: 'success', message: 'Post deleted successfully' }) } catch (e) { }
             setShowDeleteModal(false)
@@ -58,7 +48,7 @@ export default function Posts() {
     }
 
     // Filter logic: Only Published
-    const filteredPosts = posts.filter(post => post.published)
+    const filteredPosts = safePosts.filter(post => post.published)
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '1rem' }}>
@@ -69,7 +59,7 @@ export default function Posts() {
             </div>
 
             {/* Table */}
-            {loading ? (
+            {showLoader ? (
                 <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
                     <CircularLoader size={32} />
                 </div>

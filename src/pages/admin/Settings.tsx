@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { settingsService } from '../../services/settingsService'
 import { supabase } from '../../lib/supabase'
 import { useThemeStore } from '../../store/themeStore'
+import { useAdminStore } from '../../store/adminStore'
 import { Globe, AlertTriangle } from 'lucide-react'
 import CircularLoader from '../../components/common/CircularLoader'
 import { useToast } from '../../components/common/Toast'
 
 const Settings: React.FC = () => {
+    const { settings, fetchSettings, settingsLoading, updateSettingsInCache } = useAdminStore()
     const [activeTab, setActiveTab] = useState('Basics')
-    const [loading, setLoading] = useState(true)
+    // const [loading, setLoading] = useState(true) // Removed local loading
     const [saving, setSaving] = useState(false)
-    const [schemaError, setSchemaError] = useState<string | null>(null) // New Error State
+    const [schemaError, setSchemaError] = useState<string | null>(null)
     const { addToast } = useToast()
 
     // ... (rest of state)
@@ -90,27 +92,23 @@ const Settings: React.FC = () => {
         })
     }, [])
 
-    const loadSettings = async () => {
-        setLoading(true)
-        try {
-            const settings = await settingsService.getSettings()
-            if (settings) {
-                setPubName(settings.siteName || "Subrato's Substack")
-                setDescription(settings.siteDescription || "My personal Substack")
-                setCustomDomain(settings.customDomain || "")
-                setSubdomain(settings.subdomain || "")
-                setTwitterLink(settings.twitterLink || "")
-                setLinkedinLink(settings.linkedinLink || "")
-                setGithubLink(settings.githubLink || "")
-                setWebsiteLink(settings.websiteLink || "")
-                setEmail(settings.newsletterEmail || "")
-            }
-        } catch (error) {
-            console.error('Failed to load settings', error)
-        } finally {
-            setLoading(false)
-        }
+    const loadSettings = () => {
+        fetchSettings()
     }
+
+    useEffect(() => {
+        if (settings) {
+            setPubName(settings.siteName || "Subrato's Substack")
+            setDescription(settings.siteDescription || "My personal Substack")
+            setCustomDomain(settings.customDomain || "")
+            setSubdomain(settings.subdomain || "")
+            setTwitterLink(settings.twitterLink || "")
+            setLinkedinLink(settings.linkedinLink || "")
+            setGithubLink(settings.githubLink || "")
+            setWebsiteLink(settings.websiteLink || "")
+            setEmail(settings.newsletterEmail || "")
+        }
+    }, [settings])
 
     const handleSave = async () => {
         setSaving(true)
@@ -128,6 +126,7 @@ const Settings: React.FC = () => {
                 newsletterEmail: email || null
             })
             if (updated) {
+                updateSettingsInCache(updated)
                 setSubdomain(updated.subdomain || "")
 
                 // Sync with Supabase Auth Metadata as requested
@@ -164,13 +163,10 @@ const Settings: React.FC = () => {
         }
     }
 
-    if (loading) {
+    if (settingsLoading && !settings) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <style>{`
-                    @keyframes spin { 100% { transform: rotate(360deg); } }
-                `}</style>
-                <CircularLoader size={32} style={{ animation: 'spin 1s linear infinite', color: 'var(--text-muted)' }} />
+                <CircularLoader size={40} />
             </div>
         )
     }
