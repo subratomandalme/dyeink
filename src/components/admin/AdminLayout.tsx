@@ -14,6 +14,7 @@ import { useAdminStore } from '../../store/adminStore'
 import { settingsService } from '../../services/settingsService' // Keeping for default creation logic if needed, or moving logic to store
 import ThemeToggle from '../common/ThemeToggle'
 import DecryptedText from '../common/DecryptedText'
+import { InteractiveGridPattern } from '../common/InteractiveGridPattern'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
@@ -352,8 +353,19 @@ export default function AdminLayout() {
                 marginLeft: '260px',
                 backgroundColor: 'var(--bg-primary)',
                 minHeight: '100vh',
-                position: 'relative'
+                position: 'relative',
+                overflow: 'hidden'
             }}>
+                {/* Background Pattern */}
+                <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'auto' }}>
+                    <InteractiveGridPattern
+                        width={40}
+                        height={40}
+                        squares={[100, 60]}
+                        style={{ opacity: 0.5 }}
+                    />
+                </div>
+
                 {/* Fixed Theme Toggle */}
                 <div style={{
                     position: 'absolute',
@@ -363,7 +375,7 @@ export default function AdminLayout() {
                 }}>
                     <ThemeToggle />
                 </div>
-                <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
+                <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem', position: 'relative', zIndex: 10 }}>
                     <Outlet />
                 </div>
             </main>
