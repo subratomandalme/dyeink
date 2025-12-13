@@ -1,17 +1,14 @@
-import { useState, FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import LightRays from '../components/common/LightRays'
 import NeumorphismButton from '../components/common/NeumorphismButton'
 import GlareHover from '../components/common/GlareHover'
 import { Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react'
-import { useAuthStore } from '../store'
 import { useToast } from '../components/common/Toast'
 
 import { supabase } from '../lib/supabase'
 
 export default function Login() {
     const navigate = useNavigate()
-    // const { login } = useAuthStore() // Removed as not exposed
     const { addToast } = useToast()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
