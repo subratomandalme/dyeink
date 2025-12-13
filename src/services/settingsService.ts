@@ -9,6 +9,7 @@ export interface SiteSettings {
     twitterLink?: string | null
     linkedinLink?: string | null
     githubLink?: string | null
+    websiteLink?: string | null
     newsletterEmail?: string | null
 }
 
