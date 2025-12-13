@@ -10,31 +10,35 @@ import { useToast } from '../components/common/Toast'
 import { supabase } from '../lib/supabase'
 
 export default function Register() {
-    const navigate = useNavigate()
-    const [name, setName] = useState('')
+    // const navigate = useNavigate() // Not used with success modal approach immediately
+    const { addToast } = useToast()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [showSuccessModal, setShowSuccessModal] = useState(false)
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
+
+        if (password !== confirmPassword) {
+            addToast({ type: 'error', message: 'Passwords do not match' })
+            return
+        }
+
         setLoading(true)
 
         try {
-            const { data, error } = await supabase.auth.signUp({
+            const { error } = await supabase.auth.signUp({
                 email,
                 password,
-                options: {
-                    data: {
-                        name: name
-                    }
-                }
             })
 
             if (error) throw error
 
             // Show success modal instead of immediate redirect
             setShowSuccessModal(true)
+
 
         } catch (error) {
             console.error('Registration failed:', error)
