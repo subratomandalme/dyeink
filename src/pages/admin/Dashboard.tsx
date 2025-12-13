@@ -23,6 +23,7 @@ export default function Dashboard() {
         publishedPosts: 0,
         latestPost: null as Post | null
     })
+    const [graphData, setGraphData] = useState<any[]>([])
     // ...
 
     useEffect(() => {
