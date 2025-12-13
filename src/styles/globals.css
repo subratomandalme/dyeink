@@ -55,6 +55,8 @@
   --neu-shadow-inset-2: rgba(0, 0, 0, 0.5);
   --neu-text-hover: #ffffff;
   /* White in Dark Mode */
+
+  --neutral-300: #d4d4d8;
 }
 
 /* Light Mode Override (if toggled) */
@@ -92,6 +94,8 @@
   --neu-shadow-inset-2: rgba(163, 177, 198, 0.4);
   --neu-text-hover: #000000;
   /* Black/Dark in Light Mode */
+
+  --neutral-300: #cbd5e1;
 }
 
 * {

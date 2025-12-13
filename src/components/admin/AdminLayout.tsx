@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom'
 import {
     Home,
@@ -14,8 +15,7 @@ import { useAdminStore } from '../../store/adminStore'
 import { settingsService } from '../../services/settingsService' // Keeping for default creation logic if needed, or moving logic to store
 import ThemeToggle from '../common/ThemeToggle'
 import DecryptedText from '../common/DecryptedText'
-import PixelBlast from '../common/PixelBlast'
-import PixelBlast from '../common/PixelBlast'
+import { BackgroundBeams } from '../common/BackgroundBeams'
 
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
@@ -26,7 +26,7 @@ export default function AdminLayout() {
     const { settings, fetchSettings, updateSettingsInCache } = useAdminStore()
 
     // Derived state
-    const greetingName = user?.user_metadata?.full_name || 'User'
+    const greetingName = settings?.siteName || user?.user_metadata?.full_name || 'User'
 
     const subdomain = settings?.subdomain || null
 
@@ -131,8 +131,9 @@ export default function AdminLayout() {
             {/* Sidebar */}
             <aside style={{
                 width: '260px',
-                backgroundColor: 'var(--bg-elevated)',
-                borderRight: '1px solid var(--border-color)',
+                backgroundColor: 'var(--bg-primary)',
+                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '1px 0 30px rgba(255, 255, 255, 0.15)', // Sidebar Divider Glow
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'fixed',
@@ -142,14 +143,15 @@ export default function AdminLayout() {
                 // transform: 'translateX(0)' // For now, static
             }}>
                 {/* Greeting Area (Replacement for Logo) */}
-                <div style={{ padding: '1.5rem 1.25rem 1rem 1.25rem' }}>
+                <div style={{ padding: '3.5rem 1.25rem 1rem 1.25rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                         <span style={{
                             fontSize: '1.5rem',
                             color: 'var(--text-secondary)',
                             opacity: 0.8,
                             fontFamily: 'var(--font-sans)',
-                            fontWeight: 500
+                            fontWeight: 500,
+                            textShadow: '0 0 12px rgba(255, 255, 255, 0.3)'
                         }}>Hi,</span>
                         <span style={{
                             fontSize: '1.8rem',
@@ -159,6 +161,7 @@ export default function AdminLayout() {
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 700,
                             display: 'block',
+                            textShadow: '0 0 20px rgba(255, 255, 255, 0.6)',
                             minHeight: '2.2rem'
                         }}>
                             <DecryptedText
@@ -184,7 +187,7 @@ export default function AdminLayout() {
                             alignItems: 'center',
                             gap: '0.5rem',
                             padding: '0.85rem',
-                            borderRadius: '50px',
+                            borderRadius: '12px',
                             backgroundColor: 'var(--bg-primary)',
                             color: 'var(--accent-primary)',
                             fontWeight: 700,
@@ -357,29 +360,7 @@ export default function AdminLayout() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {/* Background Animation */}
-                <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-                    <PixelBlast
-                        variant="circle"
-                        pixelSize={6}
-                        color="#B19EEF"
-                        patternScale={3}
-                        patternDensity={1.2}
-                        pixelSizeJitter={0.5}
-                        enableRipples
-                        rippleSpeed={0.4}
-                        rippleThickness={0.12}
-                        rippleIntensityScale={1.5}
-                        liquid
-                        liquidStrength={0.12}
-                        liquidRadius={1.2}
-                        liquidWobbleSpeed={5}
-                        speed={0.6}
-                        edgeFade={0.25}
-                        transparent
-                    />
-                </div>
-
+                <BackgroundBeams style={{ opacity: 0.5 }} />
                 {/* Fixed Theme Toggle */}
                 <div style={{
                     position: 'absolute',
@@ -389,8 +370,18 @@ export default function AdminLayout() {
                 }}>
                     <ThemeToggle />
                 </div>
-                <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem', position: 'relative', zIndex: 1 }}>
-                    <Outlet />
+                <div style={{ position: 'relative', zIndex: 10, maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={location.pathname}
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            <Outlet />
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </main>
         </div>
