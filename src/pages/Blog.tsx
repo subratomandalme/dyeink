@@ -152,8 +152,8 @@ export default function Blog() {
                                 <ArrowLeft size={16} /> {subdomain ? 'Back to Blog' : 'All Posts'}
                             </Link>
                         ) : (
-                            <Link to={subdomain ? `/${subdomain}` : "/admin"} className="sidebar-link" style={{ fontSize: '0.95rem' }}>
-                                {subdomain ? 'Home' : 'Admin'}
+                            <Link to="/" className="sidebar-link" style={{ fontSize: '0.95rem' }}>
+                                Home
                             </Link>
                         )}
 
