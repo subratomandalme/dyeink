@@ -33,8 +33,8 @@ const Settings: React.FC = () => {
     const [hoverDeleteAccount, setHoverDeleteAccount] = useState(false)
 
     // Settings State
-    const [pubName, setPubName] = useState("Subrato's Substack")
-    const [description, setDescription] = useState("My personal Substack")
+    const [pubName, setPubName] = useState("")
+    const [description, setDescription] = useState("")
     const [customDomain, setCustomDomain] = useState("")
     const [subdomain, setSubdomain] = useState("")
     const [twitterLink, setTwitterLink] = useState("")
@@ -99,8 +99,8 @@ const Settings: React.FC = () => {
 
     useEffect(() => {
         if (settings) {
-            setPubName(settings.siteName || "Subrato's Substack")
-            setDescription(settings.siteDescription || "My personal Substack")
+            setPubName(settings.siteName || "")
+            setDescription(settings.siteDescription || "")
             setCustomDomain(settings.customDomain || "")
             setSubdomain(settings.subdomain || "")
             setTwitterLink(settings.twitterLink || "")

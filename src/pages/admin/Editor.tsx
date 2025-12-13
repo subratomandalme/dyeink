@@ -331,7 +331,7 @@ export default function Editor() {
                     pointer-events: none;
                 }
                 .editor-title-input::placeholder {
-                    font-size: 6rem;
+                    font-size: 4.5rem;
                     opacity: 0.3;
                     font-weight: 900;
                     color: var(--text-muted);
