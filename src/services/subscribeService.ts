@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase'
 
 export const subscribeService = {
-    async subscribe(email: string) {
+    async subscribe(email: string, blogId: number) {
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(email)) {
@@ -14,6 +14,7 @@ export const subscribeService = {
         const { error } = await supabase
             .from('subscribers')
             .insert({
+                blog_id: blogId,
                 email,
                 active: true,
                 created_at: new Date().toISOString()

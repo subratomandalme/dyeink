@@ -7,9 +7,10 @@ import { useToast } from './Toast'
 interface SubscribeModalProps {
     isOpen: boolean
     onClose: () => void
+    blogId?: number | null
 }
 
-export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps) {
+export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeModalProps) {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
@@ -19,9 +20,15 @@ export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps)
 
     const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        if (!blogId) {
+            addToast({ type: 'error', message: 'Unable to subscribe: Blog ID missing.' })
+            return
+        }
+
         setLoading(true)
         try {
-            await subscribeService.subscribe(email)
+            await subscribeService.subscribe(email, blogId)
             setSuccess(true)
             addToast({ type: 'success', message: 'Successfully subscribed!', duration: 3000 })
             setTimeout(() => {

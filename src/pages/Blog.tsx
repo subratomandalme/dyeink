@@ -25,6 +25,7 @@ export default function Blog() {
     const [githubLink, setGithubLink] = useState<string | null>(null)
     const [websiteLink, setWebsiteLink] = useState<string | null>(null)
     const [newsletterEmail, setNewsletterEmail] = useState<string | null>(null)
+    const [blogId, setBlogId] = useState<number | null>(null) // Added this state variable
     const { addToast } = useToast()
 
     // Modals
@@ -58,6 +59,7 @@ export default function Blog() {
                         setGithubLink(settings.githubLink || null)
                         setWebsiteLink(settings.websiteLink || null)
                         setNewsletterEmail(settings.newsletterEmail || null)
+                        setBlogId(settings.id || null) // Set blogId here
 
                         // Fetch Posts for THIS user only
                         const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
@@ -413,7 +415,12 @@ export default function Blog() {
                 </main>
             </div>
 
-            <SubscribeModal isOpen={isSubscribeOpen} onClose={() => setIsSubscribeOpen(false)} />
+            {/* Subscribe Modal - Multi-Tenant Enabled */}
+            <SubscribeModal
+                isOpen={isSubscribeOpen}
+                onClose={() => setIsSubscribeOpen(false)}
+                blogId={blogId}
+            />
 
             <style>{`
     .sidebar-link {
