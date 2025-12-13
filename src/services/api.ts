@@ -44,24 +44,15 @@ const fpPromise = FingerprintJS.load()
 
 export const analyticsService = {
     async viewPost(postId: string) {
-        // 8-second delay to prevent bounce counting (Client Logic)
-        setTimeout(async () => {
-            try {
-                const fp = await fpPromise
-                const result = await fp.get()
-
-                await fetch('/api/view', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        postId,
-                        fingerprint: result.visitorId
-                    })
-                })
-            } catch (error) {
-                console.error('Analytics View Error:', error)
-            }
-        }, 8000)
+        try {
+            await fetch('/api/view', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postId })
+            })
+        } catch (error) {
+            console.error('Analytics View Error:', error)
+        }
     },
 
     async likePost(postId: string): Promise<{ ok: boolean, error?: string }> {

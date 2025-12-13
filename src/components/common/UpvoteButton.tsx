@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { ThumbsUp } from 'lucide-react'
-import { analyticsService } from '../../services/api'
 
 interface UpvoteButtonProps {
     postId: number
@@ -9,8 +8,7 @@ interface UpvoteButtonProps {
 
 export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonProps) {
     const [count, setCount] = useState(initialCount)
-    const [hasVoted, setHasVoted] = useState(false)
-    const [loading, setLoading] = useState(false)
+    const [upvoted, setUpvoted] = useState(false)
     const [animating, setAnimating] = useState(false)
 
     // Decrypting Effect State
@@ -18,15 +16,13 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
 
     useEffect(() => {
         // Check local state for anonymous like
-        const voted = localStorage.getItem(`liked_${postId}`)
-        if (voted) setHasVoted(true)
+        const voted = localStorage.getItem(`upvoted_${postId}`)
+        if (voted === 'true') setUpvoted(true)
         setCount(initialCount) // Sync with prop if it updates
     }, [postId, initialCount])
 
     // Effect to run decryption animation when count changes
     useEffect(() => {
-        if (loading) return
-
         let iteration = 0
         const finalValue = count.toString()
         const possibleChars = '0123456789$$##@@!!&&**'
@@ -46,34 +42,37 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
         }, 30)
 
         return () => clearInterval(interval)
-    }, [count, loading])
+    }, [count])
 
-    const handleVote = async () => {
-        if (hasVoted || loading) return
+    const handleUpvote = async () => {
+        const newUpvoted = !upvoted
+        const newCount = count + (newUpvoted ? 1 : -1)
 
-        setLoading(true)
-
-        // Optimistic UI
-        setHasVoted(true)
-        setCount(prev => prev + 1)
-        localStorage.setItem(`liked_${postId}`, 'true')
+        // Optimistic UI Update
+        setUpvoted(newUpvoted)
+        setCount(newCount)
+        localStorage.setItem(`upvoted_${postId}`, newUpvoted.toString())
 
         setAnimating(true)
         setTimeout(() => setAnimating(false), 500)
 
-        const { ok, error } = await analyticsService.likePost(postId.toString())
-
-        if (!ok) {
+        try {
+            // Call Scalable API
+            await fetch('/api/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    postId,
+                    action: newUpvoted ? 'like' : 'unlike'
+                })
+            })
+        } catch (error) {
             console.error('Like failed:', error)
-            // If strictly ensuring server truth, revert here. 
-            // But "Already liked" is fine, we just keep it liked.
-            if (error !== 'Already liked') {
-                setHasVoted(false)
-                setCount(prev => prev - 1)
-                localStorage.removeItem(`liked_${postId}`)
-            }
+            // Revert on error
+            setUpvoted(upvoted)
+            setCount(count)
+            localStorage.setItem(`upvoted_${postId}`, upvoted.toString())
         }
-        setLoading(false)
     }
 
     // Dynamic Glitch Styles
@@ -90,8 +89,8 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
 
     return (
         <button
-            onClick={handleVote}
-            disabled={hasVoted || loading}
+            onClick={handleUpvote}
+            disabled={false} // Always allow toggle (optimistic)
             style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -99,19 +98,19 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
                 padding: '0.5rem 0', // Reduced horizontal padding as it's just text/icon now
                 background: 'transparent', // No background
                 border: 'none', // No border requested
-                color: hasVoted ? 'var(--text-primary)' : 'var(--text-secondary)',
-                cursor: hasVoted ? 'default' : 'pointer',
+                color: upvoted ? 'var(--text-primary)' : 'var(--text-secondary)',
+                cursor: 'pointer',
                 transition: 'color 0.3s ease',
                 position: 'relative',
                 overflow: 'hidden'
             }}
             onMouseEnter={(e) => {
-                if (!hasVoted) {
+                if (!upvoted) {
                     e.currentTarget.style.color = 'var(--text-primary)'
                 }
             }}
             onMouseLeave={(e) => {
-                if (!hasVoted) {
+                if (!upvoted) {
                     e.currentTarget.style.color = 'var(--text-secondary)'
                 }
             }}
@@ -126,10 +125,10 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
             }}>
                 <ThumbsUp
                     size={20}
-                    fill={hasVoted ? "currentColor" : "none"}
-                    strokeWidth={hasVoted ? 0 : 2}
+                    fill={upvoted ? "currentColor" : "none"}
+                    strokeWidth={upvoted ? 0 : 2}
                     style={{
-                        filter: hasVoted && animating ? 'drop-shadow(2px 2px 0px #ff00ff) drop-shadow(-2px -2px 0px #00ffff)' : 'none',
+                        filter: upvoted && animating ? 'drop-shadow(2px 2px 0px #ff00ff) drop-shadow(-2px -2px 0px #00ffff)' : 'none',
                         transition: 'filter 0.1s'
                     }}
                 />
@@ -142,7 +141,7 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
                 minWidth: '2ch', // Prevent jumping
                 letterSpacing: '-0.05em'
             }}>
-                {loading && !hasVoted ? '-' : displayCount}
+                {displayCount}
             </span>
         </button>
     )

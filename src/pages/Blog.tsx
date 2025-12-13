@@ -164,8 +164,13 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 fontSize: '1.75rem',
                                 fontWeight: 800,
                                 color: 'var(--text-primary)',
-                                display: 'block',
-                                letterSpacing: '-0.03em'
+                                display: '-webkit-box',
+                                letterSpacing: '-0.03em',
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                                wordBreak: 'break-word',
+                                lineHeight: 1.2
                             }}>
                                 {blogTitle}
                             </Link>

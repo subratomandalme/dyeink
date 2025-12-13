@@ -190,13 +190,13 @@ export default function Dashboard() {
                         }}
                     >
                         <h3 style={{
-                            fontSize: '1.75rem',
-                            fontWeight: 800,
-                            margin: '0 0 1.5rem 0',
+                            fontSize: '1.4rem',
+                            fontWeight: 700,
+                            margin: '0 0 1rem 0',
                             fontFamily: 'var(--font-display)',
                             color: 'var(--text-primary)',
                             lineHeight: 1.2,
-                            letterSpacing: '-0.03em'
+                            letterSpacing: '-0.02em'
                         }}>
                             {stats.latestPost.title}
                         </h3>
