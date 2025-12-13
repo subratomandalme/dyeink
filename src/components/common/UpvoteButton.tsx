@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { ThumbsUp } from 'lucide-react'
-import { analyticsService } from '../../services/api'
 
 interface UpvoteButtonProps {
     postId: number

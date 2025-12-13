@@ -32,9 +32,7 @@ const Stats: React.FC = () => {
     const showLoader = postsLoading && !posts
 
     // Derived Stats
-    const totalPosts = safePosts.length
     const publishedPosts = safePosts.filter(p => p.published).length
-    const totalWords = safePosts.reduce((acc, post) => acc + (post.content?.split(' ').length || 0), 0)
 
     const renderTabContent = () => {
         switch (activeTab) {
