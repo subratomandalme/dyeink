@@ -7,7 +7,7 @@ import type { Post } from '../types'
 import { format } from 'date-fns'
 // import ColorBends from '../components/common/ColorBends'
 import ThemeToggle from '../components/common/ThemeToggle'
-import { Share2, Twitter, Linkedin, Github, Globe, ArrowLeft } from 'lucide-react'
+import { Share2, Twitter, Linkedin, Github, Globe, ArrowLeft, Mail } from 'lucide-react'
 import { useToast } from '../components/common/Toast'
 import { useCodeCopy } from '../hooks/useCodeCopy'
 import SubscribeModal from '../components/common/SubscribeModal'
@@ -24,6 +24,7 @@ export default function Blog() {
     const [linkedinLink, setLinkedinLink] = useState<string | null>(null)
     const [githubLink, setGithubLink] = useState<string | null>(null)
     const [websiteLink, setWebsiteLink] = useState<string | null>(null)
+    const [newsletterEmail, setNewsletterEmail] = useState<string | null>(null)
     const { addToast } = useToast()
 
     // Modals
@@ -56,6 +57,7 @@ export default function Blog() {
                         setLinkedinLink(settings.linkedinLink || null)
                         setGithubLink(settings.githubLink || null)
                         setWebsiteLink(settings.websiteLink || null)
+                        setNewsletterEmail(settings.newsletterEmail || null)
 
                         // Fetch Posts for THIS user only
                         const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
@@ -167,22 +169,6 @@ export default function Blog() {
                             </Link>
                         )}
 
-                        <button
-                            onClick={() => setIsSubscribeOpen(true)}
-                            className="sidebar-link"
-                            style={{
-                                fontSize: '0.95rem',
-                                background: 'none',
-                                border: 'none',
-                                padding: 0,
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                fontFamily: 'inherit'
-                            }}
-                        >
-                            Subscribe by Email
-                        </button>
-
                         {!slug && (
                             <div style={{ margin: '0.5rem 0' }}>
                                 <input
@@ -206,7 +192,26 @@ export default function Blog() {
                             </div>
                         )}
 
-                        <div style={{ marginTop: '0rem', display: 'flex', gap: '1rem' }}>
+                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
+                            {newsletterEmail && (
+                                <button
+                                    onClick={() => setIsSubscribeOpen(true)}
+                                    title="Subscribe to Newsletter"
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        padding: 0,
+                                        cursor: 'pointer',
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                >
+                                    <Mail size={20} />
+                                </button>
+                            )}
                             {twitterLink && (
                                 <a
                                     href={twitterLink}

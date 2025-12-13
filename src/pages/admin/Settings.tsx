@@ -25,6 +25,7 @@ const Settings: React.FC = () => {
     const [linkedinLink, setLinkedinLink] = useState("")
     const [githubLink, setGithubLink] = useState("")
     const [websiteLink, setWebsiteLink] = useState("")
+    const [email, setEmail] = useState("") // Newsletter Email
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -83,6 +84,7 @@ const Settings: React.FC = () => {
                 setLinkedinLink(settings.linkedinLink || "")
                 setGithubLink(settings.githubLink || "")
                 setWebsiteLink(settings.websiteLink || "")
+                setEmail(settings.newsletterEmail || "")
             }
         } catch (error) {
             console.error('Failed to load settings', error)
@@ -102,7 +104,8 @@ const Settings: React.FC = () => {
                 twitterLink: twitterLink || null,
                 linkedinLink: linkedinLink || null,
                 githubLink: githubLink || null,
-                websiteLink: websiteLink || null
+                websiteLink: websiteLink || null,
+                newsletterEmail: email || null
             })
             if (updated) {
                 setSubdomain(updated.subdomain || "")
@@ -211,11 +214,15 @@ const Settings: React.FC = () => {
                         </div>
 
                         <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Email Address</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Contact email for your blog.</p>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Newsletter Email</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                                Add your email to enable the subscribe button on your blog.
+                            </p>
                             <input
                                 type="email"
                                 placeholder="hello@example.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 style={{
                                     width: '100%',
                                     padding: '0.75rem',

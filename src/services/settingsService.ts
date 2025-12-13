@@ -9,7 +9,7 @@ export interface SiteSettings {
     twitterLink?: string | null
     linkedinLink?: string | null
     githubLink?: string | null
-    websiteLink?: string | null
+    newsletterEmail?: string | null
 }
 
 export const settingsService = {
@@ -38,7 +38,8 @@ export const settingsService = {
             twitterLink: data.twitter_link,
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
-            websiteLink: data.website_link
+            websiteLink: data.website_link,
+            newsletterEmail: data.newsletter_email
         }
     },
 
@@ -64,7 +65,8 @@ export const settingsService = {
             twitterLink: data.twitter_link,
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
-            websiteLink: data.website_link
+            websiteLink: data.website_link,
+            newsletterEmail: data.newsletter_email
         }
     },
 
@@ -90,7 +92,8 @@ export const settingsService = {
                 twitterLink: data.twitter_link,
                 linkedinLink: data.linkedin_link,
                 githubLink: data.github_link,
-                websiteLink: data.website_link
+                websiteLink: data.website_link,
+                newsletterEmail: data.newsletter_email
             },
             userId: data.user_id
         }
@@ -109,7 +112,8 @@ export const settingsService = {
             twitter_link: settings.twitterLink,
             linkedin_link: settings.linkedinLink,
             github_link: settings.githubLink,
-            website_link: settings.websiteLink
+            website_link: settings.websiteLink,
+            newsletter_email: settings.newsletterEmail
         }
 
         // Check if exists first to decide insert vs update (or use upsert)
@@ -133,7 +137,8 @@ export const settingsService = {
             twitterLink: data.twitter_link,
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
-            websiteLink: data.website_link
+            websiteLink: data.website_link,
+            newsletterEmail: data.newsletter_email // Fixed logic here
         }
     }
 }
