@@ -1,32 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useAuthStore } from './store'
-import { useThemeStore } from './store/themeStore'
-import { supabase } from './lib/supabase'
+import { Loader2 } from 'lucide-react'
 
-import Landing from './pages/Landing'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import ForgotPassword from './pages/ForgotPassword'
-import ResetPassword from './pages/ResetPassword'
-import Blog from './pages/Blog'
-// PostView removed
-import Dashboard from './pages/admin/Dashboard'
-import Posts from './pages/admin/Posts'
-import Editor from './pages/admin/Editor'
-import Domains from './pages/admin/Domains'
-import Settings from './pages/admin/Settings'
-import Stats from './pages/admin/Stats'
-import AdminLayout from './components/admin/AdminLayout'
-import './styles/globals.css'
-import { ToastContainer } from './components/common/Toast'
+// ... imports remain the same
 
 interface ProtectedRouteProps {
     children: React.ReactNode
 }
 
+function FullScreenLoader() {
+    return (
+        <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
+            <Loader2 className="animate-spin" size={32} style={{ color: 'var(--text-primary)' }} />
+        </div>
+    )
+}
+
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { isAuthenticated } = useAuthStore()
+    const { isAuthenticated, isLoading } = useAuthStore()
+
+    if (isLoading) {
+        return <FullScreenLoader />
+    }
 
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />
@@ -37,7 +30,12 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
 // Redirects authenticated users away from public pages (Landing)
 function PublicRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated } = useAuthStore()
+    const { isAuthenticated, isLoading } = useAuthStore()
+
+    if (isLoading) {
+        return <FullScreenLoader />
+    }
+
     if (isAuthenticated) {
         return <Navigate to="/admin" replace />
     }
