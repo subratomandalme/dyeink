@@ -29,7 +29,7 @@ export default function UpvoteButton({ postId }: UpvoteButtonProps) {
         const possibleChars = '0123456789$$##@@!!&&**'
 
         const interval = setInterval(() => {
-            setDisplayCount(prev => finalValue.split('').map((char, index) => {
+            setDisplayCount(() => finalValue.split('').map((_, index) => {
                 if (index < iteration) return finalValue[index]
                 return possibleChars[Math.floor(Math.random() * possibleChars.length)]
             }).join(''))
