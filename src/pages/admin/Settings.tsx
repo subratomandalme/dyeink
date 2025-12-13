@@ -38,6 +38,7 @@ const Settings: React.FC = () => {
     const [githubLink, setGithubLink] = useState("")
     const [websiteLink, setWebsiteLink] = useState("")
     const [email, setEmail] = useState("") // Newsletter Email
+    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null) // Logged in user email for reference
 
     // Delete Modal State
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -81,6 +82,11 @@ const Settings: React.FC = () => {
         }
 
         loadSettings()
+
+        // Fetch current user email for newsletter options
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user?.email) setCurrentUserEmail(data.user.email)
+        })
     }, [])
 
     const loadSettings = async () => {
@@ -272,25 +278,56 @@ const Settings: React.FC = () => {
                         </div>
 
                         <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
-                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Newsletter Email</h3>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                                Add your email to enable the subscribe button on your blog.
-                            </p>
-                            <input
-                                type="email"
-                                placeholder="hello@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    padding: '0.75rem',
-                                    background: 'transparent',
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '6px',
-                                    color: 'inherit',
-                                    fontSize: '1rem'
-                                }}
-                            />
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Enable Newsletter</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                                        Automatically notify subscribers when you publish.
+                                    </p>
+                                    {email && (
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }}></span>
+                                            Sending from: <strong style={{ fontFamily: 'monospace' }}>{email}</strong>
+                                        </p>
+                                    )}
+                                </div>
+
+                                <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '26px', flexShrink: 0 }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!email}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setEmail(currentUserEmail || "")
+                                                if (!currentUserEmail) addToast({ type: 'error', message: 'Could not fetch user email. Try reloading.' })
+                                            } else {
+                                                setEmail("")
+                                            }
+                                        }}
+                                        style={{ opacity: 0, width: 0, height: 0 }}
+                                    />
+                                    <span style={{
+                                        position: 'absolute',
+                                        cursor: 'pointer',
+                                        top: 0, left: 0, right: 0, bottom: 0,
+                                        backgroundColor: email ? 'var(--text-primary)' : 'var(--bg-tertiary)',
+                                        transition: '.3s',
+                                        borderRadius: '34px',
+                                    }}></span>
+                                    <span style={{
+                                        position: 'absolute',
+                                        content: '""',
+                                        height: '20px',
+                                        width: '20px',
+                                        left: email ? '23px' : '3px',
+                                        bottom: '3px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        transition: '.3s',
+                                        borderRadius: '50%',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                    }}></span>
+                                </label>
+                            </div>
                         </div>
 
                         <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
