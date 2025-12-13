@@ -104,7 +104,8 @@ export default function Editor() {
 
             if (shouldPublish && result) {
                 // Redirect to Blog Feed (or specific post if route existed)
-                navigate('/blog') // Redirect to feed as requested/safe fallback
+                const subdomain = settings?.subdomain || 'blog'
+                navigate(`/${subdomain}/${result.slug}`)
             }
         } catch (error) {
             console.error('Failed to save post:', error)

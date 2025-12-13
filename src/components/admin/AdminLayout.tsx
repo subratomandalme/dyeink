@@ -57,7 +57,7 @@ export default function AdminLayout() {
             // If no settings exist (first time user), create defaults
             if (!currentSettings) {
                 const defaultSubdomain = `blog-${user.id.slice(0, 8)}`
-                const defaultName = user.user_metadata?.full_name || 'My DyeInk Blog'
+                const defaultName = user.user_metadata?.full_name || 'User'
 
                 try {
                     const newSettings = await settingsService.saveSettings({

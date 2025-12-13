@@ -56,13 +56,7 @@ export default function Dashboard() {
         }))
     }, [posts])
 
-    if (postsLoading && !posts) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <WaveLoader />
-            </div>
-        )
-    }
+    // Loader moved to graph specific container
 
     return (
         <div style={{ paddingBottom: '4rem' }}>
@@ -102,62 +96,68 @@ export default function Dashboard() {
                     </div>
 
                     {/* Graph Area */}
-                    <div style={{ height: '300px', padding: '1rem 1rem 0 0', marginLeft: '-2rem', background: 'transparent' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ff5e00" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#ff5e00" stopOpacity={0} />
-                                    </linearGradient>
-                                    <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    allowDecimals={false}
-                                    tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: 'var(--bg-elevated)',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '8px',
-                                        color: 'var(--text-primary)'
-                                    }}
-                                    itemStyle={{ color: 'var(--text-primary)' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="views"
-                                    stroke="var(--accent-secondary)" // Or hardcoded cyan
-                                    strokeWidth={2}
-                                    fillOpacity={1}
-                                    fill="url(#colorViews)"
-                                    style={{ stroke: '#00cbff' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="posts"
-                                    stroke="var(--accent-primary)" // Or hardcoded orange
-                                    strokeWidth={2}
-                                    fillOpacity={1}
-                                    fill="url(#colorPosts)"
-                                    style={{ stroke: '#ff5e00' }}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                    <div style={{ height: '300px', padding: '1rem 1rem 0 0', marginLeft: '-2rem', background: 'transparent', position: 'relative' }}>
+                        {postsLoading ? (
+                            <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
+                                <WaveLoader size={48} />
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={graphData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorPosts" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#ff5e00" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#ff5e00" stopOpacity={0} />
+                                        </linearGradient>
+                                        <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                    <XAxis
+                                        dataKey="name"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+                                        dy={10}
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        allowDecimals={false}
+                                        tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: 'var(--bg-elevated)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)'
+                                        }}
+                                        itemStyle={{ color: 'var(--text-primary)' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="views"
+                                        stroke="var(--accent-secondary)" // Or hardcoded cyan
+                                        strokeWidth={2}
+                                        fillOpacity={1}
+                                        fill="url(#colorViews)"
+                                        style={{ stroke: '#00cbff' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="posts"
+                                        stroke="var(--accent-primary)" // Or hardcoded orange
+                                        strokeWidth={2}
+                                        fillOpacity={1}
+                                        fill="url(#colorPosts)"
+                                        style={{ stroke: '#ff5e00' }}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
             </section>

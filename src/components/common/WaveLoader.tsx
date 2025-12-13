@@ -1,139 +1,152 @@
 
-
-
 interface WaveLoaderProps {
     size?: number;
-    color?: string; // Prepared for future, though complex to implement with current CSS
+    color?: string;
+    style?: React.CSSProperties; // Add style prop for extra flexibility
 }
 
-export default function WaveLoader({ size }: WaveLoaderProps) {
-    const baseSize = 220
-    const currentSize = size || baseSize
-    const scale = currentSize / baseSize
-
-    const renderBars = () => (
-        Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="wave-loader-bar"></div>
-        ))
-    )
+export default function WaveLoader({ size, color }: WaveLoaderProps) {
+    const currentSize = size || 48 // Default size 48px as in original CSS
 
     return (
-        <div className="wave-loader-wrapper" style={{ width: `${currentSize}px`, height: `${currentSize}px` }}>
-            <div className="wave-loader-container" style={{
-                transform: `scale(${scale})`,
-                transformOrigin: 'top left',
-                width: `${baseSize}px`,
-                height: `${baseSize}px`
-            }}>
-                <div className="wave-loader-wave">
-                    {renderBars()}
-                </div>
-                <div data-level="1" className="wave-loader-wave">
-                    {renderBars()}
-                </div>
-                <div data-level="2" className="wave-loader-wave">
-                    {renderBars()}
-                </div>
-                <div data-level="3" className="wave-loader-wave">
-                    {renderBars()}
-                </div>
-            </div>
+        <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 48 48"
+                className="uiverse-loader"
+                style={{
+                    width: `${currentSize}px`,
+                    height: `${currentSize}px`,
+                    color: color || '#ffffff' // Default to white if not provided, can use currentColor too
+                }}
+            >
+                <g
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    fillRule="evenodd" // React uses camelCase
+                    fill="none"
+                    strokeWidth="1"
+                    stroke="none"
+                >
+                    <line y2="6" x2="24" y1="2" x1="24"></line>
+                    <line
+                        transform="translate(34, 6.679) rotate(30) translate(-34, -6.679)"
+                        y2="8.679"
+                        x2="34"
+                        y1="4.679"
+                        x1="34"
+                    ></line>
+                    <line
+                        transform="translate(41.321, 14) rotate(60) translate(-41.321, -14)"
+                        y2="16"
+                        x2="41.321"
+                        y1="12"
+                        x1="41.321"
+                    ></line>
+                    <line
+                        transform="translate(44, 24) rotate(90) translate(-44, -24)"
+                        y2="26"
+                        x2="44"
+                        y1="22"
+                        x1="44"
+                    ></line>
+                    <line
+                        transform="translate(41.321, 34) rotate(120) translate(-41.321, -34)"
+                        y2="36"
+                        x2="41.321"
+                        y1="32"
+                        x1="41.321"
+                    ></line>
+                    <line
+                        transform="translate(34, 41.321) rotate(150) translate(-34, -41.321)"
+                        y2="43.321"
+                        x2="34"
+                        y1="39.321"
+                        x1="34"
+                    ></line>
+                    <line
+                        transform="translate(24, 44) rotate(180) translate(-24, -44)"
+                        y2="46"
+                        x2="24"
+                        y1="42"
+                        x1="24"
+                    ></line>
+                    <line
+                        transform="translate(14, 41.321) rotate(210) translate(-14, -41.321)"
+                        y2="43.321"
+                        x2="14"
+                        y1="39.321"
+                        x1="14"
+                    ></line>
+                    <line
+                        transform="translate(6.679, 34) rotate(240) translate(-6.679, -34)"
+                        y2="36"
+                        x2="6.679"
+                        y1="32"
+                        x1="6.679"
+                    ></line>
+                    <line
+                        transform="translate(4, 24) rotate(270) translate(-4, -24)"
+                        y2="26"
+                        x2="4"
+                        y1="22"
+                        x1="4"
+                    ></line>
+                    <line
+                        transform="translate(6.679, 14) rotate(300) translate(-6.679, -14)"
+                        y2="16"
+                        x2="6.679"
+                        y1="12"
+                        x1="6.679"
+                    ></line>
+                    <line
+                        transform="translate(14, 6.679) rotate(330) translate(-14, -6.679)"
+                        y2="8.679"
+                        x2="14"
+                        y1="4.679"
+                        x1="14"
+                    ></line>
+                </g>
+            </svg>
             <style>{`
-                .wave-loader-wrapper {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    overflow: hidden; /* Ensure no spillover */
+                .uiverse-loader {
+                    /* width/height controlled via inline style */
+                    transform: rotate(0deg);
+                    animation: spin 2.4s linear infinite;
                 }
 
-                .wave-loader-container {
-                    padding: 0;
-                    margin: 0;
-                    box-sizing: border-box;
-                    position: relative;
-                    border-radius: 50%;
-                    overflow: hidden;
+                .uiverse-loader line {
+                    stroke: currentColor; /* Use currentColor to inherit color prop */
+                    stroke-width: 4px;
+                    stroke-linecap: round;
+                    opacity: 0.8;
+                    stroke-dasharray: 10;
+                    stroke-dashoffset: 10;
+                    animation: dash 2.4s ease-in-out infinite;
                 }
 
-                .wave-loader-wave {
-                    padding: 0;
-                    margin: 0 auto;
-                    box-sizing: border-box;
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: flex-end;
-                }
-
-                .wave-loader-wave:nth-child(1) .wave-loader-bar {
-                    padding: 0;
-                    margin: 0 auto;
-                    box-sizing: border-box;
-                    width: 2px;
-                    height: 220px;
-                    background-color: #ccc;
-                }
-
-                .wave-loader-wave:nth-child(n + 2) .wave-loader-bar {
-                    padding: 0;
-                    margin: 0 auto;
-                    box-sizing: border-box;
-                    -webkit-animation:
-                        barHeight 3.9s infinite ease-in-out alternate,
-                        barSkew 3.9s infinite ease-in-out alternate;
-                    animation:
-                        barHeight 3.9s infinite ease-in-out alternate,
-                        barSkew 3.9s infinite ease-in-out alternate;
-                }
-
-                /* Animation Delays */
-                ${Array.from({ length: 24 }).map((_, i) => `
-                    .wave-loader-wave .wave-loader-bar:nth-child(${i + 1}) {
-                        -webkit-animation-delay: calc(var(--f) * ${i}), calc(var(--f) * ${i} - 1.95s);
-                        animation-delay: calc(var(--f) * ${i}), calc(var(--f) * ${i} - 1.95s);
+                @keyframes dash {
+                    0% {
+                        stroke-dashoffset: 10;
+                        opacity: 0.8;
                     }
-                `).join('')}
-
-                .wave-loader-wave[data-level="1"] .wave-loader-bar {
-                    width: 11px;
-                    background-color: #fff;
-                    --f: -0.24375s;
-                    --h: 40px;
+                    50% {
+                        stroke-dashoffset: 0;
+                        opacity: 0.4;
+                    }
+                    100% {
+                        stroke-dashoffset: 10;
+                        opacity: 0.8;
+                    }
                 }
 
-                .wave-loader-wave[data-level="2"] .wave-loader-bar {
-                    width: 8px;
-                    background-color: #eee;
-                    --f: -0.4875s;
-                    --h: 100px;
-                }
-
-                .wave-loader-wave[data-level="3"] .wave-loader-bar {
-                    width: 5px;
-                    background-color: #ddd;
-                    --f: -0.325s;
-                    --h: 120px;
-                }
-
-                @-webkit-keyframes barHeight {
-                    from { height: var(--h); }
-                    to { height: calc(var(--h) + 50px); }
-                }
-
-                @keyframes barHeight {
-                    from { height: var(--h); }
-                    to { height: calc(var(--h) + 50px); }
-                }
-
-                @-webkit-keyframes barSkew {
-                    from { transform: skewY(30deg); }
-                    to { transform: skewY(-30deg); }
-                }
-
-                @keyframes barSkew {
-                    from { transform: skewY(30deg); }
-                    to { transform: skewY(-30deg); }
+                @keyframes spin {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+                    100% {
+                        transform: rotate(360deg);
+                    }
                 }
             `}</style>
         </div>
