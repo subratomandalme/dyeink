@@ -78,55 +78,57 @@ export default function Posts() {
                     borderRadius: '8px',
                     overflow: 'hidden'
                 }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0', textAlign: 'left' }}>
                         <thead>
                             <tr>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Title</th>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Status</th>
-                                <th style={{ padding: '1rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Date</th>
-                                <th style={{ padding: '1rem', width: '50px' }}></th>
+                                <th style={{ padding: '1.25rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid var(--border-color)' }}>Title</th>
+                                <th style={{ padding: '1.25rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid var(--border-color)' }}>Status</th>
+                                <th style={{ padding: '1.25rem 1.5rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', borderBottom: '1px solid var(--border-color)' }}>Date</th>
+                                <th style={{ padding: '1.25rem 1.5rem', width: '50px', borderBottom: '1px solid var(--border-color)' }}></th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredPosts.map((post) => (
-                                <tr key={post.id} className="hover-row">
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle', maxWidth: '300px' }}>
-                                        <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                <tr key={post.id} className="hover-row" style={{ transition: 'background 0.2s' }}>
+                                    <td style={{ padding: '1.75rem 1.5rem', verticalAlign: 'middle', maxWidth: '400px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                        <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '1.1rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', letterSpacing: '-0.01em' }}>
                                             <Link to={`/admin/posts/${post.id}/edit`} style={{ color: 'inherit', textDecoration: 'none' }} title={post.title}>
                                                 {post.title}
                                             </Link>
                                         </div>
-
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', verticalAlign: 'middle' }}>
+                                    <td style={{ padding: '1.75rem 1.5rem', verticalAlign: 'middle', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                                         <span style={{
                                             display: 'inline-flex',
                                             alignItems: 'center',
-                                            padding: '0.25rem 0.6rem',
-                                            borderRadius: '12px',
+                                            padding: '0.35rem 0.85rem',
+                                            borderRadius: '50px',
                                             fontSize: '0.75rem',
-                                            fontWeight: 500,
-                                            backgroundColor: post.published ? 'var(--success-bg)' : 'var(--warning-bg)',
-                                            color: post.published ? 'var(--success)' : 'var(--warning)',
+                                            fontWeight: 700,
+                                            backgroundColor: post.published ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                                            color: post.published ? '#4ade80' : '#facc15',
                                             textTransform: 'uppercase',
-                                            letterSpacing: '0.025em'
+                                            letterSpacing: '0.05em',
+                                            border: post.published ? '1px solid rgba(34, 197, 94, 0.2)' : '1px solid rgba(234, 179, 8, 0.2)'
                                         }}>
                                             {post.published ? 'Published' : 'Draft'}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', color: 'var(--text-muted)', fontSize: '0.9rem', verticalAlign: 'middle' }}>
+                                    <td style={{ padding: '1.75rem 1.5rem', color: 'var(--text-secondary)', fontSize: '0.95rem', verticalAlign: 'middle', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                                         {format(new Date(post.createdAt), 'MMM d, yyyy')}
                                     </td>
-                                    <td style={{ padding: '1.25rem 1rem', textAlign: 'right', verticalAlign: 'middle' }}>
-                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                                    <td style={{ padding: '1.75rem 1.5rem', textAlign: 'right', verticalAlign: 'middle', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', opacity: 0.7 }}>
                                             <Link
                                                 to={`/admin/posts/${post.id}/edit`}
                                                 style={{
-                                                    padding: '0.4rem',
-                                                    color: 'var(--text-muted)',
-                                                    borderRadius: '4px',
+                                                    padding: '0.5rem',
+                                                    color: 'var(--text-primary)',
+                                                    borderRadius: '50%',
                                                     display: 'flex',
-                                                    alignItems: 'center'
+                                                    alignItems: 'center',
+                                                    transition: 'all 0.2s',
+                                                    background: 'var(--bg-tertiary)'
                                                 }}
                                                 title="Edit"
                                             >
@@ -135,13 +137,15 @@ export default function Posts() {
                                             <button
                                                 onClick={() => initiateDelete(post.id)}
                                                 style={{
-                                                    background: 'none',
+                                                    background: 'rgba(239, 68, 68, 0.1)',
                                                     border: 'none',
-                                                    padding: '0.4rem',
-                                                    color: 'var(--error)',
+                                                    padding: '0.5rem',
+                                                    color: '#ef4444',
                                                     cursor: 'pointer',
                                                     display: 'flex',
-                                                    alignItems: 'center'
+                                                    alignItems: 'center',
+                                                    borderRadius: '50%',
+                                                    transition: 'all 0.2s'
                                                 }}
                                                 title="Delete"
                                             >

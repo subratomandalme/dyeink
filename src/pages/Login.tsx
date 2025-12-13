@@ -142,7 +142,7 @@ export default function Login() {
                             justifyContent: 'center',
                             gap: '0.75rem',
                             width: '100%',
-                            padding: '0.75rem',
+                            padding: '0.875rem',
                             borderRadius: '8px',
                             border: '1px solid var(--border-color)',
                             background: 'var(--bg-tertiary)',
@@ -157,11 +157,7 @@ export default function Login() {
                         Continue with GitHub
                     </button>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
-                        OR
-                        <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
-                    </div>
+
                 </div>
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

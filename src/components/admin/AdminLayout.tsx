@@ -132,8 +132,8 @@ export default function AdminLayout() {
             <aside style={{
                 width: '260px',
                 backgroundColor: 'var(--bg-primary)',
-                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '1px 0 30px rgba(255, 255, 255, 0.15)', // Sidebar Divider Glow
+                borderRight: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.15)',
+                boxShadow: theme === 'dark' ? '1px 0 30px rgba(255, 255, 255, 0.15)' : '1px 0 25px rgba(0, 0, 0, 0.1)', // Sidebar Divider Glow
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'fixed',
@@ -205,11 +205,11 @@ export default function AdminLayout() {
                     <div style={{
                         fontSize: '0.75rem',
                         fontWeight: 600,
-                        color: 'var(--text-secondary)',
+                        color: 'var(--text-primary)',
                         marginBottom: '0.5rem',
                         paddingLeft: '0.75rem',
                         letterSpacing: '0.05em',
-                        textShadow: '0 0 15px rgba(255, 255, 255, 0.6)'
+                        textShadow: theme === 'dark' ? '0 0 15px rgba(255, 255, 255, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.1)'
                     }}>
                         MENU
                     </div>
@@ -275,10 +275,11 @@ export default function AdminLayout() {
                         <div style={{
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            color: 'var(--text-muted)',
+                            color: 'var(--text-primary)',
                             marginBottom: '0.5rem',
                             paddingLeft: '0.75rem',
-                            letterSpacing: '0.05em'
+                            letterSpacing: '0.05em',
+                            textShadow: theme === 'dark' ? '0 0 15px rgba(255, 255, 255, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.1)'
                         }}>
                             AUDIENCE
                         </div>
@@ -307,12 +308,13 @@ export default function AdminLayout() {
                         <div style={{
                             fontSize: '0.75rem',
                             fontWeight: 600,
-                            color: 'var(--text-muted)',
+                            color: 'var(--text-primary)',
                             marginBottom: '0.5rem',
                             paddingLeft: '0.75rem',
-                            letterSpacing: '0.05em'
+                            letterSpacing: '0.05em',
+                            textShadow: theme === 'dark' ? '0 0 15px rgba(255, 255, 255, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.1)'
                         }}>
-                            CREATOR TOOLS
+                            TOOLS
                         </div>
                         <Link
                             to="/admin/settings"
