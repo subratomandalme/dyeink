@@ -198,8 +198,6 @@ const Settings: React.FC = () => {
 
             if (updated) {
                 updateSettingsInCache(updated)
-                // Force sync to be sure
-                await fetchSettings(true)
             }
 
             addToast({
