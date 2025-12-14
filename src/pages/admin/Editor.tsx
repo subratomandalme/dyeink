@@ -9,7 +9,7 @@ import {
     Italic,
 } from 'lucide-react'
 import WaveLoader from '../../components/common/WaveLoader'
-import LetterGlitch from '../../components/common/LetterGlitch'
+import DecryptedText from '../../components/common/DecryptedText'
 import { useThemeStore } from '../../store/themeStore'
 
 import { useAuthStore } from '../../store'
@@ -63,7 +63,6 @@ export default function Editor() {
     // Toolbar Actions
     const executeCommand = (command: string, value: string | undefined = undefined) => {
         document.execCommand(command, false, value)
-        contentRef.current?.focus()
     }
 
     const handleSave = async (shouldPublish: boolean = false) => {
@@ -123,7 +122,6 @@ export default function Editor() {
             setIsPublishing(false) // Reset on error
         } finally {
             setSaving(false)
-            // Note: Don't reset isPublishing here if successful, to keep overlay until nav
         }
     }
 
@@ -141,16 +139,36 @@ export default function Editor() {
         )
     }
 
-    // Full Screen Glitch Overlay
+    // Minimalistic Decrypt Overlay
     if (isPublishing) {
         return (
-            <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#000' }}>
-                <LetterGlitch
-                    glitchSpeed={50}
-                    centerVignette={true}
-                    outerVignette={false}
-                    smooth={true}
-                />
+            <div style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                background: 'rgba(5, 5, 5, 0.9)',
+                backdropFilter: 'blur(12px)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'column'
+            }}>
+                <div style={{
+                    fontSize: '1.5rem',
+                    fontWeight: 500,
+                    color: '#fff',
+                    letterSpacing: '0.3em',
+                    fontFamily: 'monospace'
+                }}>
+                    <DecryptedText
+                        text="PUBLISHING..."
+                        speed={80}
+                        maxIterations={20}
+                        animateOn="view"
+                        revealDirection="center"
+                        sequential
+                    />
+                </div>
             </div>
         )
     }
@@ -204,6 +222,7 @@ export default function Editor() {
                     color: 'var(--text-secondary)'
                 }}>
                     <button
+                        type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeCommand('undo')}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
@@ -212,6 +231,7 @@ export default function Editor() {
                         <Undo size={18} />
                     </button>
                     <button
+                        type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeCommand('redo')}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
@@ -223,6 +243,7 @@ export default function Editor() {
                     <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-color)' }} />
 
                     <button
+                        type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeCommand('bold')}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
@@ -231,6 +252,7 @@ export default function Editor() {
                         <Bold size={18} />
                     </button>
                     <button
+                        type="button"
                         onMouseDown={(e) => e.preventDefault()}
                         onClick={() => executeCommand('italic')}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
@@ -294,8 +316,6 @@ export default function Editor() {
                     }}
                 />
 
-                {/* Subtitle removed as per request */}
-
                 {/* ContentEditable Div for Rich Text */}
                 <div
                     ref={contentRef}
@@ -321,8 +341,6 @@ export default function Editor() {
                     }}
                 />
             </div>
-
-
 
             <style>{`
                 .editor-content-editable:empty:before {
