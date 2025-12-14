@@ -22,7 +22,8 @@ const Stats: React.FC = () => {
     useEffect(() => {
         const loadStats = async () => {
             if (!user?.id) return
-            const { data } = await supabase.rpc('get_dashboard_stats', { user_id: user.id })
+            // v38: Use updated function name
+            const { data } = await supabase.rpc('get_author_overview', { p_user_id: user.id })
             if (data) setRealStats(data)
         }
         loadStats()

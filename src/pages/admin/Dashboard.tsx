@@ -129,6 +129,10 @@ export default function Dashboard() {
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
                                 <WaveLoader size={48} />
                             </div>
+                        ) : graphData.length === 0 ? (
+                            <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
+                                No stats recorded yet
+                            </div>
                         ) : (
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -45, bottom: 0 }}>
