@@ -352,11 +352,20 @@ export default function AdminLayout() {
                             background: 'none',
                             color: 'var(--text-secondary)',
                             cursor: 'pointer',
-                            fontSize: '0.9rem'
+                            fontSize: '0.9rem',
+                            transition: 'all 0.3s ease'
                         }}
                     >
                         <LogOut size={18} /> Sign Out
                     </button>
+                    <style>{`
+                        .btn-signout:hover {
+                            color: #ef4444 !important;
+                            text-shadow: 0 0 10px rgba(239, 68, 68, 0.6), 0 0 20px rgba(239, 68, 68, 0.4);
+                            background: transparent !important;
+                            box-shadow: none !important;
+                        }
+                    `}</style>
                 </div>
             </aside>
 

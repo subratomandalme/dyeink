@@ -42,6 +42,9 @@ export default function Editor() {
                 const post = await postService.getPostById(id)
                 if (post) {
                     setTitle(post.title)
+                    if (titleRef.current) {
+                        titleRef.current.innerHTML = post.title
+                    }
                     setExcerpt(post.excerpt || '')
                     setCoverImage(post.coverImage || '')
                     if (contentRef.current) {
@@ -59,6 +62,7 @@ export default function Editor() {
 
     // ContentEditable Ref
     const contentRef = useRef<HTMLDivElement>(null)
+    const titleRef = useRef<HTMLDivElement>(null)
 
     // Toolbar Actions
     const executeCommand = (command: string, value: string | undefined = undefined) => {
@@ -297,22 +301,27 @@ export default function Editor() {
 
             {/* Main Editor Area */}
             <div style={{ maxWidth: '720px', margin: '0 auto', padding: '5rem 1.5rem 3rem 1.5rem' }}>
-                <input
-                    type="text"
-                    placeholder="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="editor-title-input"
+                <div
+                    ref={titleRef}
+                    contentEditable
+                    className="editor-title-editable"
+                    data-placeholder="Title"
+                    onInput={(e) => setTitle(e.currentTarget.innerHTML)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault()
+                        }
+                    }}
                     style={{
                         width: '100%',
-                        border: 'none',
                         outline: 'none',
                         fontSize: '3.5rem',
                         fontWeight: 700,
                         color: 'var(--text-primary)',
                         marginBottom: '1rem',
                         background: 'transparent',
-                        fontFamily: 'inherit'
+                        fontFamily: 'inherit',
+                        lineHeight: '1.2'
                     }}
                 />
 
@@ -343,20 +352,19 @@ export default function Editor() {
             </div>
 
             <style>{`
-                .editor-content-editable:empty:before {
+                .editor-content-editable:empty:before,
+                .editor-title-editable:empty:before {
                     content: attr(data-placeholder);
                     color: var(--text-muted);
                     pointer-events: none;
                 }
-                .editor-title-input::placeholder {
-                    font-size: 4rem;
-                    opacity: 0.3;
-                    font-weight: 900;
-                    color: var(--text-muted);
-                    transition: all 0.3s ease;
+                .editor-title-editable {
+                    transition: opacity 0.3s ease;
                 }
-                .editor-title-input:focus::placeholder {
-                    opacity: 0.5;
+                .editor-title-editable:empty:before {
+                    font-size: 3.5rem; /* Match title size */
+                    font-weight: 700;
+                    opacity: 0.3;
                 }
             `}</style>
         </div>
