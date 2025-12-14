@@ -98,38 +98,16 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     }
                                 })
 
-                            // 2. Update Graph Daily Stats (v52 Local Time)
+                            // 2. Update Graph Daily Stats (v63 Atomic RPC)
                             const today = format(new Date(), 'yyyy-MM-dd')
 
-                            // Check for existing record
-                            supabase.from('daily_post_stats')
-                                .select('id, views, shares')
-                                .eq('post_id', activePost.id)
-                                .eq('date', today)
-                                .maybeSingle()
-                                .then(({ data: daily, error: fetchErr }) => {
-                                    if (fetchErr) console.error('Stats Fetch Err:', fetchErr)
-
-                                    if (daily) {
-                                        // Update existing
-                                        const newViews = (daily.views || 0) + 1
-                                        supabase.from('daily_post_stats')
-                                            .update({ views: newViews })
-                                            .eq('id', daily.id)
-                                            .then(({ error: updateErr }) => {
-                                                if (updateErr) console.error('Stats Update Err:', updateErr)
-                                                else console.log('Graph Stats Updated:', newViews)
-                                            })
-                                    } else {
-                                        // Insert new
-                                        supabase.from('daily_post_stats')
-                                            .insert({ post_id: activePost.id, date: today, views: 1, shares: 0 })
-                                            .then(({ error: insertErr }) => {
-                                                if (insertErr) console.error('Stats Insert Err:', insertErr)
-                                                else console.log('Graph Stats Created: 1')
-                                            })
-                                    }
-                                })
+                            supabase.rpc('increment_daily_views', {
+                                p_post_id: activePost.id,
+                                p_date: today
+                            }).then(({ error }) => {
+                                if (error) console.error('Stats Update Error (RPC):', error)
+                                else console.log('Graph Stats Incremented (Atomic)')
+                            })
                         }
                     }
                 } else {
