@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
-import { analyticsService } from '../services/api'
+
 import { supabase } from '../lib/supabase'
 import type { Post } from '../types'
 import { format } from 'date-fns'
@@ -80,13 +80,11 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     if (slug && fetchedPosts.length > 0) {
                         const activePost = fetchedPosts.find(p => p.slug === slug)
                         if (activePost) {
-                            // Direct Supabase Update (Minimal Stack)
-                            supabase.from('posts').select('views').eq('id', activePost.id).single()
-                                .then(({ data }) => {
-                                    const currentViews = data?.views || 0
-                                    supabase.from('posts').update({ views: currentViews + 1 }).eq('id', activePost.id).then(() => {
-                                        // View counted silently
-                                    })
+                            // Use RPC for atomic update + security definer bypass of RLS
+                            // This ensures anonymous users can count views
+                            supabase.rpc('increment_post_view', { post_id: activePost.id })
+                                .then(({ error }) => {
+                                    if (error) console.error('View increment failed:', error)
                                 })
                         }
                     }
@@ -380,7 +378,8 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                                         message: 'Link copied to clipboard',
                                                         duration: 2000
                                                     })
-                                                    analyticsService.sharePost(post.id)
+                                                    // RPC call for shares
+                                                    supabase.rpc('increment_shares', { post_id: post.id })
                                                 }}
                                                 style={{
                                                     background: 'none',
