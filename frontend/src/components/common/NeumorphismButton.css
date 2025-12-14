@@ -1,0 +1,35 @@
+.neu-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    /* full rounded */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    background: var(--neu-bg);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    /* For Link usage */
+
+    /* Default Shadow (Outset) */
+    box-shadow:
+        -5px -5px 10px var(--neu-shadow-1),
+        5px 5px 10px var(--neu-shadow-2);
+}
+
+.neu-btn:hover {
+    color: var(--neu-text-hover);
+
+    /* Hover Shadow (Inset / Pressed look as per user request) */
+    box-shadow:
+        -1px -1px 5px var(--neu-shadow-1),
+        1px 1px 5px var(--neu-shadow-2),
+        inset -2px -2px 5px var(--neu-shadow-inset-1),
+        inset 2px 2px 4px var(--neu-shadow-inset-2);
+
+    transform: translateY(1px);
+    /* Slight press feeling */
+}

@@ -1,0 +1,975 @@
+import React, { useState, useEffect } from 'react'
+import { settingsService } from '../../services/settingsService'
+import { supabase } from '../../lib/supabase'
+import { useThemeStore } from '../../store/themeStore'
+import { useAdminStore } from '../../store/adminStore'
+import { AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
+
+import WaveLoader from '../../components/common/WaveLoader'
+import { useToast } from '../../components/common/Toast'
+
+const Settings: React.FC = () => {
+    const { settings, fetchSettings, settingsLoading, updateSettingsInCache } = useAdminStore()
+    const [activeTab, setActiveTab] = useState('Basics')
+    // const [loading, setLoading] = useState(true) // Removed local loading
+    const [saving, setSaving] = useState(false)
+    const [schemaError, setSchemaError] = useState<string | null>(null)
+    const { addToast } = useToast()
+
+    // ... (rest of state)
+
+    // ... (rest of logic)
+
+    // Wait, I need to verify where to insert the UI render.
+    // I can't use replace_file_content to insert in the middle without seeing the whole file content or a large chunk.
+    // I will use multi_replace for this to be precise, or just replace the header section to include the alert.
+
+    // Let's do the state first.
+
+    const { theme } = useThemeStore() // Get theme
+
+    // Hover states for Neumorphic buttons
+    const [hoverDeletePosts, setHoverDeletePosts] = useState(false)
+    const [hoverDeleteAccount, setHoverDeleteAccount] = useState(false)
+
+    // Settings State
+    const [pubName, setPubName] = useState("")
+    const [description, setDescription] = useState("")
+    const [customDomain, setCustomDomain] = useState("")
+    const [subdomain, setSubdomain] = useState("")
+    const [twitterLink, setTwitterLink] = useState("")
+    const [linkedinLink, setLinkedinLink] = useState("")
+    const [githubLink, setGithubLink] = useState("")
+    const [websiteLink, setWebsiteLink] = useState("")
+    const [email, setEmail] = useState("") // Newsletter Email
+    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null) // Logged in user reference
+    const [domainStatus, setDomainStatus] = useState<'pending' | 'verified' | 'active' | 'failed' | null>(null)
+
+    // Delete Modal State
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [deleteType, setDeleteType] = useState<'posts' | 'publication' | null>(null)
+    const [deleteConfirmation, setDeleteConfirmation] = useState("")
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    // Helper for Neumorphic Shadows (Reused from AdminLayout)
+    const getNeumorphicShadows = (isHovered: boolean) => {
+        const isDark = theme === 'dark'
+        if (isHovered) {
+            if (isDark) {
+                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5)'
+            }
+            return '-1px -1px 5px rgba(255,255,255,0.6), 1px 1px 5px rgba(0,0,0,0.3), inset -2px -2px 5px rgba(255,255,255,1), inset 2px 2px 4px rgba(0,0,0,0.3)'
+        } else {
+            if (isDark) {
+                return '-5px -5px 10px rgba(255,255,255,0.1), 5px 5px 10px rgba(255,255,255,0.03)'
+            }
+            return '-5px -5px 10px rgba(255,255,255,0.8), 5px 5px 10px rgba(0,0,0,0.25)'
+        }
+    }
+
+    const tabs = [
+        { id: 'Basics', label: 'Basics' },
+        { id: 'Publication', label: 'Publication' },
+        { id: 'Security', label: 'Security' }, // New Tab
+        { id: 'Danger', label: 'Danger Zone', danger: true },
+    ]
+
+    // Security State
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+
+    useEffect(() => {
+        // Auto-select tab from URL (e.g. ?tab=Security)
+        const params = new URLSearchParams(window.location.search)
+        const tabParam = params.get('tab')
+        if (tabParam && tabs.some(t => t.id === tabParam)) {
+            setActiveTab(tabParam)
+        }
+
+        loadSettings()
+
+        // Fetch current user email for newsletter options
+        supabase.auth.getUser().then(({ data }) => {
+            if (data.user?.email) setCurrentUserEmail(data.user.email)
+        })
+    }, [])
+
+    const loadSettings = () => {
+        fetchSettings()
+    }
+
+    useEffect(() => {
+        if (settings) {
+            setPubName(settings.siteName || "")
+            setDescription(settings.siteDescription || "")
+            setCustomDomain(settings.customDomain || "")
+            setSubdomain(settings.subdomain || "")
+            setTwitterLink(settings.twitterLink || "")
+            setLinkedinLink(settings.linkedinLink || "")
+            setGithubLink(settings.githubLink || "")
+            setWebsiteLink(settings.websiteLink || "")
+            setWebsiteLink(settings.websiteLink || "")
+            setEmail(settings.newsletterEmail || "")
+            setDomainStatus(settings.domainStatus || null)
+        }
+    }, [settings])
+
+    const handleSave = async () => {
+        setSaving(true)
+        setSchemaError(null)
+        try {
+            const updated = await settingsService.saveSettings({
+                siteName: pubName,
+                siteDescription: description,
+                customDomain: customDomain || null,
+                subdomain: subdomain || null,
+                twitterLink: twitterLink || null,
+                linkedinLink: linkedinLink || null,
+                githubLink: githubLink || null,
+                websiteLink: websiteLink || null,
+                newsletterEmail: email || null
+            })
+            if (updated) {
+                updateSettingsInCache(updated)
+                setSubdomain(updated.subdomain || "")
+
+                // FORCE SYNC
+                await fetchSettings(true)
+
+                // FORCE SYNC
+                await fetchSettings(true)
+
+                // Sync with Supabase Auth Metadata as requested
+                const { error: authError } = await supabase.auth.updateUser({
+                    data: {
+                        name: pubName,
+                        full_name: pubName
+                    }
+                })
+                if (authError) console.error("Failed to sync auth user name:", authError)
+
+                addToast({
+                    type: 'success',
+                    message: 'Settings saved successfully'
+                })
+            }
+        } catch (error: any) {
+            console.error('Save error:', error)
+            const isSchemaError = error.message?.includes('column') || error.message?.includes('schema') || error.code === '42703'
+
+            if (isSchemaError) {
+                setSchemaError('Missing database column. Please run the generated SQL migration.')
+            }
+
+            addToast({
+                type: 'error',
+                message: isSchemaError
+                    ? 'Database update required. See alert above.'
+                    : `Failed to save: ${error.message || 'Unknown error'} `,
+                duration: isSchemaError ? 10000 : 4000
+            })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    // Auto-verify on load if domain exists but status is pending/missing
+    useEffect(() => {
+        if (settings?.customDomain && (!settings.domainStatus || settings.domainStatus === 'pending')) {
+            const checkStatus = async () => {
+                try {
+                    const result = await settingsService.verifyDomain(settings.customDomain!)
+                    // If Vercel says it's good (verified=true OR success with conflict message handled by API)
+                    if (result.success && (result.verified || (result as any).message === 'Domain already connected')) {
+                        setDomainStatus('verified')
+                        // Update cache to reflect this immediately
+                        updateSettingsInCache({ ...settings, domainStatus: 'verified' } as any)
+                    }
+                } catch (e) {
+                    // Ignore errors in background check to avoid console noise
+                }
+            }
+            checkStatus()
+        }
+    }, [settings?.customDomain, settings?.domainStatus])
+
+    const handleVerify = async () => {
+        if (!customDomain) return
+        setSaving(true)
+        try {
+            // 1. Call Vercel API
+            const result = await settingsService.verifyDomain(customDomain)
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to verify domain')
+            }
+
+            // 2. Update Status in DB
+            const newStatus = 'verified'
+            // NOTE: We update local state instantly for UI feedback
+            setDomainStatus(newStatus)
+
+            const updated = await settingsService.saveSettings({
+                ...settings,
+                customDomain,
+                subdomain: subdomain || null,
+                domainStatus: newStatus
+            } as any)
+
+            if (updated) {
+                updateSettingsInCache(updated)
+            }
+
+            addToast({
+                type: 'success',
+                message: 'Domain connected! SSL is being issued. This can take 5–20 minutes.'
+            })
+
+        } catch (err: any) {
+            console.error('Verification failed', err)
+            addToast({
+                type: 'error',
+                message: err.message
+            })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleRemoveDomain = async () => {
+        setSaving(true)
+        try {
+            const updated = await settingsService.saveSettings({
+                ...settings,
+                customDomain: null,
+                domainStatus: null
+            } as any)
+
+            if (updated) {
+                updateSettingsInCache(updated)
+                setCustomDomain("")
+                setDomainStatus(null)
+                addToast({ type: 'success', message: 'Domain removed successfully' })
+            }
+        } catch (error: any) {
+            addToast({ type: 'error', message: 'Failed to remove domain' })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    if (settingsLoading && !settings) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+                <WaveLoader />
+            </div>
+        )
+    }
+
+    return (
+        <div style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Settings</h1>
+            </div>
+
+            {/* Schema Error Alert */}
+            {schemaError && (
+                <div style={{
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: '2rem'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem', color: '#ef4444' }}>
+                        <AlertTriangle size={20} />
+                        <h4 style={{ margin: 0, fontWeight: 700 }}>Database Update Required</h4>
+                    </div>
+                    <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                        The <code>newsletter_email</code> column is missing in your database. Please run this SQL command in your Supabase SQL Editor:
+                    </p>
+                    <div style={{
+                        backgroundColor: 'var(--bg-secondary)',
+                        padding: '0.75rem',
+                        borderRadius: '4px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.85rem',
+                        marginBottom: '0.75rem',
+                        overflowX: 'auto',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
+                    </div>
+                    <button
+                        onClick={() => {
+                            navigator.clipboard.writeText("ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;")
+                            addToast({ type: 'success', message: 'SQL copied to clipboard!' })
+                        }}
+                        style={{
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 600
+                        }}
+                    >
+                        Copy SQL Command
+                    </button>
+                </div>
+            )}
+
+            {/* Horizontal Tabs */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: '0.75rem 1rem',
+                            color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-secondary)',
+                            fontWeight: activeTab === tab.id ? 600 : 400,
+                            cursor: 'pointer',
+                            borderBottom: activeTab === tab.id ? '2px solid var(--text-primary)' : '2px solid transparent',
+                            marginBottom: '-1px', // Sit on the line
+                            fontSize: '0.95rem',
+                            transition: 'all 0.2s',
+                            ...(tab.danger ? { color: activeTab === tab.id ? '#ef4444' : 'var(--text-secondary)' } : {})
+                        }}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Content Area */}
+            <div style={{ paddingBottom: '4rem' }}>
+                {activeTab === 'Basics' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Publication name</h3>
+                            <input
+                                type="text"
+                                value={pubName}
+                                onChange={(e) => setPubName(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    background: 'transparent',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '6px',
+                                    color: 'inherit',
+                                    fontSize: '1rem'
+                                }}
+                            />
+                        </div>
+
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Enable Newsletter</h3>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                                        Automatically notify subscribers when you publish.
+                                    </p>
+                                    {email && (
+                                        <p style={{ fontSize: '0.8rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e' }}></span>
+                                            Sending from: <strong style={{ fontFamily: 'monospace' }}>{email}</strong>
+                                        </p>
+                                    )}
+                                </div>
+
+                                <label style={{ position: 'relative', display: 'inline-block', width: '46px', height: '26px', flexShrink: 0 }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={!!email}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setEmail(currentUserEmail || "")
+                                                if (!currentUserEmail) addToast({ type: 'error', message: 'Could not fetch user email. Try reloading.' })
+                                            } else {
+                                                setEmail("")
+                                            }
+                                        }}
+                                        style={{ opacity: 0, width: 0, height: 0 }}
+                                    />
+                                    <span style={{
+                                        position: 'absolute',
+                                        cursor: 'pointer',
+                                        top: 0, left: 0, right: 0, bottom: 0,
+                                        backgroundColor: email ? 'var(--text-primary)' : 'var(--bg-tertiary)',
+                                        transition: '.3s',
+                                        borderRadius: '34px',
+                                    }}></span>
+                                    <span style={{
+                                        position: 'absolute',
+                                        content: '""',
+                                        height: '20px',
+                                        width: '20px',
+                                        left: email ? '23px' : '3px',
+                                        bottom: '3px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        transition: '.3s',
+                                        borderRadius: '50%',
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                    }}></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Social Links</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Display links on your blog sidebar.</p>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Twitter / X Link"
+                                    value={twitterLink}
+                                    onChange={(e) => setTwitterLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="LinkedIn Profile"
+                                    value={linkedinLink}
+                                    onChange={(e) => setLinkedinLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="GitHub Profile"
+                                    value={githubLink}
+                                    onChange={(e) => setGithubLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Website / Portfolio"
+                                    value={websiteLink}
+                                    onChange={(e) => setWebsiteLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className="btn btn-primary"
+                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                {saving ? 'Saving...' : 'Save'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Publication' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        {/* Custom Domain Section - Default Address Removed */}
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Custom Domain</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Connect your own domain (e.g. blog.yourname.com).</p>
+
+                            {!settings?.customDomain ? (
+                                /* Connect New Domain */
+                                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                    <Globe size={18} style={{ color: 'var(--text-secondary)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="blog.yourname.com"
+                                        value={customDomain}
+                                        onChange={(e) => setCustomDomain(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '0.75rem',
+                                            background: 'transparent',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '6px',
+                                            color: 'inherit',
+                                            fontSize: '1rem'
+                                        }}
+                                    />
+                                </div>
+                            ) : (
+                                /* Existing Domain Management */
+                                <div style={{
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
+                                    padding: '1.5rem',
+                                    backgroundColor: 'var(--bg-secondary)'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
+                                            <Globe size={20} style={{ flexShrink: 0 }} />
+                                            <span style={{ fontSize: '1.1rem', fontWeight: 600, wordBreak: 'break-all' }}>{customDomain}</span>
+                                        </div>
+                                        <div style={{
+                                            padding: '0.25rem 0.75rem',
+                                            borderRadius: '20px',
+                                            fontSize: '0.8rem',
+                                            fontWeight: 600,
+                                            backgroundColor: domainStatus === 'active' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
+                                            color: domainStatus === 'active' ? '#22c55e' : '#eab308',
+                                            textTransform: 'uppercase',
+                                            whiteSpace: 'nowrap'
+                                        }}>
+                                            {domainStatus || 'Pending'}
+                                        </div>
+                                    </div>
+
+                                    {/* Instructions for Pending Domains */}
+                                    {domainStatus !== 'active' && domainStatus !== 'verified' && (
+                                        <div style={{ marginBottom: '1.5rem' }}>
+                                            <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Add this DNS record at your domain provider:</p>
+                                            <div style={{ overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: '80px 1fr 1fr',
+                                                    gap: '1px',
+                                                    backgroundColor: 'var(--border-color)',
+                                                    border: '1px solid var(--border-color)',
+                                                    borderRadius: '6px',
+                                                    marginBottom: '1rem',
+                                                    minWidth: '500px' /* Force scroll on small screens */
+                                                }}>
+                                                    <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Type</div>
+                                                    <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Name</div>
+                                                    <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Value</div>
+
+                                                    <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.9rem' }}>CNAME</div>
+                                                    <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.9rem' }}>blog</div>
+                                                    <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.9rem' }}>cname.vercel-dns.com</div>
+                                                </div>
+                                            </div>
+
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', fontStyle: 'italic' }}>
+                                                DNS changes may take a few minutes. After adding, click Verify.
+                                            </div>
+
+                                            <div style={{
+                                                fontSize: '0.8rem',
+                                                color: '#eab308',
+                                                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                                                padding: '0.75rem',
+                                                borderRadius: '4px',
+                                                marginBottom: '1rem',
+                                                border: '1px solid rgba(234, 179, 8, 0.2)'
+                                            }}>
+                                                <strong>Cloudflare User?</strong> Make sure to turn <strong>OFF</strong> the proxy (Grey Cloud) for this record, or ensure SSL is set to <strong>Full (Strict)</strong>.
+                                            </div>
+
+                                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                                <button onClick={handleVerify} disabled={saving} style={{
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 600,
+                                                    background: 'var(--text-primary)',
+                                                    color: 'var(--bg-primary)',
+                                                    border: 'none',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer',
+                                                    opacity: saving ? 0.7 : 1
+                                                }}>
+                                                    {saving ? 'Verifying...' : 'Verify Connection'}
+                                                </button>
+                                                <button
+                                                    onClick={handleRemoveDomain}
+                                                    style={{
+                                                        padding: '0.5rem 1rem',
+                                                        fontSize: '0.9rem',
+                                                        background: 'transparent',
+                                                        color: '#ef4444',
+                                                        border: '1px solid #ef4444',
+                                                        borderRadius: '4px',
+                                                        cursor: 'pointer'
+                                                    }}>
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Verified (Propagating) State */}
+                                    {domainStatus === 'verified' && (
+                                        <div style={{
+                                            marginBottom: '1.5rem',
+                                            padding: '1.5rem',
+                                            backgroundColor: 'rgba(34, 197, 94, 0.05)',
+                                            border: '1px solid rgba(34, 197, 94, 0.2)',
+                                            borderRadius: '8px'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                                                <CheckCircle2 size={24} color="#22c55e" />
+                                                <h4 style={{ margin: 0, color: '#22c55e', fontSize: '1rem' }}>Domain Verified!</h4>
+                                            </div>
+                                            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
+                                                We are generating your SSL certificate and configuring global routing. This typically takes <strong>5-20 minutes</strong>. You don't need to do anything else.
+                                            </p>
+                                            <button
+                                                onClick={handleRemoveDomain}
+                                                style={{
+                                                    marginTop: '1rem',
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.85rem',
+                                                    background: 'transparent',
+                                                    color: '#ef4444',
+                                                    border: '1px solid #ef4444',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}>
+                                                Disconnect
+                                            </button>
+                                        </div>
+                                    )}
+
+
+                                    {domainStatus === 'active' && (
+                                        <div>
+                                            <p style={{ fontSize: '0.9rem', color: '#22c55e' }}>✓ Domain is active and serving your blog.</p>
+                                            <button
+                                                onClick={handleRemoveDomain}
+                                                style={{
+                                                    marginTop: '1rem',
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.9rem',
+                                                    background: 'transparent',
+                                                    color: '#ef4444',
+                                                    border: '1px solid #ef4444',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}>
+                                                Disconnect
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {!settings?.customDomain && (
+                            <div style={{ marginTop: '2rem' }}>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    className="btn btn-primary"
+                                    style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                >
+                                    {saving ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {activeTab === 'Security' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
+                            <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Change Password</h3>
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Ensure your account is using a long, random password to stay secure.</p>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <input
+                                    type="password"
+                                    placeholder="New Password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="password"
+                                    placeholder="Confirm New Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        <div style={{ marginTop: '2rem' }}>
+                            <button
+                                onClick={async () => {
+                                    if (newPassword.length < 6) {
+                                        addToast({ type: 'error', message: 'Password must be at least 6 characters.' })
+                                        return
+                                    }
+                                    if (newPassword !== confirmPassword) {
+                                        addToast({ type: 'error', message: 'Passwords do not match.' })
+                                        return
+                                    }
+
+                                    setSaving(true)
+                                    try {
+                                        const { error } = await supabase.auth.updateUser({ password: newPassword })
+                                        if (error) throw error
+                                        addToast({ type: 'success', message: 'Password updated successfully.' })
+                                        setNewPassword("")
+                                        setConfirmPassword("")
+                                    } catch (err: any) {
+                                        console.error('Update password failed', err)
+                                        addToast({ type: 'error', message: err.message || 'Failed to update password.' })
+                                    } finally {
+                                        setSaving(false)
+                                    }
+                                }}
+                                disabled={saving}
+                                className="btn btn-primary"
+                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                {saving ? 'Updating...' : 'Update Password'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'Danger' && (
+                    <div style={{ maxWidth: '600px' }}>
+                        <div style={{ border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete post archive</h3>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete all posts on this publication.</p>
+                                <button
+                                    onMouseEnter={() => setHoverDeletePosts(true)}
+                                    onMouseLeave={() => setHoverDeletePosts(false)}
+                                    onClick={() => {
+                                        setDeleteType('posts')
+                                        setDeleteConfirmation('')
+                                        setShowDeleteModal(true)
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '50px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        color: hoverDeletePosts ? 'var(--error)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: getNeumorphicShadows(hoverDeletePosts)
+                                    }}
+                                >
+                                    Delete all posts
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style={{ border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete Account</h3>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete your account, posts, subscriber list, and all other content.</p>
+                                <button
+                                    onMouseEnter={() => setHoverDeleteAccount(true)}
+                                    onMouseLeave={() => setHoverDeleteAccount(false)}
+                                    onClick={() => {
+                                        setDeleteType('publication')
+                                        setDeleteConfirmation('')
+                                        setShowDeleteModal(true)
+                                    }}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '50px',
+                                        backgroundColor: 'var(--bg-primary)',
+                                        color: hoverDeleteAccount ? 'var(--error)' : 'var(--text-secondary)',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontWeight: 600,
+                                        fontSize: '0.9rem',
+                                        transition: 'all 0.3s ease',
+                                        boxShadow: getNeumorphicShadows(hoverDeleteAccount)
+                                    }}
+                                >
+                                    Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Secure Delete Modal */}
+            {
+                showDeleteModal && (
+                    <div style={{
+                        position: 'fixed',
+                        inset: 0,
+                        zIndex: 9999,
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                        backdropFilter: 'blur(4px)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '1rem'
+                    }}>
+                        <div style={{
+                            width: '100%',
+                            maxWidth: '480px',
+                            backgroundColor: 'var(--bg-elevated)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '12px',
+                            padding: '2rem',
+                            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', color: '#ef4444' }}>
+                                <AlertTriangle size={32} />
+                                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+                                    {deleteType === 'posts' ? 'Delete Archive' : 'Delete Account'}
+                                </h2>
+                            </div>
+
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                {deleteType === 'posts'
+                                    ? 'This action sends all your posts to the void. There is no undo button.'
+                                    : 'This action will permanently delete your account, posts, and settings. This cannot be undone.'
+                                }
+                            </p>
+
+                            <div style={{ marginBottom: '2rem' }}>
+                                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+                                    Type <span style={{ fontFamily: 'monospace', background: 'var(--bg-secondary)', padding: '2px 6px', borderRadius: '4px' }}>I consent of delete</span> to confirm:
+                                </label>
+                                <input
+                                    type="text"
+                                    value={deleteConfirmation}
+                                    onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                    placeholder="I consent of delete"
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'var(--bg-primary)',
+                                        color: 'var(--text-primary)',
+                                        fontSize: '1rem',
+                                        outline: 'none'
+                                    }}
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        borderRadius: '6px',
+                                        border: '1px solid var(--border-color)',
+                                        background: 'transparent',
+                                        color: 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        fontWeight: 500
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    disabled={deleteConfirmation !== 'I consent of delete' || isDeleting}
+                                    onClick={async () => {
+                                        setIsDeleting(true)
+                                        try {
+                                            if (deleteType === 'posts') {
+                                                const { postService } = await import('../../services/postService')
+                                                await postService.deleteAllPosts()
+                                                alert('All posts deleted.')
+                                            } else {
+                                                // Mock Account Deletion (Clear Data & Logout)
+                                                const { postService } = await import('../../services/postService')
+                                                // settingsService removed as it was unused
+                                                const { useAuthStore } = await import('../../store')
+
+                                                await postService.deleteAllPosts()
+                                                // Ideally destroy settings too
+                                                await useAuthStore.getState().logout()
+                                                window.location.href = '/' // Hard redirect
+                                            }
+                                            setShowDeleteModal(false)
+                                        } catch (e) {
+                                            alert('Failed to delete.')
+                                            console.error(e)
+                                        } finally {
+                                            setIsDeleting(false)
+                                        }
+                                    }}
+                                    style={{
+                                        padding: '0.75rem 1.5rem',
+                                        borderRadius: '6px',
+                                        border: 'none',
+                                        background: deleteConfirmation === 'I consent of delete' ? '#ef4444' : 'var(--bg-secondary)',
+                                        color: deleteConfirmation === 'I consent of delete' ? '#fff' : 'var(--text-muted)',
+                                        cursor: deleteConfirmation === 'I consent of delete' ? 'pointer' : 'not-allowed',
+                                        fontWeight: 600,
+                                        opacity: isDeleting ? 0.7 : 1
+                                    }}
+                                >
+                                    {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
+    )
+}
+
+export default Settings
