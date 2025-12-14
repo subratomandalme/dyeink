@@ -1,0 +1,29 @@
+.pixel-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.pixel-card {
+    height: 300px;
+    width: 240px;
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    isolation: isolate;
+    transition: border-color 200ms cubic-bezier(0.5, 1, 0.89, 1);
+    user-select: none;
+    background-color: transparent;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+.pixel-card::before {
+    content: '';
+    display: none;
+}
+.pixel-card:hover::before,
+.pixel-card:focus-within::before {
+    opacity: 0;
+} 
