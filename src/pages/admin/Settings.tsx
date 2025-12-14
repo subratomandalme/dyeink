@@ -178,7 +178,7 @@ const Settings: React.FC = () => {
         if (settings?.customDomain && (!settings.domainStatus || settings.domainStatus === 'pending')) {
             const checkStatus = async () => {
                 try {
-                    const result = await settingsService.verifyDomain(settings.customDomain)
+                    const result = await settingsService.verifyDomain(settings.customDomain!)
                     // If Vercel says it's good (verified=true OR success with conflict message handled by API)
                     if (result.success && (result.verified || (result as any).message === 'Domain already connected')) {
                         setDomainStatus('verified')
