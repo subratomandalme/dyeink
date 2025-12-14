@@ -683,16 +683,18 @@ const Settings: React.FC = () => {
                             )}
                         </div>
 
-                        <div style={{ marginTop: '2rem' }}>
-                            <button
-                                onClick={handleSave}
-                                disabled={saving}
-                                className="btn btn-primary"
-                                style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-                            >
-                                {saving ? 'Saving...' : 'Save'}
-                            </button>
-                        </div>
+                        {!settings?.customDomain && (
+                            <div style={{ marginTop: '2rem' }}>
+                                <button
+                                    onClick={handleSave}
+                                    disabled={saving}
+                                    className="btn btn-primary"
+                                    style={{ background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '0.75rem 1.5rem', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                                >
+                                    {saving ? 'Saving...' : 'Save'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
