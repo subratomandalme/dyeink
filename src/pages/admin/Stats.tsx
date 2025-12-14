@@ -42,7 +42,7 @@ const Stats: React.FC = () => {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                             <StatCard label="Total Views" value={(realStats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
                             <StatCard label="Posts Published" value={publishedPosts.toString()} />
-                            <StatCard label="Total Likes" value={(realStats?.totalLikes || 0).toLocaleString()} />
+                            {/* Likes removed */}
                         </div>
                     </div>
                 )

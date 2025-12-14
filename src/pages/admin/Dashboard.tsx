@@ -23,7 +23,7 @@ export default function Dashboard() {
     const { user } = useAuthStore() // Get user
     const [realStats, setRealStats] = useState<{
         totalViews: number;
-        totalLikes: number;
+
         graphData: any[];
     } | null>(null)
 
@@ -66,7 +66,7 @@ export default function Dashboard() {
             return {
                 name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
                 views: 0,
-                likes: 0
+
             }
         })
     }, [realStats])
@@ -102,14 +102,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                         {/* Stat 2: Total Likes (Real) */}
-                        <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Total Likes
-                            </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {(realStats?.totalLikes || 0).toLocaleString()}
-                            </div>
-                        </div>
+
                         {/* Stat 3: Published (Keep functionality) */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
@@ -129,10 +122,7 @@ export default function Dashboard() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -45, bottom: 0 }}>
                                     <defs>
-                                        <linearGradient id="colorLikes" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#ff5e00" stopOpacity={0.2} />
-                                            <stop offset="95%" stopColor="#ff5e00" stopOpacity={0} />
-                                        </linearGradient>
+
                                         <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
                                             <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
@@ -170,15 +160,7 @@ export default function Dashboard() {
                                         fill="url(#colorViews)"
                                         style={{ stroke: '#00cbff' }}
                                     />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="likes"
-                                        stroke="var(--accent-primary)" // Orange
-                                        strokeWidth={2}
-                                        fillOpacity={1}
-                                        fill="url(#colorLikes)"
-                                        style={{ stroke: '#ff5e00' }}
-                                    />
+
                                 </AreaChart>
                             </ResponsiveContainer>
                         )}

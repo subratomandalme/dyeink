@@ -11,7 +11,7 @@ import { Share2, Twitter, Linkedin, Github, Globe, ArrowLeft, Mail } from 'lucid
 import { useToast } from '../components/common/Toast'
 import { useCodeCopy } from '../hooks/useCodeCopy'
 import SubscribeModal from '../components/common/SubscribeModal'
-import UpvoteButton from '../components/common/UpvoteButton'
+//
 
 interface BlogProps {
     isCustomDomain?: boolean
@@ -367,7 +367,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                         paddingTop: 0 // Removed padding and border
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                            <UpvoteButton postId={post.id} initialCount={(post as any).likes || 0} />
+                                            {/* Upvote removed */}
 
                                             <button
                                                 onClick={() => {

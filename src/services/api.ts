@@ -51,28 +51,7 @@ export const analyticsService = {
         }
     },
 
-    async likePost(postId: string): Promise<{ ok: boolean, error?: string }> {
-        try {
-            const fp = await fpPromise
-            const result = await fp.get()
 
-            const response = await fetch('/api/like', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    postId,
-                    fingerprint: result.visitorId
-                })
-            })
-
-            const data = await response.json()
-            if (!response.ok) return { ok: false, error: data.error }
-            return { ok: true }
-        } catch (error) {
-            console.error('Analytics Like Error:', error)
-            return { ok: false, error: 'Network error' }
-        }
-    }
 }
 
 export const postsApi = {
