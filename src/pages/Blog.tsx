@@ -80,15 +80,19 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     if (slug && fetchedPosts.length > 0) {
                         const activePost = fetchedPosts.find(p => p.slug === slug)
                         if (activePost) {
-                            // Use RPC for atomic update + security definer bypass of RLS
-                            // This ensures anonymous users can count views
-                            supabase.rpc('increment_post_view', { post_id: activePost.id })
+                            // v43 DIRECT UPDATE (Part C)
+                            // Requires RLS to be DISABLED (v42_disable_rls.sql)
+                            const currentViews = activePost.views || 0
+                            supabase
+                                .from('posts')
+                                .update({ views: currentViews + 1 })
+                                .eq('id', activePost.id)
                                 .then(({ error }) => {
                                     if (error) {
-                                        console.error('View Increment ERROR:', error)
-                                        console.error('This usually means the DB function is missing. Run fix_stats_fully.sql')
+                                        console.error('VIEW ERROR:', error)
+                                        console.error('Run v42_disable_rls.sql in Supabase!')
                                     } else {
-                                        console.log('View incremented successfully.')
+                                        console.log('View updated directly to', currentViews + 1)
                                     }
                                 })
                         }
@@ -383,8 +387,16 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                                         message: 'Link copied to clipboard',
                                                         duration: 2000
                                                     })
-                                                    // RPC call for shares
-                                                    supabase.rpc('increment_shares', { post_id: post.id })
+                                                    // v43 DIRECT SHARE UPDATE
+                                                    const currentShares = post.shares || 0
+                                                    supabase
+                                                        .from('posts')
+                                                        .update({ shares: currentShares + 1 })
+                                                        .eq('id', post.id)
+                                                        .then(({ error }) => {
+                                                            if (error) console.error('SHARE ERROR:', error)
+                                                            else console.log('Share updated to', currentShares + 1)
+                                                        })
                                                 }}
                                                 style={{
                                                     background: 'none',
