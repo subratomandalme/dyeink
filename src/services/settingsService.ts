@@ -177,6 +177,26 @@ export const settingsService = {
         }
     },
 
+    async verifyDomain(domain: string): Promise<{ success: boolean; verified?: boolean; error?: string }> {
+        try {
+            const response = await fetch('/api/add-domain', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain })
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                return { success: false, error: data.error }
+            }
+
+            return { success: true, verified: data.verified }
+        } catch (err: any) {
+            return { success: false, error: err.message }
+        }
+    },
+
     async initializeSettings(settings: SiteSettings): Promise<SiteSettings | null> {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('User not authenticated')

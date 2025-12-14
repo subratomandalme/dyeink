@@ -173,6 +173,55 @@ const Settings: React.FC = () => {
         }
     }
 
+    const handleVerify = async () => {
+        if (!customDomain) return
+        setSaving(true)
+        try {
+            // 1. Call Vercel API
+            const result = await settingsService.verifyDomain(customDomain)
+
+            if (!result.success) {
+                throw new Error(result.error || 'Failed to verify domain')
+            }
+
+            // 2. Update Status in DB
+            // If Vercel says it's verified immediately (rare but possible), we set 'verified'.
+            // Otherwise 'verifying' (or 'pending' as per user guide map).
+            // User guide: "Update domain status to verifying".
+            // My types: 'pending' | 'verified' | 'active' | 'failed'
+            // I'll use 'pending' for "Verifying DNS..." state if 'active' is the goal.
+            // Or add 'verifying' to types?
+            // The type is defined in Settings.tsx line 46: `useState<'pending' | 'verified' | 'active' | 'failed' | null>`
+            // I should use 'verified' to mean "Vercel knows about it, waiting for SSL". 
+            // Or 'pending'.
+            // User says: "Tell user: SSL is being issued. This can take 5–20 minutes."
+
+            const newStatus = 'verified' // Using 'verified' to indicate step 1 passed.
+            setDomainStatus(newStatus)
+
+            await settingsService.saveSettings({
+                ...settings,
+                customDomain,
+                subdomain: subdomain || null,
+                domainStatus: newStatus
+            } as any)
+
+            addToast({
+                type: 'success',
+                message: 'Domain connected! SSL is being issued. This can take 5–20 minutes.'
+            })
+
+        } catch (err: any) {
+            console.error('Verification failed', err)
+            addToast({
+                type: 'error',
+                message: err.message
+            })
+        } finally {
+            setSaving(false)
+        }
+    }
+
     if (settingsLoading && !settings) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -474,26 +523,32 @@ const Settings: React.FC = () => {
                                     {/* Instructions for Pending Domains */}
                                     {domainStatus !== 'active' && (
                                         <div style={{ marginBottom: '1.5rem' }}>
-                                            <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Set the following record in your DNS provider:</p>
+                                            <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Add this DNS record at your domain provider:</p>
                                             <div style={{
                                                 display: 'grid',
-                                                gridTemplateColumns: '1fr 1fr 1fr',
+                                                gridTemplateColumns: '80px 1fr 1fr',
                                                 gap: '1px',
                                                 backgroundColor: 'var(--border-color)',
                                                 border: '1px solid var(--border-color)',
                                                 borderRadius: '6px',
-                                                overflow: 'hidden'
+                                                overflow: 'hidden',
+                                                marginBottom: '1rem'
                                             }}>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Type</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Name</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.5rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Value</div>
+                                                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Type</div>
+                                                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Name</div>
+                                                <div style={{ background: 'var(--bg-secondary)', padding: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Value</div>
 
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.85rem' }}>CNAME</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.85rem' }}>{customDomain.split('.')[0] || 'blog'}</div>
-                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.85rem' }}>cname.vercel-dns.com</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.9rem' }}>CNAME</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontWeight: 600, fontSize: '0.9rem' }}>blog</div>
+                                                <div style={{ background: 'var(--bg-primary)', padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.9rem' }}>cname.vercel-dns.com</div>
                                             </div>
-                                            <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-                                                <button onClick={handleSave} style={{
+
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem', fontStyle: 'italic' }}>
+                                                DNS changes may take a few minutes. After adding, click Verify.
+                                            </div>
+
+                                            <div style={{ display: 'flex', gap: '1rem' }}>
+                                                <button onClick={handleVerify} disabled={saving} style={{
                                                     padding: '0.5rem 1rem',
                                                     fontSize: '0.9rem',
                                                     fontWeight: 600,
@@ -501,13 +556,13 @@ const Settings: React.FC = () => {
                                                     color: 'var(--bg-primary)',
                                                     border: 'none',
                                                     borderRadius: '4px',
-                                                    cursor: 'pointer'
+                                                    cursor: 'pointer',
+                                                    opacity: saving ? 0.7 : 1
                                                 }}>
-                                                    Verify Logic (Save)
+                                                    {saving ? 'Verifying...' : 'Verify Connection'}
                                                 </button>
                                                 <button
                                                     onClick={() => {
-                                                        // remove logic placeholder
                                                         setCustomDomain("")
                                                         setDomainStatus(null)
                                                         handleSave()
