@@ -203,6 +203,7 @@ export const settingsService = {
         if (!user) throw new Error('User not authenticated')
 
         const newSettings = {
+            user_id: user.id,
             site_description: settings.siteDescription,
             custom_domain: null,
             subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`,
