@@ -65,7 +65,7 @@ export default function AdminLayout() {
                 const defaultName = user.user_metadata?.full_name || 'User'
 
                 try {
-                    const newSettings = await settingsService.saveSettings({
+                    const newSettings = await settingsService.initializeSettings({
                         siteName: defaultName,
                         siteDescription: 'Welcome to my new blog',
                         customDomain: null,
@@ -77,6 +77,7 @@ export default function AdminLayout() {
                 }
             }
         }
+
         loadSettings()
     }, [user])
 

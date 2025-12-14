@@ -137,6 +137,7 @@ export const settingsService = {
         if (!user) throw new Error('User not authenticated')
 
         const updates = {
+            ...(settings.id ? { id: settings.id } : {}),
             user_id: user.id,
             site_name: settings.siteName,
             site_description: settings.siteDescription,
@@ -159,6 +160,49 @@ export const settingsService = {
         if (error) {
             console.error('Error saving settings:', error)
             throw error
+        }
+
+        return {
+            id: data.id,
+            siteName: data.site_name,
+            siteDescription: data.site_description,
+            customDomain: data.custom_domain,
+            subdomain: data.subdomain,
+            twitterLink: data.twitter_link,
+            linkedinLink: data.linkedin_link,
+            githubLink: data.github_link,
+            websiteLink: data.website_link,
+            newsletterEmail: data.newsletter_email,
+            domainStatus: data.domain_status
+        }
+    },
+
+    async initializeSettings(settings: SiteSettings): Promise<SiteSettings | null> {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) throw new Error('User not authenticated')
+
+        const newSettings = {
+            site_description: settings.siteDescription,
+            custom_domain: null,
+            subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`,
+            domain_status: 'pending'
+        }
+
+        // Try to insert, but ignore if exists (SAFE initialization)
+        const { data, error } = await supabase
+            .from('site_settings')
+            .upsert(newSettings, { onConflict: 'user_id', ignoreDuplicates: true })
+            .select()
+            .single()
+
+        // If we ignored duplicate, no data is returned (PGRST116).
+        // This is GOOD. It means settings exist. We just fetch them.
+        if (error || !data) {
+            if (error && error.code !== 'PGRST116') {
+                console.error('Error initializing settings:', error)
+                throw error
+            }
+            return this.getSettings()
         }
 
         return {
