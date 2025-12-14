@@ -37,7 +37,13 @@ export default function Dashboard() {
         const loadStats = async () => {
             if (!user?.id) return
             const { data, error } = await supabase.rpc('get_dashboard_stats', { user_id: user.id })
-            if (!error && data) {
+
+            if (error) {
+                console.error('CRITICAL STATS ERROR:', error)
+                console.error('Did you run the fix_stats_fully.sql script in Supabase?')
+            }
+
+            if (data) {
                 setRealStats(data)
             }
         }

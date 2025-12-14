@@ -84,7 +84,12 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             // This ensures anonymous users can count views
                             supabase.rpc('increment_post_view', { post_id: activePost.id })
                                 .then(({ error }) => {
-                                    if (error) console.error('View increment failed:', error)
+                                    if (error) {
+                                        console.error('View Increment ERROR:', error)
+                                        console.error('This usually means the DB function is missing. Run fix_stats_fully.sql')
+                                    } else {
+                                        console.log('View incremented successfully.')
+                                    }
                                 })
                         }
                     }
