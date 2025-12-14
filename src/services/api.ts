@@ -38,9 +38,7 @@ api.interceptors.response.use(
 )
 
 // Analytics Service calling Edge Functions
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
-const fpPromise = FingerprintJS.load()
 
 export const analyticsService = {
     async viewPost(postId: string) {
