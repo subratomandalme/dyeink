@@ -105,25 +105,7 @@ export default function Dashboard() {
                         {/* Stat 2: Total Likes (Real) */}
 
 
-                        {/* Stat 2: Total Subscribers */}
-                        <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Total Subscribers
-                            </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {(realStats?.totalSubscribers || 0).toLocaleString()}
-                            </div>
-                        </div>
-
-                        {/* Stat 3: Total Shares */}
-                        <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                Total Shares
-                            </div>
-                            <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {(realStats?.totalShares || 0).toLocaleString()}
-                            </div>
-                        </div>
+                        {/* Stats removed as per request */}
 
                         {/* Stat 4: Published (Keep functionality) */}
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
