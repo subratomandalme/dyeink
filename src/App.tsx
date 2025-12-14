@@ -104,7 +104,9 @@ function App() {
                 {/* Public Only Route (Landing) */}
                 {/* Root Route: Handles Custom Domains (Blog) OR Landing Page */}
                 <Route path="/" element={
-                    !window.location.hostname.includes('localhost') && !window.location.hostname.includes('vercel.app') ? (
+                    !window.location.hostname.includes('localhost') &&
+                        !window.location.hostname.includes('vercel.app') &&
+                        window.location.hostname !== 'dyeink.subratomandal.com' ? (
                         <Blog isCustomDomain={true} />
                     ) : (
                         <PublicRoute>
