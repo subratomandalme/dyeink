@@ -102,10 +102,15 @@ function App() {
             <ToastContainer />
             <Routes>
                 {/* Public Only Route (Landing) */}
+                {/* Root Route: Handles Custom Domains (Blog) OR Landing Page */}
                 <Route path="/" element={
-                    <PublicRoute>
-                        <Landing />
-                    </PublicRoute>
+                    !window.location.hostname.includes('localhost') && !window.location.hostname.includes('vercel.app') ? (
+                        <Blog isCustomDomain={true} />
+                    ) : (
+                        <PublicRoute>
+                            <Landing />
+                        </PublicRoute>
+                    )
                 } />
 
                 {/* Public Route (Global Feed) */}

@@ -133,6 +133,12 @@ const Settings: React.FC = () => {
                 updateSettingsInCache(updated)
                 setSubdomain(updated.subdomain || "")
 
+                // FORCE SYNC
+                await fetchSettings(true)
+
+                // FORCE SYNC
+                await fetchSettings(true)
+
                 // Sync with Supabase Auth Metadata as requested
                 const { error: authError } = await supabase.auth.updateUser({
                     data: {
