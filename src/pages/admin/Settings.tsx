@@ -547,6 +547,18 @@ const Settings: React.FC = () => {
                                                 DNS changes may take a few minutes. After adding, click Verify.
                                             </div>
 
+                                            <div style={{
+                                                fontSize: '0.8rem',
+                                                color: '#eab308',
+                                                backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                                                padding: '0.75rem',
+                                                borderRadius: '4px',
+                                                marginBottom: '1rem',
+                                                border: '1px solid rgba(234, 179, 8, 0.2)'
+                                            }}>
+                                                <strong>Cloudflare User?</strong> Make sure to turn <strong>OFF</strong> the proxy (Grey Cloud) for this record, or ensure SSL is set to <strong>Full (Strict)</strong>.
+                                            </div>
+
                                             <div style={{ display: 'flex', gap: '1rem' }}>
                                                 <button onClick={handleVerify} disabled={saving} style={{
                                                     padding: '0.5rem 1rem',
