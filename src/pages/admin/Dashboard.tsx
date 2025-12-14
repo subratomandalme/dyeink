@@ -36,16 +36,70 @@ export default function Dashboard() {
     useEffect(() => {
         const loadStats = async () => {
             if (!user?.id) return
-            // v40: Use 'get_basic_stats' (Simple, Robust)
-            const { data, error } = await supabase.rpc('get_basic_stats', { p_user_id: user.id })
 
-            if (error) {
-                console.error('CRITICAL STATS ERROR:', error)
-                console.error('Did you run the v40_guaranteed.sql script in Supabase?')
-            }
+            try {
+                // v46 Direct Fetching Logic (No RPC)
 
-            if (data) {
-                setRealStats(data)
+                // 1. Get User Posts & Totals
+                const { data: userPosts, error: postsErr } = await supabase
+                    .from('posts')
+                    .select('id, views, shares')
+                    .eq('user_id', user.id)
+
+                if (postsErr) throw postsErr
+
+                const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
+                const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
+                const postIds = userPosts?.map(p => p.id) || []
+
+                // 2. Get Subscribers Count (Global count for now as fallback)
+                const { count: subCount } = await supabase
+                    .from('subscribers')
+                    .select('*', { count: 'exact', head: true })
+
+                // 3. Get Graph Data (Daily Stats)
+                let graphData: any[] = []
+                if (postIds.length > 0) {
+                    const sevenDaysAgo = new Date()
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+                    const dateStr = sevenDaysAgo.toISOString().split('T')[0]
+
+                    const { data: daily } = await supabase
+                        .from('daily_post_stats')
+                        .select('date, views, shares')
+                        .in('post_id', postIds)
+                        .gte('date', dateStr)
+
+                    if (daily) {
+                        const agg: Record<string, { views: number, shares: number }> = {}
+                        daily.forEach(d => {
+                            // @ts-ignore
+                            const dateKey = d.date
+                            if (!agg[dateKey]) agg[dateKey] = { views: 0, shares: 0 }
+                            // @ts-ignore
+                            agg[dateKey].views += (d.views || 0)
+                            // @ts-ignore
+                            agg[dateKey].shares += (d.shares || 0)
+                        })
+
+                        graphData = Object.entries(agg).map(([date, counts]) => ({
+                            date,
+                            name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                            views: counts.views,
+                            shares: counts.shares
+                        })).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                    }
+                }
+
+                setRealStats({
+                    totalViews,
+                    totalShares,
+                    totalSubscribers: subCount || 0,
+                    graphData
+                })
+
+            } catch (err) {
+                console.error('STATS FETCH ERROR:', err)
             }
         }
         loadStats()
