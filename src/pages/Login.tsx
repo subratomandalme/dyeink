@@ -192,55 +192,6 @@ export default function Login() {
                         icon={loading ? <WaveLoader size={24} /> : null}
                     />
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0.5rem 0' }}>
-                        <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
-                        <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>OR</span>
-                        <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
-                    </div>
-
-                    <button
-                        type="button"
-                        onClick={async () => {
-                            if (!email) {
-                                addToast({ type: 'error', message: 'Please enter your email address first' })
-                                return
-                            }
-                            setLoading(true)
-                            try {
-                                const { error } = await supabase.auth.signInWithOtp({
-                                    email,
-                                    options: {
-                                        emailRedirectTo: `${window.location.origin}/admin`
-                                    }
-                                })
-                                if (error) throw error
-                                addToast({ type: 'success', message: 'Check your email for the magic link!' })
-                            } catch (error: any) {
-                                console.error('Magic Link Error:', error)
-                                addToast({ type: 'error', message: error.message || 'Failed to send magic link' })
-                            } finally {
-                                setLoading(false)
-                            }
-                        }}
-                        className="btn-secondary"
-                        style={{
-                            width: '100%',
-                            padding: '0.75rem',
-                            borderRadius: '8px',
-                            border: '1px solid var(--border-color)',
-                            background: 'transparent',
-                            color: 'var(--text-primary)',
-                            cursor: 'pointer',
-                            fontWeight: 600,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.5rem'
-                        }}
-                    >
-                        ✨ Sign in with Magic Link
-                    </button>
-
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                         <button
                             onClick={handleGithubLogin}
