@@ -22,9 +22,34 @@ const Stats: React.FC = () => {
     useEffect(() => {
         const loadStats = async () => {
             if (!user?.id) return
-            // v40: Use updated function name
-            const { data } = await supabase.rpc('get_basic_stats', { p_user_id: user.id })
-            if (data) setRealStats(data)
+
+            try {
+                // v57: Direct Fetch Logic (Align with Dashboard)
+                // 1. Get User Posts & Totals
+                const { data: userPosts, error: postsErr } = await supabase
+                    .from('posts')
+                    .select('id, views, shares')
+                    .eq('user_id', user.id)
+
+                if (postsErr) throw postsErr
+
+                const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
+                const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
+
+                // 2. Get Subscribers Count
+                const { count: subCount } = await supabase
+                    .from('subscribers')
+                    .select('*', { count: 'exact', head: true })
+
+                setRealStats({
+                    totalViews,
+                    totalShares,
+                    totalSubscribers: subCount || 0
+                })
+
+            } catch (err) {
+                console.error('Stats Page Error:', err)
+            }
         }
         loadStats()
     }, [user?.id])
@@ -51,7 +76,7 @@ const Stats: React.FC = () => {
                 return (
                     <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Subscribers" value="0" icon={<Users size={20} />} />
+                            <StatCard label="Total Subscribers" value={(realStats?.totalSubscribers || 0).toLocaleString()} icon={<Users size={20} />} />
                         </div>
                     </div>
                 )
@@ -60,7 +85,7 @@ const Stats: React.FC = () => {
                 return (
                     <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Shares" value="0" icon={<Share2 size={20} />} />
+                            <StatCard label="Total Shares" value={(realStats?.totalShares || 0).toLocaleString()} icon={<Share2 size={20} />} />
                         </div>
                     </div>
                 )
