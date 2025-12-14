@@ -521,7 +521,7 @@ const Settings: React.FC = () => {
                                     </div>
 
                                     {/* Instructions for Pending Domains */}
-                                    {domainStatus !== 'active' && (
+                                    {domainStatus !== 'active' && domainStatus !== 'verified' && (
                                         <div style={{ marginBottom: '1.5rem' }}>
                                             <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Add this DNS record at your domain provider:</p>
                                             <div style={{
@@ -593,6 +593,44 @@ const Settings: React.FC = () => {
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Verified (Propagating) State */}
+                                    {domainStatus === 'verified' && (
+                                        <div style={{
+                                            marginBottom: '1.5rem',
+                                            padding: '1.5rem',
+                                            backgroundColor: 'rgba(34, 197, 94, 0.05)',
+                                            border: '1px solid rgba(34, 197, 94, 0.2)',
+                                            borderRadius: '8px'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                                                <div className="spinner" style={{ width: '16px', height: '16px', border: '2px solid #22c55e', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                                <h4 style={{ margin: 0, color: '#22c55e', fontSize: '1rem' }}>Domain Verified!</h4>
+                                            </div>
+                                            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
+                                                We are generating your SSL certificate and configuring global routing. This typically takes <strong>5-20 minutes</strong>. You don't need to do anything else.
+                                            </p>
+                                            <button
+                                                onClick={() => {
+                                                    setCustomDomain("")
+                                                    setDomainStatus(null)
+                                                    handleSave()
+                                                }}
+                                                style={{
+                                                    marginTop: '1rem',
+                                                    padding: '0.5rem 1rem',
+                                                    fontSize: '0.85rem',
+                                                    background: 'transparent',
+                                                    color: '#ef4444',
+                                                    border: '1px solid #ef4444',
+                                                    borderRadius: '4px',
+                                                    cursor: 'pointer'
+                                                }}>
+                                                Disconnect
+                                            </button>
+                                        </div>
+                                    )}
+
 
                                     {domainStatus === 'active' && (
                                         <div>

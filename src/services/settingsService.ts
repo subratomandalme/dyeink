@@ -141,13 +141,14 @@ export const settingsService = {
             user_id: user.id,
             site_name: settings.siteName,
             site_description: settings.siteDescription,
-            custom_domain: settings.customDomain,
+            custom_domain: settings.customDomain || null,
             subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`, // Generate default subdomain if missing
             twitter_link: settings.twitterLink,
             linkedin_link: settings.linkedinLink,
             github_link: settings.githubLink,
             website_link: settings.websiteLink,
-            newsletter_email: settings.newsletterEmail
+            newsletter_email: settings.newsletterEmail,
+            domain_status: settings.domainStatus || null
         }
 
         // Check if exists first to decide insert vs update (or use upsert)
