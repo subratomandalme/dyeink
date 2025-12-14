@@ -36,11 +36,12 @@ export default function Dashboard() {
     useEffect(() => {
         const loadStats = async () => {
             if (!user?.id) return
-            const { data, error } = await supabase.rpc('get_dashboard_stats', { p_user_id: user.id })
+            // Renamed to 'get_author_overview' to avoid ad-blockers blocking 'stats' keyword
+            const { data, error } = await supabase.rpc('get_author_overview', { p_user_id: user.id })
 
             if (error) {
                 console.error('CRITICAL STATS ERROR:', error)
-                console.error('Did you run the v30_final_fix.sql script in Supabase?')
+                console.error('Did you run the v34_anti_adblock.sql script in Supabase?')
             }
 
             if (data) {
