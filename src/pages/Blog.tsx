@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
-import { analyticsService } from '../services/api'
+import { supabase } from '../lib/supabase'
 import type { Post } from '../types'
 import { format } from 'date-fns'
 // import ColorBends from '../components/common/ColorBends'
@@ -79,10 +79,18 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     if (slug && fetchedPosts.length > 0) {
                         const activePost = fetchedPosts.find(p => p.slug === slug)
                         if (activePost) {
-                            analyticsService.viewPost(activePost.id.toString())
+                            // Direct Supabase Update (Minimal Stack)
+                            supabase.from('posts').select('views').eq('id', activePost.id).single()
+                                .then(({ data }) => {
+                                    const currentViews = data?.views || 0
+                                    supabase.from('posts').update({ views: currentViews + 1 }).eq('id', activePost.id).then(() => {
+                                        // View counted silently
+                                    })
+                                })
                         }
                     }
                 } else {
+                    // ...
                     // Not found logic
                     if (isCustomDomain || subdomain) {
                         setBlogTitle('User Not Found')

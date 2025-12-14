@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X, CheckCircle } from 'lucide-react'
 import WaveLoader from './WaveLoader'
-import { subscribeService } from '../../services/subscribeService'
+import { supabase } from '../../lib/supabase'
 import { useToast } from './Toast'
 
 interface SubscribeModalProps {
@@ -22,14 +22,17 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
     const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (!blogId) {
-            addToast({ type: 'error', message: 'Unable to subscribe: Blog ID missing.' })
-            return
-        }
-
         setLoading(true)
         try {
-            await subscribeService.subscribe(email, blogId)
+            // Direct Supabase Insert (Minimal Stack)
+            const { error } = await supabase
+                .from('subscribers')
+                .insert({ email })
+
+            if (error && error.code !== '23505') { // 23505 = Unique Violation (Already subscribed)
+                throw error
+            }
+
             setSuccess(true)
             addToast({ type: 'success', message: 'Successfully subscribed!', duration: 3000 })
             setTimeout(() => {
@@ -38,7 +41,8 @@ export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeMod
                 setEmail('')
             }, 2000)
         } catch (error) {
-            addToast({ type: 'error', message: (error as Error).message, duration: 3000 })
+            console.error('Subscription error:', error)
+            addToast({ type: 'error', message: 'Something went wrong.', duration: 3000 })
         } finally {
             setLoading(false)
         }

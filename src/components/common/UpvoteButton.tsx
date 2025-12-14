@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ThumbsUp } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
 
 interface UpvoteButtonProps {
     postId: number
@@ -57,15 +58,12 @@ export default function UpvoteButton({ postId, initialCount = 0 }: UpvoteButtonP
         setTimeout(() => setAnimating(false), 500)
 
         try {
-            // Call Scalable API
-            await fetch('/api/like', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    postId,
-                    action: newUpvoted ? 'like' : 'unlike'
-                })
-            })
+            // Direct Supabase Update (Minimal Stack)
+            const { data } = await supabase.from('posts').select('likes').eq('id', postId).single()
+            const serverLikes = data?.likes || 0
+            const nextLikes = newUpvoted ? serverLikes + 1 : Math.max(0, serverLikes - 1)
+
+            await supabase.from('posts').update({ likes: nextLikes }).eq('id', postId)
         } catch (error) {
             console.error('Like failed:', error)
             // Revert on error
