@@ -151,19 +151,25 @@ export default function Dashboard() {
 
     // Use fetched graph data or fallback to 7-day zero data to ensure graph always renders
     const graphData = useMemo(() => {
+        let rawData: any[] = []
         if (realStats?.graphData && realStats.graphData.length > 0) {
-            return realStats.graphData
+            rawData = [...realStats.graphData]
+        } else {
+            // Fallback: Last 7 days with 0 data
+            rawData = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date()
+                d.setDate(d.getDate() - (6 - i))
+                return {
+                    name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                    date: format(d, 'yyyy-MM-dd'),
+                    views: 0,
+                    shares: 0,
+                    published: 0
+                }
+            })
         }
-        // Fallback: Last 7 days with 0 data
-        return Array.from({ length: 7 }, (_, i) => {
-            const d = new Date()
-            d.setDate(d.getDate() - (6 - i))
-            return {
-                name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-                views: 0,
-
-            }
-        })
+        // v58: Force Sort by Date to prevent "Glitching" lines
+        return rawData.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
     }, [realStats])
 
     return (
@@ -241,11 +247,11 @@ export default function Dashboard() {
                                 <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -45, bottom: 0 }}>
                                     <defs>
 
-                                        <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="dash_grad_views_v58" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
                                             <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
                                         </linearGradient>
-                                        <linearGradient id="colorPublished" x1="0" y1="0" x2="0" y2="1">
+                                        <linearGradient id="dash_grad_pub_v58" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
                                             <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                         </linearGradient>
@@ -280,7 +286,7 @@ export default function Dashboard() {
                                         stroke="#8b5cf6"
                                         strokeWidth={2}
                                         fillOpacity={1}
-                                        fill="url(#colorPublished)"
+                                        fill="url(#dash_grad_pub_v58)"
                                         style={{ stroke: '#8b5cf6' }}
                                         isAnimationActive={false}
                                     />
@@ -290,7 +296,7 @@ export default function Dashboard() {
                                         stroke="var(--accent-secondary)" // Cyan
                                         strokeWidth={2}
                                         fillOpacity={1}
-                                        fill="url(#colorViews)"
+                                        fill="url(#dash_grad_views_v58)"
                                         style={{ stroke: '#00cbff' }}
                                         isAnimationActive={false}
                                     />
