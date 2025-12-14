@@ -185,26 +185,22 @@ const Settings: React.FC = () => {
             }
 
             // 2. Update Status in DB
-            // If Vercel says it's verified immediately (rare but possible), we set 'verified'.
-            // Otherwise 'verifying' (or 'pending' as per user guide map).
-            // User guide: "Update domain status to verifying".
-            // My types: 'pending' | 'verified' | 'active' | 'failed'
-            // I'll use 'pending' for "Verifying DNS..." state if 'active' is the goal.
-            // Or add 'verifying' to types?
-            // The type is defined in Settings.tsx line 46: `useState<'pending' | 'verified' | 'active' | 'failed' | null>`
-            // I should use 'verified' to mean "Vercel knows about it, waiting for SSL". 
-            // Or 'pending'.
-            // User says: "Tell user: SSL is being issued. This can take 5–20 minutes."
-
-            const newStatus = 'verified' // Using 'verified' to indicate step 1 passed.
+            const newStatus = 'verified'
+            // NOTE: We update local state instantly for UI feedback
             setDomainStatus(newStatus)
 
-            await settingsService.saveSettings({
+            const updated = await settingsService.saveSettings({
                 ...settings,
                 customDomain,
                 subdomain: subdomain || null,
                 domainStatus: newStatus
             } as any)
+
+            if (updated) {
+                updateSettingsInCache(updated)
+                // Force sync to be sure
+                await fetchSettings(true)
+            }
 
             addToast({
                 type: 'success',
@@ -217,6 +213,28 @@ const Settings: React.FC = () => {
                 type: 'error',
                 message: err.message
             })
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleRemoveDomain = async () => {
+        setSaving(true)
+        try {
+            const updated = await settingsService.saveSettings({
+                ...settings,
+                customDomain: null,
+                domainStatus: null
+            } as any)
+
+            if (updated) {
+                updateSettingsInCache(updated)
+                setCustomDomain("")
+                setDomainStatus(null)
+                addToast({ type: 'success', message: 'Domain removed successfully' })
+            }
+        } catch (error: any) {
+            addToast({ type: 'error', message: 'Failed to remove domain' })
         } finally {
             setSaving(false)
         }
@@ -574,11 +592,7 @@ const Settings: React.FC = () => {
                                                     {saving ? 'Verifying...' : 'Verify Connection'}
                                                 </button>
                                                 <button
-                                                    onClick={() => {
-                                                        setCustomDomain("")
-                                                        setDomainStatus(null)
-                                                        handleSave()
-                                                    }}
+                                                    onClick={handleRemoveDomain}
                                                     style={{
                                                         padding: '0.5rem 1rem',
                                                         fontSize: '0.9rem',
@@ -611,11 +625,7 @@ const Settings: React.FC = () => {
                                                 We are generating your SSL certificate and configuring global routing. This typically takes <strong>5-20 minutes</strong>. You don't need to do anything else.
                                             </p>
                                             <button
-                                                onClick={() => {
-                                                    setCustomDomain("")
-                                                    setDomainStatus(null)
-                                                    handleSave()
-                                                }}
+                                                onClick={handleRemoveDomain}
                                                 style={{
                                                     marginTop: '1rem',
                                                     padding: '0.5rem 1rem',
@@ -636,11 +646,7 @@ const Settings: React.FC = () => {
                                         <div>
                                             <p style={{ fontSize: '0.9rem', color: '#22c55e' }}>✓ Domain is active and serving your blog.</p>
                                             <button
-                                                onClick={() => {
-                                                    setCustomDomain("")
-                                                    setDomainStatus(null)
-                                                    handleSave()
-                                                }}
+                                                onClick={handleRemoveDomain}
                                                 style={{
                                                     marginTop: '1rem',
                                                     padding: '0.5rem 1rem',
