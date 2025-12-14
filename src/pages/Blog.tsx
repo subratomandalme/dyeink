@@ -320,7 +320,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     {loading ? (
                         <div style={{ padding: '2rem 0', color: 'var(--text-muted)' }}>Loading...</div>
                     ) : posts.length === 0 ? (
-                        <div style={{ padding: '2rem 0', color: 'var(--text-secondary)', fontFamily: 'var(--font-serif)', fontSize: '1.2rem' }}>
+                        <div style={{ color: 'var(--text-secondary)', fontSize: '1.1rem', fontWeight: 500 }}>
                             No posts published yet.
                         </div>
                     ) : (

@@ -3,7 +3,7 @@ import { settingsService } from '../../services/settingsService'
 import { supabase } from '../../lib/supabase'
 import { useThemeStore } from '../../store/themeStore'
 import { useAdminStore } from '../../store/adminStore'
-import { Globe, AlertTriangle } from 'lucide-react'
+import { Upload, X, Plus, AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
 
 import WaveLoader from '../../components/common/WaveLoader'
 import { useToast } from '../../components/common/Toast'
@@ -165,7 +165,7 @@ const Settings: React.FC = () => {
                 type: 'error',
                 message: isSchemaError
                     ? 'Database update required. See alert above.'
-                    : `Failed to save: ${error.message || 'Unknown error'}`,
+                    : `Failed to save: ${error.message || 'Unknown error'} `,
                 duration: isSchemaError ? 10000 : 4000
             })
         } finally {
@@ -616,7 +616,7 @@ const Settings: React.FC = () => {
                                             borderRadius: '8px'
                                         }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                                                <div className="spinner" style={{ width: '16px', height: '16px', border: '2px solid #22c55e', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                                                <CheckCircle2 size={24} color="#22c55e" />
                                                 <h4 style={{ margin: 0, color: '#22c55e', fontSize: '1rem' }}>Domain Verified!</h4>
                                             </div>
                                             <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: 0 }}>
