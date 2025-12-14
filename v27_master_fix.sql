@@ -1,3 +1,9 @@
+-- v27 MASTER FIX SCRIPT (UPDATED v29)
+
+-- 0. DROP EXISTING FUNCTION TO ALLOW RENAMING PARAMETER
+DROP FUNCTION IF EXISTS public.get_dashboard_stats(uuid);
+
+-- 1. FIX AMBIGUOUS COLUMN ERROR (Renamed argument to p_user_id)
 create or replace function public.get_dashboard_stats(p_user_id uuid)
 returns json as $$
 declare
@@ -6,13 +12,16 @@ declare
   total_subscribers bigint;
   graph_data json;
 begin
+  -- Totals
   select coalesce(sum(views), 0) into total_views from public.posts where posts.user_id = get_dashboard_stats.p_user_id;
   select coalesce(sum(shares), 0) into total_shares from public.posts where posts.user_id = get_dashboard_stats.p_user_id;
 
+  -- Subscribers
   select count(*) into total_subscribers
   from public.subscribers s join public.site_settings ss on s.blog_id = ss.id
   where ss.user_id = get_dashboard_stats.p_user_id;
 
+  -- Graph Data
   with recursive dates as (
       select (now() at time zone 'utc')::date - 6 as day
       union all select day + 1 from dates where day < (now() at time zone 'utc')::date
@@ -31,6 +40,7 @@ begin
 end;
 $$ language plpgsql security definer;
 
+-- 2. FIX SITE SETTINGS RLS ERROR
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can insert their own settings" ON public.site_settings;
@@ -42,6 +52,7 @@ CREATE POLICY "Public can view settings" ON public.site_settings FOR SELECT USIN
 DROP POLICY IF EXISTS "Users can update their own settings" ON public.site_settings;
 CREATE POLICY "Users can update their own settings" ON public.site_settings FOR UPDATE USING (auth.uid() = user_id);
 
+-- 3. ENSURE PERMISSIONS
 grant execute on function public.get_dashboard_stats(uuid) to anon, authenticated, service_role;
 grant execute on function public.increment_shares(bigint) to anon, authenticated, service_role;
 grant execute on function public.increment_post_view(bigint) to anon, authenticated, service_role;
