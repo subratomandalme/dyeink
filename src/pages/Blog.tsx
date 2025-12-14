@@ -83,6 +83,8 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             // v43 DIRECT UPDATE (Part C)
                             // Requires RLS to be DISABLED (v42_disable_rls.sql)
                             const currentViews = activePost.views || 0
+
+                            // 1. Update Post Total
                             supabase
                                 .from('posts')
                                 .update({ views: currentViews + 1 })
@@ -93,6 +95,26 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                         console.error('Run v42_disable_rls.sql in Supabase!')
                                     } else {
                                         console.log('View updated directly to', currentViews + 1)
+                                    }
+                                })
+
+                            // 2. Update Graph Daily Stats (v52 Local Time)
+                            const today = format(new Date(), 'yyyy-MM-dd')
+                            supabase.from('daily_post_stats')
+                                .select('id, views')
+                                .eq('post_id', activePost.id)
+                                .eq('date', today)
+                                .single()
+                                .then(({ data: daily }) => {
+                                    if (daily) {
+                                        supabase.from('daily_post_stats')
+                                            .update({ views: (daily.views || 0) + 1 })
+                                            .eq('id', daily.id)
+                                            .then(r => r.error && console.error(r.error))
+                                    } else {
+                                        supabase.from('daily_post_stats')
+                                            .insert({ post_id: activePost.id, date: today, views: 1, shares: 0 })
+                                            .then(r => r.error && console.error(r.error))
                                     }
                                 })
                         }
@@ -396,7 +418,8 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                                     })
 
                                                     // v45/v48: Update Graph Shares (Daily)
-                                                    const today = new Date().toISOString().split('T')[0]
+                                                    // v52: Use Local Time for Graph Consistency
+                                                    const today = format(new Date(), 'yyyy-MM-dd')
                                                     console.log('Graph Share Update:', post.id, today)
 
                                                     supabase.from('daily_post_stats')

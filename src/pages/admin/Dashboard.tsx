@@ -10,6 +10,7 @@ import {
 import {
     ArrowRight
 } from 'lucide-react'
+import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminStore } from '../../store/adminStore'
@@ -58,56 +59,51 @@ export default function Dashboard() {
                     .select('*', { count: 'exact', head: true })
 
                 // 3. Get Graph Data (Daily Stats)
-                // v49: Always generate 7-day skeleton and merge data
-                const sevenDaysAgo = new Date()
-                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6) // Go back 6 days + today = 7 days
-                const dateStr = sevenDaysAgo.toISOString().split('T')[0]
-
-                // Initialize 7-day skeleton
+                // v52: Use date-fns for consistent Local Time handling
                 const last7Days: any[] = []
-                for (let i = 0; i < 7; i++) {
+                for (let i = 6; i >= 0; i--) {
                     const d = new Date()
-                    d.setDate(d.getDate() - (6 - i))
-                    const dateKey = d.toISOString().split('T')[0]
+                    d.setDate(d.getDate() - i)
+                    const dateKey = format(d, 'yyyy-MM-dd')
                     last7Days.push({
                         date: dateKey,
-                        name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                        name: format(d, 'MMM d'),
                         views: 0,
                         shares: 0
                     })
                 }
+
+                const queryDate = last7Days[0].date
+                const mergedGraphData = [...last7Days]
 
                 if (postIds.length > 0) {
                     const { data: daily, error: dailyErr } = await supabase
                         .from('daily_post_stats')
                         .select('date, views, shares')
                         .in('post_id', postIds)
-                        .gte('date', dateStr)
+                        .gte('date', queryDate)
 
                     if (dailyErr) console.error('Daily Stats Fetch Error:', dailyErr)
 
                     if (daily) {
-                        // Merge DB data into skeleton
-                        daily.forEach(d => {
+                        daily.forEach(record => {
                             // @ts-ignore
-                            const entry = last7Days.find(day => day.date === d.date)
-                            if (entry) {
+                            const dayEntry = mergedGraphData.find(d => d.date === record.date)
+                            if (dayEntry) {
                                 // @ts-ignore
-                                entry.views += (d.views || 0)
+                                dayEntry.views += (record.views || 0)
                                 // @ts-ignore
-                                entry.shares += (d.shares || 0)
+                                dayEntry.shares += (record.shares || 0)
                             }
                         })
                     }
                 }
 
-                const graphData = last7Days
-
                 setRealStats({
                     totalViews,
                     totalShares,
                     totalSubscribers: subCount || 0,
-                    graphData
+                    graphData: mergedGraphData
                 })
 
             } catch (err) {
