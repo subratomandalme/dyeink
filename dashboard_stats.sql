@@ -4,14 +4,28 @@ create or replace function public.get_dashboard_stats(user_id uuid)
 returns json as $$
 declare
   total_views bigint;
+  total_shares bigint;
+  total_subscribers bigint;
   graph_data json;
 begin
-  -- 1. Calculate Total Views for this user's posts
+  -- 1. Calculate Total Views
   select coalesce(sum(views), 0) into total_views
   from public.posts
   where user_id = get_dashboard_stats.user_id;
 
-  -- 2. Calculate Graph Data (Last 7 Days)
+  -- 2. Calculate Total Shares
+  select coalesce(sum(shares), 0) into total_shares
+  from public.posts
+  where user_id = get_dashboard_stats.user_id;
+
+  -- 3. Calculate Total Subscribers
+  -- Joins subscribers to site_settings to filter by user_id
+  select count(*) into total_subscribers
+  from public.subscribers s
+  join public.site_settings ss on s.blog_id = ss.id
+  where ss.user_id = get_dashboard_stats.user_id;
+
+  -- 4. Calculate Graph Data (Last 7 Days - Views Only)
   with recursive dates as (
       select (now() at time zone 'utc')::date - 6 as day
       union all
@@ -39,6 +53,8 @@ begin
 
   return json_build_object(
     'totalViews', total_views,
+    'totalShares', total_shares,
+    'totalSubscribers', total_subscribers,
     'graphData', coalesce(graph_data, '[]'::json)
   );
 end;

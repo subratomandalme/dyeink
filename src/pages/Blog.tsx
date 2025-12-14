@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams, useParams, useNavigate } from 'react-router-dom'
 import { postService } from '../services/postService'
 import { settingsService } from '../services/settingsService'
+import { analyticsService } from '../services/api'
 import { supabase } from '../lib/supabase'
 import type { Post } from '../types'
 import { format } from 'date-fns'
@@ -379,6 +380,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                                         message: 'Link copied to clipboard',
                                                         duration: 2000
                                                     })
+                                                    analyticsService.sharePost(post.id)
                                                 }}
                                                 style={{
                                                     background: 'none',

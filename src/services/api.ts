@@ -41,11 +41,11 @@ api.interceptors.response.use(
 
 
 export const analyticsService = {
-    async viewPost(postId: string) {
+    async sharePost(postId: number | string): Promise<void> {
         try {
-            await api.post('/view', { postId })
+            await api.post('/share', { postId })
         } catch (error) {
-            console.error('Analytics View Error:', error)
+            console.error('Share Error:', error)
         }
     },
 
