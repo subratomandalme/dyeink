@@ -44,7 +44,7 @@ export default function Dashboard() {
                 // 1. Get User Posts & Totals
                 const { data: userPosts, error: postsErr } = await supabase
                     .from('posts')
-                    .select('id, views, shares')
+                    .select('id, views, shares, created_at')
                     .eq('user_id', user.id)
 
                 if (postsErr) throw postsErr
@@ -69,12 +69,28 @@ export default function Dashboard() {
                         date: dateKey,
                         name: format(d, 'MMM d'),
                         views: 0,
-                        shares: 0
+                        shares: 0,
+                        published: 0
                     })
                 }
 
                 const queryDate = last7Days[0].date
                 const mergedGraphData = [...last7Days]
+
+                // v54: Map Published Posts to Graph
+                if (userPosts) {
+                    userPosts.forEach(p => {
+                        if (p.created_at) {
+                            const dateKey = format(new Date(p.created_at), 'yyyy-MM-dd')
+                            // @ts-ignore
+                            const entry = mergedGraphData.find(d => d.date === dateKey)
+                            if (entry) {
+                                // @ts-ignore
+                                entry.published += 1
+                            }
+                        }
+                    })
+                }
 
                 if (postIds.length > 0) {
                     const { data: daily, error: dailyErr } = await supabase
@@ -214,6 +230,10 @@ export default function Dashboard() {
                                             <stop offset="5%" stopColor="#00cbff" stopOpacity={0.2} />
                                             <stop offset="95%" stopColor="#00cbff" stopOpacity={0} />
                                         </linearGradient>
+                                        <linearGradient id="colorPublished" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                        </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                                     <XAxis
@@ -238,6 +258,15 @@ export default function Dashboard() {
                                             color: 'var(--text-primary)'
                                         }}
                                         itemStyle={{ color: 'var(--text-primary)' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="published"
+                                        stroke="#8b5cf6"
+                                        strokeWidth={2}
+                                        fillOpacity={1}
+                                        fill="url(#colorPublished)"
+                                        style={{ stroke: '#8b5cf6' }}
                                     />
                                     <Area
                                         type="monotone"
