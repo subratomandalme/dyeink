@@ -11,7 +11,7 @@ interface SubscribeModalProps {
     blogId?: number | null
 }
 
-export default function SubscribeModal({ isOpen, onClose, blogId }: SubscribeModalProps) {
+export default function SubscribeModal({ isOpen, onClose }: SubscribeModalProps) {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
