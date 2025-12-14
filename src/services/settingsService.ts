@@ -171,7 +171,8 @@ export const settingsService = {
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
             websiteLink: data.website_link,
-            newsletterEmail: data.newsletter_email // Fixed logic here
+            newsletterEmail: data.newsletter_email,
+            domainStatus: data.domain_status
         }
     }
 }
