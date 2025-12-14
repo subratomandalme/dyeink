@@ -28,8 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const { postId, action, userId } = req.body // userId is optional (trusted client? No, verify auth)
-        // Actually, checking auth header is safer than trusting body userId.
+        const { postId, action } = req.body
 
         if (!postId || !action) {
             return res.status(400).json({ error: 'Missing postId or action' })
