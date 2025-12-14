@@ -198,6 +198,8 @@ const mapResponseToPost = (data: any): Post => {
         published: data.published,
         publishedAt: data.published_at,
         userId: data.user_id,
+        views: data.views, // Mapped from DB
+        shares: data.shares, // Mapped from DB
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         user: data.user

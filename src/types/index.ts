@@ -18,6 +18,8 @@ export interface Post {
     publishedAt: string | null
     userId: string
     user?: User
+    views?: number
+    shares?: number
     createdAt: string
     updatedAt: string
 }
