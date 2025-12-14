@@ -242,7 +242,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             )}
                             {twitterLink && (
                                 <a
-                                    href={twitterLink}
+                                    href={twitterLink.startsWith('http') ? twitterLink : `https://${twitterLink}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
@@ -259,7 +259,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             )}
                             {linkedinLink && (
                                 <a
-                                    href={linkedinLink}
+                                    href={linkedinLink.startsWith('http') ? linkedinLink : `https://${linkedinLink}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
@@ -276,7 +276,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             )}
                             {githubLink && (
                                 <a
-                                    href={githubLink}
+                                    href={githubLink.startsWith('http') ? githubLink : `https://${githubLink}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
@@ -293,7 +293,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             )}
                             {websiteLink && (
                                 <a
-                                    href={websiteLink}
+                                    href={websiteLink.startsWith('http') ? websiteLink : `https://${websiteLink}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{

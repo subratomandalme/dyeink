@@ -173,6 +173,26 @@ const Settings: React.FC = () => {
         }
     }
 
+    // Auto-verify on load if domain exists but status is pending/missing
+    useEffect(() => {
+        if (settings?.customDomain && (!settings.domainStatus || settings.domainStatus === 'pending')) {
+            const checkStatus = async () => {
+                try {
+                    const result = await settingsService.verifyDomain(settings.customDomain)
+                    // If Vercel says it's good (verified=true OR success with conflict message handled by API)
+                    if (result.success && (result.verified || (result as any).message === 'Domain already connected')) {
+                        setDomainStatus('verified')
+                        // Update cache to reflect this immediately
+                        updateSettingsInCache({ ...settings, domainStatus: 'verified' } as any)
+                    }
+                } catch (e) {
+                    // Ignore errors in background check to avoid console noise
+                }
+            }
+            checkStatus()
+        }
+    }, [settings?.customDomain, settings?.domainStatus])
+
     const handleVerify = async () => {
         if (!customDomain) return
         setSaving(true)
