@@ -164,7 +164,8 @@ export default function AdminLayout() {
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 700,
                             display: 'block',
-                            minHeight: '2.2rem'
+                            height: '2.2rem',
+                            width: '100%'
                         }}>
                             <DecryptedText
                                 text={greetingName.length > 18 ? `${greetingName.slice(0, 18)}...` : greetingName}
