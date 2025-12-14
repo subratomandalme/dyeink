@@ -3,7 +3,7 @@ import { settingsService } from '../../services/settingsService'
 import { supabase } from '../../lib/supabase'
 import { useThemeStore } from '../../store/themeStore'
 import { useAdminStore } from '../../store/adminStore'
-import { Upload, X, Plus, AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
 
 import WaveLoader from '../../components/common/WaveLoader'
 import { useToast } from '../../components/common/Toast'
