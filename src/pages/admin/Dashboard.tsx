@@ -58,38 +58,50 @@ export default function Dashboard() {
                     .select('*', { count: 'exact', head: true })
 
                 // 3. Get Graph Data (Daily Stats)
-                let graphData: any[] = []
-                if (postIds.length > 0) {
-                    const sevenDaysAgo = new Date()
-                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-                    const dateStr = sevenDaysAgo.toISOString().split('T')[0]
+                // v49: Always generate 7-day skeleton and merge data
+                const sevenDaysAgo = new Date()
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6) // Go back 6 days + today = 7 days
+                const dateStr = sevenDaysAgo.toISOString().split('T')[0]
 
-                    const { data: daily } = await supabase
+                // Initialize 7-day skeleton
+                const last7Days: any[] = []
+                for (let i = 0; i < 7; i++) {
+                    const d = new Date()
+                    d.setDate(d.getDate() - (6 - i))
+                    const dateKey = d.toISOString().split('T')[0]
+                    last7Days.push({
+                        date: dateKey,
+                        name: d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+                        views: 0,
+                        shares: 0
+                    })
+                }
+
+                if (postIds.length > 0) {
+                    const { data: daily, error: dailyErr } = await supabase
                         .from('daily_post_stats')
                         .select('date, views, shares')
                         .in('post_id', postIds)
                         .gte('date', dateStr)
 
+                    if (dailyErr) console.error('Daily Stats Fetch Error:', dailyErr)
+
                     if (daily) {
-                        const agg: Record<string, { views: number, shares: number }> = {}
+                        // Merge DB data into skeleton
                         daily.forEach(d => {
                             // @ts-ignore
-                            const dateKey = d.date
-                            if (!agg[dateKey]) agg[dateKey] = { views: 0, shares: 0 }
-                            // @ts-ignore
-                            agg[dateKey].views += (d.views || 0)
-                            // @ts-ignore
-                            agg[dateKey].shares += (d.shares || 0)
+                            const entry = last7Days.find(day => day.date === d.date)
+                            if (entry) {
+                                // @ts-ignore
+                                entry.views += (d.views || 0)
+                                // @ts-ignore
+                                entry.shares += (d.shares || 0)
+                            }
                         })
-
-                        graphData = Object.entries(agg).map(([date, counts]) => ({
-                            date,
-                            name: new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-                            views: counts.views,
-                            shares: counts.shares
-                        })).sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
                     }
                 }
+
+                const graphData = last7Days
 
                 setRealStats({
                     totalViews,
