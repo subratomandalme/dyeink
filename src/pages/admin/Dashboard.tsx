@@ -134,7 +134,7 @@ export default function Dashboard() {
                                 No stats recorded yet
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                 <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -45, bottom: 0 }}>
                                     <defs>
 
