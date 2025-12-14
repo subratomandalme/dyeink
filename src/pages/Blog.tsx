@@ -100,21 +100,34 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
 
                             // 2. Update Graph Daily Stats (v52 Local Time)
                             const today = format(new Date(), 'yyyy-MM-dd')
+
+                            // Check for existing record
                             supabase.from('daily_post_stats')
-                                .select('id, views')
+                                .select('id, views, shares')
                                 .eq('post_id', activePost.id)
                                 .eq('date', today)
-                                .single()
-                                .then(({ data: daily }) => {
+                                .maybeSingle()
+                                .then(({ data: daily, error: fetchErr }) => {
+                                    if (fetchErr) console.error('Stats Fetch Err:', fetchErr)
+
                                     if (daily) {
+                                        // Update existing
+                                        const newViews = (daily.views || 0) + 1
                                         supabase.from('daily_post_stats')
-                                            .update({ views: (daily.views || 0) + 1 })
+                                            .update({ views: newViews })
                                             .eq('id', daily.id)
-                                            .then(r => r.error && console.error(r.error))
+                                            .then(({ error: updateErr }) => {
+                                                if (updateErr) console.error('Stats Update Err:', updateErr)
+                                                else console.log('Graph Stats Updated:', newViews)
+                                            })
                                     } else {
+                                        // Insert new
                                         supabase.from('daily_post_stats')
                                             .insert({ post_id: activePost.id, date: today, views: 1, shares: 0 })
-                                            .then(r => r.error && console.error(r.error))
+                                            .then(({ error: insertErr }) => {
+                                                if (insertErr) console.error('Stats Insert Err:', insertErr)
+                                                else console.log('Graph Stats Created: 1')
+                                            })
                                     }
                                 })
                         }
