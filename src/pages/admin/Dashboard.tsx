@@ -123,7 +123,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Graph Area */}
-                    <div style={{ height: '300px', width: '100%', minWidth: 0, padding: '1rem 0', background: 'transparent', position: 'relative' }}>
+                    <div style={{ height: '300px', width: '100%', minWidth: '200px', padding: '1rem 0', background: 'transparent', position: 'relative' }}>
                         {!realStats && postsLoading ? (
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
                                 <WaveLoader size={48} />

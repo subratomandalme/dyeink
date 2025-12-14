@@ -210,21 +210,20 @@ export const settingsService = {
             domain_status: 'pending'
         }
 
-        // Try to insert, but ignore if exists (SAFE initialization)
+        // 1. Check if settings already exist (Avoids 406 error from atomic upsert)
+        const existing = await this.getSettings()
+        if (existing) return existing
+
+        // 2. If not, insert new settings explicitly
         const { data, error } = await supabase
             .from('site_settings')
-            .upsert(newSettings, { onConflict: 'user_id', ignoreDuplicates: true })
+            .insert(newSettings)
             .select()
             .single()
 
-        // If we ignored duplicate, no data is returned (PGRST116).
-        // This is GOOD. It means settings exist. We just fetch them.
-        if (error || !data) {
-            if (error && error.code !== 'PGRST116') {
-                console.error('Error initializing settings:', error)
-                throw error
-            }
-            return this.getSettings()
+        if (error) {
+            console.error('Error initializing settings:', error)
+            throw error
         }
 
         return {
