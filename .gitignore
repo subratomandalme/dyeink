@@ -1,0 +1,10 @@
+.vercel
+.env
+.env*.local
+node_modules
+ 
+
+# Build
+dist
+.vite
+.vscode
