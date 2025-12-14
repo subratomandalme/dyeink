@@ -31,6 +31,7 @@ export default function Editor() {
     const [isPublishing, setIsPublishing] = useState(false) // New state for loading screen
     const [lastSaved, setLastSaved] = useState<Date | null>(null)
     const [isContinueHovered, setIsContinueHovered] = useState(false)
+    const [isBackHovered, setIsBackHovered] = useState(false)
 
     // Load Data if Edit Mode
     useEffect(() => {
@@ -166,8 +167,8 @@ export default function Editor() {
                 }}>
                     <DecryptedText
                         text="PUBLISHING..."
-                        speed={80}
-                        maxIterations={20}
+                        speed={125000}
+                        maxIterations={10}
                         animateOn="view"
                         revealDirection="center"
                         sequential
@@ -198,14 +199,25 @@ export default function Editor() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <button
                         onClick={() => navigate(-1)}
+                        onMouseEnter={() => setIsBackHovered(true)}
+                        onMouseLeave={() => setIsBackHovered(false)}
                         style={{
-                            background: 'none',
-                            border: 'none',
+                            background: 'var(--bg-secondary)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '50%',
+                            width: '40px',
+                            height: '40px',
                             cursor: 'pointer',
-                            color: 'var(--text-secondary)',
-                            padding: '4px',
+                            color: 'var(--text-primary)',
                             display: 'flex',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.3s ease',
+                            paddingRight: '3px', // Optical adjustment for ChevronLeft
+                            boxShadow: isBackHovered
+                                ? (theme === 'dark' ? '0 0 15px rgba(255, 255, 255, 0.3)' : '0 0 15px rgba(0, 0, 0, 0.15)')
+                                : 'none',
+                            transform: isBackHovered ? 'scale(1.05)' : 'scale(1)'
                         }}
                     >
                         <ChevronLeft size={20} />

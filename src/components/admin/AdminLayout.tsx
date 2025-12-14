@@ -157,11 +157,12 @@ export default function AdminLayout() {
                             fontSize: '1.8rem',
                             color: 'var(--text-primary)',
                             lineHeight: 1.2,
-                            wordBreak: 'break-word',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                             fontFamily: 'var(--font-sans)',
                             fontWeight: 700,
                             display: 'block',
-                            textShadow: '0 0 25px rgba(255, 255, 255, 0.8)',
                             minHeight: '2.2rem'
                         }}>
                             <DecryptedText
