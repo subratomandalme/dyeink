@@ -99,6 +99,15 @@ export default function Dashboard() {
                     }
                 }
 
+                // v53: Visual Sync - If Graph is empty but Total Views > 0, attribute total to Today
+                // This prevents the "Total 10, Graph 0" mismatch for legacy data.
+                const hasGraphData = mergedGraphData.some(d => d.views > 0 || d.shares > 0)
+                if (!hasGraphData && totalViews > 0) {
+                    const todayEntry = mergedGraphData[mergedGraphData.length - 1]
+                    todayEntry.views = totalViews
+                    todayEntry.shares = totalShares
+                }
+
                 setRealStats({
                     totalViews,
                     totalShares,
