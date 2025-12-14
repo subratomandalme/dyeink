@@ -11,7 +11,7 @@ import {
     ArrowRight
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminStore } from '../../store/adminStore'
 import { useAuthStore } from '../../store' // Import from index
@@ -34,100 +34,127 @@ export default function Dashboard() {
         fetchSettings()
     }, [])
 
-    useEffect(() => {
-        const loadStats = async () => {
-            if (!user?.id) return
+    // v62: Realtime Stats Loading
+    const loadStats = useCallback(async () => {
+        if (!user?.id) return
 
-            try {
-                // v46 Direct Fetching Logic (No RPC)
+        try {
+            // v46 Direct Fetching Logic (No RPC)
 
-                // 1. Get User Posts & Totals
-                const { data: userPosts, error: postsErr } = await supabase
-                    .from('posts')
-                    .select('id, views, shares, created_at')
-                    .eq('user_id', user.id)
+            // 1. Get User Posts & Totals
+            const { data: userPosts, error: postsErr } = await supabase
+                .from('posts')
+                .select('id, views, shares, created_at')
+                .eq('user_id', user.id)
 
-                if (postsErr) throw postsErr
+            if (postsErr) throw postsErr
 
-                const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
-                const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
-                const postIds = userPosts?.map(p => p.id) || []
+            const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
+            const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
+            const postIds = userPosts?.map(p => p.id) || []
 
-                // 2. Get Subscribers Count (Global count for now as fallback)
-                const { count: subCount } = await supabase
-                    .from('subscribers')
-                    .select('*', { count: 'exact', head: true })
+            // 2. Get Subscribers Count (Global count for now as fallback)
+            const { count: subCount } = await supabase
+                .from('subscribers')
+                .select('*', { count: 'exact', head: true })
 
-                // 3. Get Graph Data (Daily Stats)
-                // v52: Use date-fns for consistent Local Time handling
-                const last7Days: any[] = []
-                for (let i = 6; i >= 0; i--) {
-                    const d = new Date()
-                    d.setDate(d.getDate() - i)
-                    const dateKey = format(d, 'yyyy-MM-dd')
-                    last7Days.push({
-                        date: dateKey,
-                        name: format(d, 'MMM d'),
-                        views: 0,
-                        shares: 0,
-                        published: 0
-                    })
-                }
+            // 3. Get Graph Data (Daily Stats)
+            // v52: Use date-fns for consistent Local Time handling
+            const last7Days: any[] = []
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date()
+                d.setDate(d.getDate() - i)
+                const dateKey = format(d, 'yyyy-MM-dd')
+                last7Days.push({
+                    date: dateKey,
+                    name: format(d, 'MMM d'),
+                    views: 0,
+                    shares: 0,
+                    published: 0
+                })
+            }
 
-                const queryDate = last7Days[0].date
-                const mergedGraphData = [...last7Days]
+            const queryDate = last7Days[0].date
+            const mergedGraphData = [...last7Days]
 
-                // v54: Map Published Posts to Graph
-                if (userPosts) {
-                    userPosts.forEach(p => {
-                        if (p.created_at) {
-                            const dateKey = format(new Date(p.created_at), 'yyyy-MM-dd')
+            // v54: Map Published Posts to Graph
+            if (userPosts) {
+                userPosts.forEach(p => {
+                    if (p.created_at) {
+                        const dateKey = format(new Date(p.created_at), 'yyyy-MM-dd')
+                        // @ts-ignore
+                        const entry = mergedGraphData.find(d => d.date === dateKey)
+                        if (entry) {
                             // @ts-ignore
-                            const entry = mergedGraphData.find(d => d.date === dateKey)
-                            if (entry) {
-                                // @ts-ignore
-                                entry.published += 1
-                            }
+                            entry.published += 1
+                        }
+                    }
+                })
+            }
+
+            if (postIds.length > 0) {
+                const { data: daily, error: dailyErr } = await supabase
+                    .from('daily_post_stats')
+                    .select('date, views, shares')
+                    .in('post_id', postIds)
+                    .gte('date', queryDate)
+
+                if (dailyErr) console.error('Daily Stats Fetch Error:', dailyErr)
+
+                if (daily) {
+                    daily.forEach(record => {
+                        // @ts-ignore
+                        const dayEntry = mergedGraphData.find(d => d.date === record.date)
+                        if (dayEntry) {
+                            // @ts-ignore
+                            dayEntry.views += (record.views || 0)
+                            // @ts-ignore
+                            dayEntry.shares += (record.shares || 0)
                         }
                     })
                 }
-
-                if (postIds.length > 0) {
-                    const { data: daily, error: dailyErr } = await supabase
-                        .from('daily_post_stats')
-                        .select('date, views, shares')
-                        .in('post_id', postIds)
-                        .gte('date', queryDate)
-
-                    if (dailyErr) console.error('Daily Stats Fetch Error:', dailyErr)
-
-                    if (daily) {
-                        daily.forEach(record => {
-                            // @ts-ignore
-                            const dayEntry = mergedGraphData.find(d => d.date === record.date)
-                            if (dayEntry) {
-                                // @ts-ignore
-                                dayEntry.views += (record.views || 0)
-                                // @ts-ignore
-                                dayEntry.shares += (record.shares || 0)
-                            }
-                        })
-                    }
-                }
-
-                setRealStats({
-                    totalViews,
-                    totalShares,
-                    totalSubscribers: subCount || 0,
-                    graphData: mergedGraphData
-                })
-
-            } catch (err) {
-                console.error('STATS FETCH ERROR:', err)
             }
+
+            setRealStats({
+                totalViews,
+                totalShares,
+                totalSubscribers: subCount || 0,
+                graphData: mergedGraphData
+            })
+
+        } catch (err) {
+            console.error('STATS FETCH ERROR:', err)
         }
-        loadStats()
     }, [user?.id])
+
+    useEffect(() => {
+        loadStats()
+
+        // v62: Realtime Subscription
+        const channel = supabase
+            .channel('dashboard-stats-v62')
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'posts' },
+                () => {
+                    console.log('RT: Posts update, refreshing stats...')
+                    loadStats()
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: '*', schema: 'public', table: 'daily_post_stats' },
+                () => {
+                    console.log('RT: Daily stats update, refreshing stats...')
+                    loadStats()
+                }
+            )
+            .subscribe()
+
+        return () => {
+            supabase.removeChannel(channel)
+        }
+    }, [loadStats])
 
     const subdomain = settings?.subdomain || null
 
