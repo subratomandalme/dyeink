@@ -210,6 +210,7 @@ export default function Dashboard() {
                                         tickLine={false}
                                         allowDecimals={false}
                                         tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+                                        domain={[0, 'auto']}
                                     />
                                     <Tooltip
                                         contentStyle={{

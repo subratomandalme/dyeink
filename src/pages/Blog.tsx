@@ -397,76 +397,105 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                                             if (error) console.error('SHARE ERROR:', error)
                                                             else console.log('Share updated to', currentShares + 1)
                                                         })
-                                                }}
-                                                style={{
-                                                    background: 'none',
-                                                    border: 'none',
-                                                    cursor: 'pointer',
-                                                    color: 'var(--text-secondary)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    gap: '0.4rem',
-                                                    fontSize: '0.85rem',
-                                                    padding: 0,
-                                                    transition: 'color 0.2s'
-                                                }}
-                                                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                                                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                                    // v45/v47: Update Graph Data (Daily Stats)
+                                                    const today = new Date().toISOString().split('T')[0]
+                                                    console.log('Attempting Graph Update for Post:', activePost.id, 'Date:', today)
+
+                                                    supabase.from('daily_post_stats')
+                                                        .select('id, views')
+                                                        .eq('post_id', activePost.id)
+                                                        .eq('date', today)
+                                                        .single()
+                                                        .then(({ data: daily, error: fetchErr }) => {
+                                                            if (fetchErr && fetchErr.code !== 'PGRST116') { // PGRST116 is "not found" 
+                                                                console.error('Graph Fetch Error:', fetchErr)
+                                                            }
+
+                                                            if (daily) {
+                                                                console.log('Daily Stats Found. Incrementing...', daily)
+                                                                supabase.from('daily_post_stats')
+                                                                    .update({ views: (daily.views || 0) + 1 })
+                                                                    .eq('id', daily.id)
+                                                                    .then(r => {
+                                                                        if (r.error) console.error('Graph UPDATE FAIL (RLS?):', r.error)
+                                                                        else console.log('Graph Updated Successfully +1')
+                                                                    })
+                                                            } else {
+                                                                console.log('No Daily Stats. Creating new entry...')
+                                                                supabase.from('daily_post_stats')
+                                                                    .insert({
+                                                                        post_id: activePost.id,
+                                                                        date: today,
+                                                                        views: 1,
+                                                                        shares: 0
+                                                                    })
+                                                                    .then(r => {
+                                                                        if (r.error) {
+                                                                            console.error('Graph INSERT FAIL (RLS?):', r.error)
+                                                                            console.error('CRITICAL: Run v45_graph_fix.sql in Supabase!')
+                                                                        } else {
+                                                                            console.log('Graph Inserted Successfully (1)')
+                                                                        }
+                                                                    })
+                                                            }
+                                                        })    onMouseEnter = {(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                             >
-                                                <Share2 size={16} /> Share
-                                            </button>
-                                        </div>
-
-                                        <div style={{
-                                            fontFamily: 'var(--font-mono)',
-                                            fontSize: '0.8rem',
-                                            color: 'var(--text-muted)',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.05em'
-                                        }}>
-                                            {post.publishedAt ? format(new Date(post.publishedAt), "MMM d, yyyy") : null}
-                                        </div>
-                                    </div>
-                                </article>
-                            ))}
-
-                            {/* Pagination Controls */}
-                            {!slug && totalPages > 1 && (
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', marginTop: '2rem' }}>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-                                        <button
-                                            key={number}
-                                            onClick={() => handlePageChange(number)}
-                                            style={{
-                                                width: '32px',
-                                                height: '32px',
-                                                borderRadius: '4px',
-                                                border: '1px solid var(--border-color)',
-                                                background: currentPage === number ? 'var(--text-primary)' : 'transparent',
-                                                color: currentPage === number ? 'var(--bg-primary)' : 'var(--text-primary)',
-                                                cursor: 'pointer',
-                                                fontSize: '0.9rem',
-                                                fontWeight: 600
-                                            }}
-                                        >
-                                            {number}
+                                            <Share2 size={16} /> Share
                                         </button>
-                                    ))}
+                                    </div>
+
+                                    <div style={{
+                                        fontFamily: 'var(--font-mono)',
+                                        fontSize: '0.8rem',
+                                        color: 'var(--text-muted)',
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.05em'
+                                    }}>
+                                        {post.publishedAt ? format(new Date(post.publishedAt), "MMM d, yyyy") : null}
+                                    </div>
                                 </div>
-                            )}
+                                </article>
+                    ))}
+
+                    {/* Pagination Controls */}
+                    {!slug && totalPages > 1 && (
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', marginTop: '2rem' }}>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                                <button
+                                    key={number}
+                                    onClick={() => handlePageChange(number)}
+                                    style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '4px',
+                                        border: '1px solid var(--border-color)',
+                                        background: currentPage === number ? 'var(--text-primary)' : 'transparent',
+                                        color: currentPage === number ? 'var(--bg-primary)' : 'var(--text-primary)',
+                                        cursor: 'pointer',
+                                        fontSize: '0.9rem',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    {number}
+                                </button>
+                            ))}
                         </div>
                     )}
-                </main>
             </div>
+                    )}
+        </main>
+            </div >
 
-            {/* Subscribe Modal - Multi-Tenant Enabled */}
-            <SubscribeModal
-                isOpen={isSubscribeOpen}
-                onClose={() => setIsSubscribeOpen(false)}
-                blogId={blogId}
-            />
+        {/* Subscribe Modal - Multi-Tenant Enabled */ }
+        < SubscribeModal
+    isOpen = { isSubscribeOpen }
+    onClose = {() => setIsSubscribeOpen(false)
+}
+blogId = { blogId }
+    />
 
-            <style>{`
+    <style>{`
     .sidebar-link {
     color: var(--text-secondary);
     text-decoration: none;
@@ -494,6 +523,6 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
     }
 }
 `}</style>
-        </div>
+        </div >
     )
 }
