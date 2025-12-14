@@ -191,6 +191,11 @@ export default function Dashboard() {
 
                     {/* Graph Area */}
                     <div style={{ height: '300px', width: '100%', minWidth: '200px', padding: '1rem 0', background: 'transparent', position: 'relative' }}>
+                        {/* DEBUG DATA DUMP - REMOVE LATER */}
+                        <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'monospace', overflow: 'hidden', height: '20px', marginBottom: '5px', whiteSpace: 'nowrap' }}>
+                            DEBUG: {JSON.stringify(graphData.map(d => `${d.date}:${d.views}`))}
+                        </div>
+
                         {!realStats && postsLoading ? (
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
                                 <WaveLoader size={48} />
