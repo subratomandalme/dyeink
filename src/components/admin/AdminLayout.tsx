@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+
 import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom'
 import {
     Home,
@@ -397,17 +397,7 @@ export default function AdminLayout() {
                     zIndex: 10
                 }}>
                     <div className="content-wrapper" style={{ position: 'relative', maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={location.pathname}
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -15 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <Outlet />
-                            </motion.div>
-                        </AnimatePresence>
+                        <Outlet />
                     </div>
                 </div>
             </main>
