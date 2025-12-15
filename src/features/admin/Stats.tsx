@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BarChart2, Users, Share2 } from 'lucide-react'
+import { BarChart2, Share2 } from 'lucide-react'
 import WaveLoader from '../../components/common/feedback/WaveLoader'
 import { useAdminStore } from '../../stores/adminStore'
 import { useAuthStore } from '../../stores/authStore'
@@ -9,7 +9,7 @@ const Stats: React.FC = () => {
     const { user } = useAuthStore()
     const [activeTab, setActiveTab] = useState('Traffic')
     const [realStats, setRealStats] = useState<any>(null)
-    const tabs = ['Traffic', 'Audience', 'Sharing']
+    const tabs = ['Traffic', 'Sharing']
     useEffect(() => {
         fetchPosts()
     }, [])
@@ -24,13 +24,9 @@ const Stats: React.FC = () => {
                 if (postsErr) throw postsErr
                 const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
                 const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
-                const { count: subCount } = await supabase
-                    .from('subscribers')
-                    .select('*', { count: 'exact', head: true })
                 setRealStats({
                     totalViews,
-                    totalShares,
-                    totalSubscribers: subCount || 0
+                    totalShares
                 })
             } catch (err) {
                 console.error('Stats Page Error:', err)
@@ -49,18 +45,11 @@ const Stats: React.FC = () => {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                             <StatCard label="Total Views" value={(realStats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
                             <StatCard label="Posts Published" value={publishedPosts.toString()} />
-                            {}
+                            { }
                         </div>
                     </div>
                 )
-            case 'Audience':
-                return (
-                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Subscribers" value={(realStats?.totalSubscribers || 0).toLocaleString()} icon={<Users size={20} />} />
-                        </div>
-                    </div>
-                )
+
             case 'Sharing':
                 return (
                     <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
@@ -78,7 +67,7 @@ const Stats: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Stats</h1>
             </div>
-            {}
+            { }
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', paddingBottom: '0' }}>
                 {tabs.map((tab) => (
                     <button
@@ -92,7 +81,7 @@ const Stats: React.FC = () => {
                             fontWeight: activeTab === tab ? 600 : 400,
                             cursor: 'pointer',
                             borderBottom: activeTab === tab ? '2px solid var(--text-primary)' : '2px solid transparent',
-                            marginBottom: '-1px', 
+                            marginBottom: '-1px',
                             transition: 'all 0.2s',
                             fontSize: '0.95rem'
                         }}
@@ -101,7 +90,7 @@ const Stats: React.FC = () => {
                     </button>
                 ))}
             </div>
-            {}
+            { }
             {
                 showLoader ? (
                     <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
@@ -143,7 +132,7 @@ const Stats: React.FC = () => {
 function StatCard({ label, value, subValue, icon }: { label: string, value: string, subValue?: string, icon?: React.ReactNode }) {
     return (
         <div style={{
-            padding: '1.5rem 0', 
+            padding: '1.5rem 0',
             display: 'flex',
             flexDirection: 'column',
             gap: '0.5rem'
@@ -164,4 +153,4 @@ function StatCard({ label, value, subValue, icon }: { label: string, value: stri
     )
 }
 export default Stats
- 
+
