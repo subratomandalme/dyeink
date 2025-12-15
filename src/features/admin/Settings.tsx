@@ -884,7 +884,6 @@ const Settings: React.FC = () => {
                         font-size: 1.75rem !important;
                         margin-bottom: 1rem !important;
                     }
-                    /* Tabs */
                     .settings-tabs {
                         overflow-x: auto !important;
                         flex-wrap: nowrap !important;
@@ -898,50 +897,34 @@ const Settings: React.FC = () => {
                        flex-shrink: 0 !important;
                        padding: 0.6rem 0.9rem !important;
                     } 
-                    /* Fix Danger Zone Buttons Overflow */
                     .settings-danger-zone .danger-btn {
                        flex-wrap: wrap !important;
                        height: auto !important;
-                       white-space: normal !important; /* Allow wrapping */
+                       white-space: normal !important;
                        text-align: left !important;
-                       min-width: 0 !important; /* Override min-width */
+                       min-width: 0 !important;
                     }
-                    /* General content width override */
                     .settings-content > div {
                          max-width: 100% !important;
                     }
-                    
-                    /* Modal Fixes */
                     .delete-modal-overlay {
                         align-items: center !important;
-                        padding: 1rem !important;
+                        justify-content: center !important;
+                        padding: 0 !important;
                     }
                     .delete-modal-content {
-                        max-width: 90% !important; /* Smaller width */
-                        width: 90% !important;
-                        max-width: 360px !important; /* Cap width */
-                        padding: 1.25rem !important;
-                        max-height: 85vh !important;
-                        overflow-y: auto !important;
-                        border-radius: 16px !important;
-                        margin: auto !important;
-                        box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
+                        transform: scale(0.6) !important;
+                        transform-origin: center center !important;
+                        max-width: 90vw !important;
+                        width: 90vw !important;
+                        margin: 0 auto !important;
+                        max-height: 80vh !important;
                     }
-                    .delete-modal-content h2 {
-                        font-size: 1.25rem !important;
-                    }
-                    /* Delete Modal Buttons */
-                    .delete-modal-actions {
-                         flex-direction: column !important;
-                         gap: 0.75rem !important;
-                         width: 100% !important;
-                    }
+                    .delete-modal-content h2,
+                    .delete-modal-content p,
+                    .delete-modal-content label,
+                    .delete-modal-content input,
                     .delete-modal-actions button {
-                        width: 100% !important;
-                        justify-content: center !important;
-                        padding: 0.8rem !important;
-                        min-width: 0 !important;
-                        white-space: normal !important;
                     }
                 }
             `}</style>

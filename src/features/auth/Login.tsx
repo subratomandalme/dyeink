@@ -80,7 +80,7 @@ export default function Login() {
         }
     }
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
+        <div className="login-container" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
 
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
                 <LightRays
@@ -274,6 +274,42 @@ export default function Login() {
                     </div>
                 </div>
             )}
+            <style>{`
+                @media (max-width: 499px) {
+                    .login-container {
+                        height: 100vh !important;
+                        overflow: hidden !important;
+                        padding: 1rem !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                    }
+                    .logo-adaptive {
+                        width: 50px !important;
+                        height: 50px !important;
+                    }
+                    .animate-fade-in {
+                        transform: scale(0.95);
+                        width: 100% !important;
+                        max-width: 320px !important;
+                        padding: 1.5rem !important;
+                    }
+                    .form-label {
+                        font-size: 0.85rem !important;
+                        margin-bottom: 0.25rem !important;
+                    }
+                    input {
+                        height: 42px !important;
+                        font-size: 0.9rem !important;
+                    }
+                    form > div {
+                        gap: 1rem !important;
+                    }
+                    .github-btn {
+                        padding: 0.6rem !important;
+                        font-size: 0.9rem !important;
+                    }
+                }
+            `}</style>
         </div>
     )
 }
