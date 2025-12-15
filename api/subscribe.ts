@@ -1,8 +1,6 @@
 export const config = {
     runtime: 'edge',
 }
-
-
 const SECRET = process.env.SUBSCRIBE_SECRET || 'default-secret-change-me'
 
 async function generateToken(email: string) {
@@ -26,33 +24,17 @@ export default async function handler(req: Request) {
 
     try {
         const { email } = await req.json()
-
         if (!email || !email.includes('@')) {
             return new Response('Invalid email', { status: 400 })
         }
-
-        
-        
-        
-
-        
         const token = await generateToken(email)
-
-        
-        
         console.log(`[Mock Email] Sending verification to ${email} with token ${token}`)
-
-        
-        
-        
-
         return new Response(JSON.stringify({ ok: true, message: 'Verification email sent' }), {
             headers: { 'Content-Type': 'application/json' }
         })
-
     } catch (error) {
         console.error('Subscribe Error:', error)
         return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 })
     }
 }
- 
+

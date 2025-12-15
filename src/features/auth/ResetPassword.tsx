@@ -65,7 +65,7 @@ export default function ResetPassword() {
             background: 'var(--bg-primary)',
             color: 'var(--text-primary)'
         }}>
-            {}
+
             <div style={{
                 position: 'absolute',
                 inset: 0,
@@ -130,7 +130,7 @@ export default function ResetPassword() {
                             <div style={{
                                 padding: '0.75rem',
                                 borderRadius: '8px',
-                                background: 'rgba(239, 68, 68, 0.1)', 
+                                background: 'rgba(239, 68, 68, 0.1)',
                                 border: '1px solid rgba(239, 68, 68, 0.2)',
                                 color: '#ef4444',
                                 fontSize: '0.9rem'
@@ -216,4 +216,4 @@ export default function ResetPassword() {
         </div>
     )
 }
- 
+

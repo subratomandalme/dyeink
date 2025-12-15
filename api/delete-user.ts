@@ -23,16 +23,12 @@ export default async function handler(request: Request) {
         }
 
         const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-
-
         const token = authHeader.replace('Bearer ', '')
         const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token)
 
         if (userError || !user) {
             return new Response('Invalid Token', { status: 401 })
         }
-
-
         const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id)
 
         if (deleteError) {
@@ -47,7 +43,6 @@ export default async function handler(request: Request) {
                 'Access-Control-Allow-Origin': '*',
             },
         })
-
     } catch (e: any) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 })
     }

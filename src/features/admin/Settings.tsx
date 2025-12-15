@@ -130,21 +130,7 @@ const Settings: React.FC = () => {
             setSaving(false)
         }
     }
-    useEffect(() => {
-        if (settings?.customDomain && (!settings.domainStatus || settings.domainStatus === 'pending')) {
-            const checkStatus = async () => {
-                try {
-                    const result = await settingsService.verifyDomain(settings.customDomain!)
-                    if (result.success && (result.verified || (result as any).message === 'Domain already connected')) {
-                        setDomainStatus('verified')
-                        updateSettingsInCache({ ...settings, domainStatus: 'verified' } as any)
-                    }
-                } catch (e) {
-                }
-            }
-            checkStatus()
-        }
-    }, [settings?.customDomain, settings?.domainStatus])
+
     const handleVerify = async () => {
         if (!customDomain) return
         setSaving(true)
@@ -841,10 +827,8 @@ const Settings: React.FC = () => {
                                                 addToast({ type: 'success', message: 'All posts deleted.' })
                                             } else {
                                                 const { postService } = await import('../../services/postService')
-                                                // First delete data (optional but good for cleanup)
                                                 try { await postService.deleteAllPosts() } catch (e) { }
 
-                                                // Call Edge Function to delete user account
                                                 const { data: { session } } = await supabase.auth.getSession()
                                                 if (!session?.access_token) throw new Error('No session')
 
@@ -860,7 +844,6 @@ const Settings: React.FC = () => {
                                                     throw new Error(err.error || 'Failed to delete account')
                                                 }
 
-                                                // Force logout
                                                 const { useAuthStore } = await import('../../stores/authStore')
                                                 await useAuthStore.getState().logout()
                                                 window.location.href = '/'
@@ -893,7 +876,7 @@ const Settings: React.FC = () => {
                     </div>
                 )
             }
-            { }
+
             <style>{`
                 @media (max-width: 499px) {
                     /* Title */

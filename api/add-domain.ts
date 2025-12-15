@@ -12,10 +12,7 @@ export default async function handler(req: Request) {
 
         if (!domain) {
             return new Response(JSON.stringify({ error: "Domain required" }), { status: 400 })
-        }
-
-
-        const response = await fetch(
+        } const response = await fetch(
             `https://api.vercel.com/v9/projects/${process.env.VERCEL_PROJECT_ID}/domains`,
             {
                 method: "POST",
@@ -46,7 +43,6 @@ export default async function handler(req: Request) {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         })
-
     } catch (error) {
         console.error("API Error:", error)
         return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 })

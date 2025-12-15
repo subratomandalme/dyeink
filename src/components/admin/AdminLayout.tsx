@@ -16,6 +16,8 @@ import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ui/ThemeToggle'
 import DecryptedText from '../common/animations/DecryptedText'
 import { BackgroundBeams } from '../common/animations/BackgroundBeams'
+import AdminGreeting from './AdminGreeting'
+import NewPostButton from './sidebar/NewPostButton'
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
@@ -24,27 +26,9 @@ export default function AdminLayout() {
     const { settings, fetchSettings, updateSettingsInCache } = useAdminStore()
     const greetingName = settings?.siteName || user?.name || 'User'
     const subdomain = settings?.subdomain || null
-    const [isCreateHovered, setIsCreateHovered] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
     const { theme } = useThemeStore()
-
-    const getNeumorphicShadows = () => {
-        const isDark = theme === 'dark'
-        if (isCreateHovered) {
-            if (isDark) {
-                return 'inset -2px -2px 5px rgba(255,255,255,0.08), inset 2px 2px 4px rgba(0,0,0,0.5), -1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(0,0,0,0.5)'
-            }
-
-            return '-1px -1px 5px rgba(255, 255, 255, 0.6), 1px 1px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 1), inset 2px 2px 4px rgba(0, 0, 0, 0.3)'
-        } else {
-            if (isDark) {
-                return '-5px -5px 10px rgba(255,255,255,0.12), 5px 5px 10px rgba(0,0,0,0.5)'
-            }
-
-            return '-5px -5px 10px rgba(255, 255, 255, 0.8), 5px 5px 10px rgba(0, 0, 0, 0.25)'
-        }
-    }
 
     useEffect(() => {
         const checkMobile = () => {
@@ -143,66 +127,10 @@ export default function AdminLayout() {
             }}>
 
                 <div className="greeting-area" style={{ padding: '2rem 1.25rem 1rem 1.25rem' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        <span style={{
-                            fontSize: '1.5rem',
-                            color: 'var(--text-secondary)',
-                            opacity: 0.8,
-                            fontFamily: 'var(--font-sans)',
-                            fontWeight: 500,
-                            textShadow: '0 0 25px rgba(255, 255, 255, 0.8)'
-                        }}>Hi,</span>
-                        <span style={{
-                            fontSize: '1.8rem',
-                            color: 'var(--text-primary)',
-                            lineHeight: 1.2,
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            fontFamily: 'var(--font-sans)',
-                            fontWeight: 700,
-                            display: 'block',
-                            height: '2.2rem',
-                            width: '100%'
-                        }}>
-                            <DecryptedText
-                                text={greetingName.length > 18 ? `${greetingName.slice(0, 18)}...` : greetingName}
-                                speed={60}
-                                maxIterations={15}
-                                animateOn="view"
-                                revealDirection="start"
-                            />
-                        </span>
-                    </div>
+                    <AdminGreeting name={greetingName} />
                 </div>
 
-                <div className="new-post-btn" style={{ padding: '0 1.25rem 1.5rem 1.25rem' }}>
-                    <Link
-                        to="/admin/posts/new"
-                        onMouseEnter={() => setIsCreateHovered(true)}
-                        onMouseLeave={() => setIsCreateHovered(false)}
-                        onTouchStart={() => setIsCreateHovered(true)}
-                        onTouchEnd={() => setIsCreateHovered(false)}
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            gap: '0.5rem',
-                            padding: '0.85rem',
-                            borderRadius: '50px',
-                            backgroundColor: 'var(--bg-primary)',
-                            color: isCreateHovered
-                                ? (theme === 'dark' ? '#ffffff' : 'var(--accent-primary)')
-                                : 'var(--text-secondary)',
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                            transition: 'all 0.2s ease',
-                            boxShadow: getNeumorphicShadows()
-                        }}
-                    >
-                        New Post
-                    </Link>
-                </div>
+                <NewPostButton />
 
                 <nav style={{ flex: 1, padding: '0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <div className="section-label" style={{
@@ -375,17 +303,15 @@ export default function AdminLayout() {
                 overflow: 'hidden'
             }}>
                 {!isMobile && <BackgroundBeams style={{ opacity: 0.5 }} />}
-                {/* Theme Toggle */}
                 <div className="theme-toggle-wrapper" style={{
                     position: 'absolute',
-                    top: '2rem',
-                    right: '2rem',
+                    top: '1.5rem',
+                    right: '1.5rem',
                     zIndex: 50
                 }}>
                     <ThemeToggle />
                 </div>
 
-                {/* Scrollable Content Container */}
                 <div className="scroll-container" style={{
                     position: 'absolute',
                     top: 0,
