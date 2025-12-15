@@ -118,7 +118,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                 background: 'radial-gradient(circle at 10% 10%, var(--bg-secondary), var(--bg-primary))'
             }} />
             { }
-            <div style={{
+            <div className="blog-theme-toggle-wrapper" style={{
                 position: 'fixed',
                 top: '2rem',
                 right: '2rem',
@@ -159,7 +159,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             { }
                         </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {slug ? (
                             <Link to={subdomain ? `/${subdomain}` : "/blog"} className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <ArrowLeft size={16} /> {subdomain ? '' : 'All Posts'}
@@ -190,7 +190,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             </button>
                         )}
                         {!slug && (
-                            <div style={{}}>
+                            <div style={{ margin: '0.5rem 0' }}>
                                 <input
                                     type="text"
                                     placeholder="Search here..."
@@ -211,7 +211,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 />
                             </div>
                         )}
-                        <div style={{ display: 'flex', gap: '1rem' }}>
+                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
 
                             {twitterLink && (
                                 <a
@@ -491,9 +491,13 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     article h2 {
                         font-size: 1.3rem !important;
                     }
-                    div[style*="position: fixed"][style*="top: 2rem"] {
+                    .blog-theme-toggle-wrapper {
                         top: 1rem !important;
                         right: 1rem !important;
+                        width: 36px !important;
+                        height: 36px !important;
+                    }
+                    .blog-theme-toggle-wrapper button {
                         width: 36px !important;
                         height: 36px !important;
                     }
