@@ -81,7 +81,7 @@ export default function Login() {
     }
     return (
         <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
-            { }
+
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
                 <LightRays
                     raysOrigin="top-center"
@@ -186,7 +186,7 @@ export default function Login() {
                     Don't have an account? <Link to="/register" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Create one</Link>
                 </p>
             </GlareHover>
-            { }
+
             {showForgotModal && (
                 <div style={{
                     position: 'fixed',

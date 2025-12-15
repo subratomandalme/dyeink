@@ -40,12 +40,12 @@ export default function Posts() {
     const filteredPosts = safePosts.filter(post => post.published)
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '1rem' }}>
-            { }
+
             <div style={{ marginBottom: '3rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Published Posts</h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Manage your live content.</p>
             </div>
-            { }
+
             {showLoader ? (
                 <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
                     <WaveLoader />
@@ -114,6 +114,7 @@ export default function Posts() {
                                                     borderRadius: '50%',
                                                     display: 'flex',
                                                     alignItems: 'center',
+                                                    justifyContent: 'center',
                                                     transition: 'all 0.2s',
                                                     background: 'var(--bg-tertiary)'
                                                 }}
@@ -146,9 +147,9 @@ export default function Posts() {
                     </table>
                 </div>
             )}
-            { }
+
             {showDeleteModal && (
-                <div style={{
+                <div className="post-delete-modal-overlay" style={{
                     position: 'fixed',
                     inset: 0,
                     zIndex: 9999,
@@ -160,7 +161,7 @@ export default function Posts() {
                     padding: '1rem',
                     animation: 'fadeIn 0.2s ease-out'
                 }}>
-                    <div style={{
+                    <div className="post-delete-modal-content" style={{
                         width: '100%',
                         maxWidth: '400px',
                         backgroundColor: 'var(--bg-elevated)',
@@ -177,7 +178,7 @@ export default function Posts() {
                         <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', lineHeight: 1.5, fontSize: '0.95rem' }}>
                             This action cannot be undone. The post will be permanently removed from your blog.
                         </p>
-                        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                        <div className="post-delete-actions" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                             <button
                                 onClick={() => setShowDeleteModal(false)}
                                 disabled={isDeleting}
@@ -221,6 +222,36 @@ export default function Posts() {
             <style>{`
                 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
                 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                
+                @media (max-width: 480px) {
+                    .post-delete-modal-content {
+                        padding: 1rem !important;
+                        max-width: 260px !important;
+                        margin: auto !important;
+                        border-radius: 12px !important;
+                    }
+                    .post-delete-modal-content h2 {
+                        font-size: 0.95rem !important;
+                        margin-bottom: 0.25rem !important;
+                    }
+                    .post-delete-modal-content p {
+                        font-size: 0.75rem !important;                    margin-bottom: 1rem !important;
+                        line-height: 1.3 !important;
+                    }
+                    .post-delete-actions {
+                        flex-direction: column !important;
+                        gap: 0.4rem !important;
+                    }
+                    .post-delete-actions button {
+                        width: 100% !important;
+                        justify-content: center !important; 
+                        padding: 0.5rem 0.75rem !important;
+                        font-size: 0.8rem !important;                    height: 32px !important;
+                        min-height: 0 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                    }
+                }
             `}</style>
         </div>
     )
