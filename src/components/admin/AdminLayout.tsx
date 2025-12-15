@@ -128,7 +128,7 @@ export default function AdminLayout() {
     }
     return (
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
-            { }
+
             <aside className="admin-sidebar" style={{
                 width: '260px',
                 backgroundColor: 'var(--bg-primary)',
@@ -141,7 +141,7 @@ export default function AdminLayout() {
                 zIndex: 40,
                 transition: 'transform 0.3s ease-in-out',
             }}>
-                { }
+
                 <div className="greeting-area" style={{ padding: '2rem 1.25rem 1rem 1.25rem' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                         <span style={{
@@ -175,7 +175,7 @@ export default function AdminLayout() {
                         </span>
                     </div>
                 </div>
-                { }
+
                 <div className="new-post-btn" style={{ padding: '0 1.25rem 1.5rem 1.25rem' }}>
                     <Link
                         to="/admin/posts/new"
@@ -203,7 +203,7 @@ export default function AdminLayout() {
                         New Post
                     </Link>
                 </div>
-                { }
+
                 <nav style={{ flex: 1, padding: '0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     <div className="section-label" style={{
                         fontSize: '0.75rem',
@@ -269,7 +269,7 @@ export default function AdminLayout() {
                     >
                         <FileText size={20} /><span className="sidebar-item-text"> Posts</span>
                     </Link>
-                    { }
+
                     <div style={{ marginTop: '2rem' }}>
                         <div className="section-label" style={{
                             fontSize: '0.75rem',
@@ -301,7 +301,7 @@ export default function AdminLayout() {
                             <BarChart2 size={20} /><span className="sidebar-item-text"> Stats</span>
                         </Link>
                     </div>
-                    { }
+
                     <div style={{ marginTop: '2rem' }}>
                         <div className="section-label" style={{
                             fontSize: '0.75rem',
@@ -334,7 +334,7 @@ export default function AdminLayout() {
                         </Link>
                     </div>
                 </nav>
-                { }
+
                 <div style={{ padding: '1.25rem' }}>
                     <button
                         onClick={handleSignOut}
@@ -365,7 +365,7 @@ export default function AdminLayout() {
                     `}</style>
                 </div>
             </aside>
-            { }
+
             <main className="admin-main" style={{
                 flex: 1,
                 marginLeft: '260px',
@@ -411,7 +411,7 @@ export default function AdminLayout() {
                     </div>
                 </div>
             </main>
-            { }
+
             <style>{`
                 @media (max-width: 499px) {
                     .admin-sidebar {
