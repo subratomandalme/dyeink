@@ -830,18 +830,15 @@ const Settings: React.FC = () => {
                                                 await postService.deleteAllPosts()
 
                                                 const { data: { session } } = await supabase.auth.getSession()
-                                                if (!session?.access_token) throw new Error('No session')
-
-                                                const res = await fetch('/api/delete-user', {
-                                                    method: 'POST',
-                                                    headers: {
-                                                        'Authorization': `Bearer ${session.access_token}`
-                                                    }
-                                                })
-
-                                                if (!res.ok) {
-                                                    const err = await res.json()
-                                                    throw new Error(err.error || 'Failed to delete account')
+                                                if (session?.access_token) {
+                                                    try {
+                                                        await fetch('/api/delete-user', {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Authorization': `Bearer ${session.access_token}`
+                                                            }
+                                                        })
+                                                    } catch (e) { }
                                                 }
 
                                                 const { useAuthStore } = await import('../../stores/authStore')
