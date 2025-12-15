@@ -13,6 +13,7 @@ import DecryptedText from '../../components/common/animations/DecryptedText'
 import { useThemeStore } from '../../stores/themeStore'
 import { useAuthStore } from '../../stores/authStore'
 import { useAdminStore } from '../../stores/adminStore'
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
 export default function Editor() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -133,7 +134,9 @@ export default function Editor() {
             </div>
         )
     }
-    if (isPublishing) {
+
+    function PublishingScreen() {
+        useLockBodyScroll()
         return (
             <div style={{
                 position: 'fixed',
@@ -166,6 +169,10 @@ export default function Editor() {
                 </div>
             </div>
         )
+    }
+
+    if (isPublishing) {
+        return <PublishingScreen />
     }
     return (
         <div className="editor-page" style={{
