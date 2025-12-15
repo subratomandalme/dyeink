@@ -216,7 +216,7 @@ export default function Register() {
                             </h2>
                             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
                                 Please check your email for verification instructions (if enabled) or log in to continue. <br />
-                                <strong>Check Spam Folders in Email</strong>
+                                <strong style={{ color: '#ef4444' }}>Check Spam Folders in Email</strong>
                             </p>
                             <Link to="/login" className="btn btn-primary"
                                 style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
