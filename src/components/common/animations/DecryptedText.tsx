@@ -126,16 +126,6 @@ export default function DecryptedText({
             }
         }
         if (isHovering) {
-            // Performance optimization: Disable scrambling on mobile/tablets
-            const isMobile = window.innerWidth < 768
-            if (isMobile) {
-                setDisplayText(text)
-                setIsScrambling(false)
-                setRevealedIndices(new Set(Array.from({ length: text.length }, (_, i) => i)))
-                setHasAnimated(true)
-                return
-            }
-
             setIsScrambling(true)
             interval = setInterval(() => {
                 setRevealedIndices((prevRevealed) => {
