@@ -12,7 +12,7 @@ const Settings: React.FC = () => {
     const [saving, setSaving] = useState(false)
     const [schemaError, setSchemaError] = useState<string | null>(null)
     const { addToast } = useToast()
-    const { theme } = useThemeStore() 
+    const { theme } = useThemeStore()
     const [hoverDeletePosts, setHoverDeletePosts] = useState(false)
     const [hoverDeleteAccount, setHoverDeleteAccount] = useState(false)
     const [pubName, setPubName] = useState("")
@@ -23,8 +23,8 @@ const Settings: React.FC = () => {
     const [linkedinLink, setLinkedinLink] = useState("")
     const [githubLink, setGithubLink] = useState("")
     const [websiteLink, setWebsiteLink] = useState("")
-    const [email, setEmail] = useState("") 
-    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null) 
+    const [email, setEmail] = useState("")
+    const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null)
     const [domainStatus, setDomainStatus] = useState<'pending' | 'verified' | 'active' | 'failed' | null>(null)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [deleteType, setDeleteType] = useState<'posts' | 'publication' | null>(null)
@@ -47,7 +47,7 @@ const Settings: React.FC = () => {
     const tabs = [
         { id: 'Basics', label: 'Basics' },
         { id: 'Publication', label: 'Publication' },
-        { id: 'Security', label: 'Security' }, 
+        { id: 'Security', label: 'Security' },
         { id: 'Danger', label: 'Danger Zone', danger: true },
     ]
     const [newPassword, setNewPassword] = useState("")
@@ -206,12 +206,12 @@ const Settings: React.FC = () => {
         )
     }
     return (
-        <div style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
-            {}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div className="settings-page" style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
+
+            <div className="settings-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Settings</h1>
             </div>
-            {}
+
             {schemaError && (
                 <div style={{
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -259,12 +259,13 @@ const Settings: React.FC = () => {
                     </button>
                 </div>
             )}
-            {}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
+
+            <div className="settings-tabs" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', borderBottom: '1px solid var(--border-color)' }}>
                 {tabs.map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
+                        className="tab-btn"
                         style={{
                             background: 'none',
                             border: 'none',
@@ -273,7 +274,7 @@ const Settings: React.FC = () => {
                             fontWeight: activeTab === tab.id ? 600 : 400,
                             cursor: 'pointer',
                             borderBottom: activeTab === tab.id ? '2px solid var(--text-primary)' : '2px solid transparent',
-                            marginBottom: '-1px', 
+                            marginBottom: '-1px',
                             fontSize: '0.95rem',
                             transition: 'all 0.2s',
                             ...(tab.danger ? { color: activeTab === tab.id ? '#ef4444' : 'var(--text-secondary)' } : {})
@@ -283,8 +284,8 @@ const Settings: React.FC = () => {
                     </button>
                 ))}
             </div>
-            {}
-            <div style={{ paddingBottom: '4rem' }}>
+
+            <div className="settings-content" style={{ paddingBottom: '4rem' }}>
                 {activeTab === 'Basics' && (
                     <div style={{ maxWidth: '600px' }}>
                         <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
@@ -435,7 +436,7 @@ const Settings: React.FC = () => {
                 )}
                 {activeTab === 'Publication' && (
                     <div style={{ maxWidth: '600px' }}>
-                        {}
+
                         <div className="setting-group" style={{ marginBottom: '2.5rem' }}>
                             <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Custom Domain</h3>
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Connect your own domain (e.g. blog.yourname.com).</p>
@@ -482,7 +483,7 @@ const Settings: React.FC = () => {
                                             {domainStatus || 'Pending'}
                                         </div>
                                     </div>
-                                    {}
+
                                     {domainStatus !== 'active' && domainStatus !== 'verified' && (
                                         <div style={{ marginBottom: '1.5rem' }}>
                                             <p style={{ fontSize: '0.9rem', marginBottom: '0.75rem' }}>Add this DNS record at your domain provider:</p>
@@ -547,7 +548,7 @@ const Settings: React.FC = () => {
                                             </div>
                                         </div>
                                     )}
-                                    {}
+
                                     {domainStatus === 'verified' && (
                                         <div style={{
                                             marginBottom: '1.5rem',
@@ -688,12 +689,13 @@ const Settings: React.FC = () => {
                     </div>
                 )}
                 {activeTab === 'Danger' && (
-                    <div style={{ maxWidth: '600px' }}>
+                    <div className="settings-danger-zone" style={{ maxWidth: '600px' }}>
                         <div style={{ border: '1px solid var(--border-color)', padding: '1.5rem', borderRadius: '8px', marginBottom: '2rem' }}>
                             <div>
                                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete post archive</h3>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete all posts on this publication.</p>
                                 <button
+                                    className="danger-btn"
                                     onMouseEnter={() => setHoverDeletePosts(true)}
                                     onMouseLeave={() => setHoverDeletePosts(false)}
                                     onClick={() => {
@@ -726,6 +728,7 @@ const Settings: React.FC = () => {
                                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete Account</h3>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete your account, posts, subscriber list, and all other content.</p>
                                 <button
+                                    className="danger-btn"
                                     onMouseEnter={() => setHoverDeleteAccount(true)}
                                     onMouseLeave={() => setHoverDeleteAccount(false)}
                                     onClick={() => {
@@ -756,10 +759,10 @@ const Settings: React.FC = () => {
                     </div>
                 )}
             </div>
-            {}
+
             {
                 showDeleteModal && (
-                    <div style={{
+                    <div className="delete-modal-overlay" style={{
                         position: 'fixed',
                         inset: 0,
                         zIndex: 9999,
@@ -770,7 +773,7 @@ const Settings: React.FC = () => {
                         alignItems: 'center',
                         padding: '1rem'
                     }}>
-                        <div style={{
+                        <div className="delete-modal-content" style={{
                             width: '100%',
                             maxWidth: '480px',
                             backgroundColor: 'var(--bg-elevated)',
@@ -812,7 +815,7 @@ const Settings: React.FC = () => {
                                     }}
                                 />
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                            <div className="delete-modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                                 <button
                                     onClick={() => setShowDeleteModal(false)}
                                     style={{
@@ -835,17 +838,36 @@ const Settings: React.FC = () => {
                                             if (deleteType === 'posts') {
                                                 const { postService } = await import('../../services/postService')
                                                 await postService.deleteAllPosts()
-                                                alert('All posts deleted.')
+                                                addToast({ type: 'success', message: 'All posts deleted.' })
                                             } else {
                                                 const { postService } = await import('../../services/postService')
+                                                // First delete data (optional but good for cleanup)
+                                                try { await postService.deleteAllPosts() } catch (e) { }
+
+                                                // Call Edge Function to delete user account
+                                                const { data: { session } } = await supabase.auth.getSession()
+                                                if (!session?.access_token) throw new Error('No session')
+
+                                                const res = await fetch('/api/delete-user', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${session.access_token}`
+                                                    }
+                                                })
+
+                                                if (!res.ok) {
+                                                    const err = await res.json()
+                                                    throw new Error(err.error || 'Failed to delete account')
+                                                }
+
+                                                // Force logout
                                                 const { useAuthStore } = await import('../../stores/authStore')
-                                                await postService.deleteAllPosts()
                                                 await useAuthStore.getState().logout()
-                                                window.location.href = '/' 
+                                                window.location.href = '/'
                                             }
                                             setShowDeleteModal(false)
-                                        } catch (e) {
-                                            alert('Failed to delete.')
+                                        } catch (e: any) {
+                                            addToast({ type: 'error', message: e.message || 'Failed to delete.' })
                                             console.error(e)
                                         } finally {
                                             setIsDeleting(false)
@@ -859,24 +881,28 @@ const Settings: React.FC = () => {
                                         color: deleteConfirmation === 'I consent of delete' ? '#fff' : 'var(--text-muted)',
                                         cursor: deleteConfirmation === 'I consent of delete' ? 'pointer' : 'not-allowed',
                                         fontWeight: 600,
-                                        opacity: isDeleting ? 0.7 : 1
+                                        opacity: isDeleting ? 0.7 : 1,
+                                        whiteSpace: 'nowrap',
+                                        minWidth: '120px'
                                     }}
                                 >
-                                    {isDeleting ? 'Deleting...' : 'Confirm Delete'}
+                                    {isDeleting ? 'Deleting...' : (deleteType === 'posts' ? 'Delete Posts' : 'Delete Account')}
                                 </button>
                             </div>
                         </div>
                     </div>
                 )
             }
-            {}
+            { }
             <style>{`
                 @media (max-width: 499px) {
-                    div > h1[style*="font-size: 2.5rem"] {
+                    /* Title */
+                    .settings-header h1 {
                         font-size: 1.75rem !important;
                         margin-bottom: 1rem !important;
                     }
-                    div[style*="display: flex"][style*="gap: 0.5rem"][style*="border-bottom"] {
+                    /* Tabs */
+                    .settings-tabs {
                         overflow-x: auto !important;
                         flex-wrap: nowrap !important;
                         -webkit-overflow-scrolling: touch;
@@ -884,37 +910,55 @@ const Settings: React.FC = () => {
                         gap: 0.25rem !important;
                         border-bottom: none !important;
                     }
-                    div[style*="display: flex"][style*="gap: 0.5rem"][style*="border-bottom"] button {
-                        white-space: nowrap !important;
-                        padding: 0.6rem 0.9rem !important;
-                        font-size: 0.9rem !important;
+                    .settings-tabs .tab-btn {
+                       white-space: nowrap !important;
+                       flex-shrink: 0 !important;
+                       padding: 0.6rem 0.9rem !important;
+                    } 
+                    /* Fix Danger Zone Buttons Overflow */
+                    .settings-danger-zone .danger-btn {
+                       flex-wrap: wrap !important;
+                       height: auto !important;
+                       white-space: normal !important; /* Allow wrapping */
+                       text-align: left !important;
+                       min-width: 0 !important; /* Override min-width */
                     }
-                    div[style*="maxWidth: '600px'"] {
-                        max-width: 100% !important;
-                        padding: 0 !important;
+                    /* General content width override */
+                    .settings-content > div {
+                         max-width: 100% !important;
                     }
-                    .setting-group {
-                        margin-bottom: 1.5rem !important;
+                    
+                    /* Modal Fixes */
+                    .delete-modal-overlay {
+                        align-items: center !important;
+                        padding: 1rem !important;
                     }
-                    .setting-group h3 {
-                        font-size: 1rem !important;
-                        margin-bottom: 0.5rem !important;
+                    .delete-modal-content {
+                        max-width: 90% !important; /* Smaller width */
+                        width: 90% !important;
+                        max-width: 360px !important; /* Cap width */
+                        padding: 1.25rem !important;
+                        max-height: 85vh !important;
+                        overflow-y: auto !important;
+                        border-radius: 16px !important;
+                        margin: auto !important;
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
                     }
-                    .setting-group input,
-                    .setting-group textarea {
-                        padding: 0.7rem !important;
-                        font-size: 0.95rem !important;
-                    }
-                    div[style*="position: fixed"][style*="zIndex: 9999"] > div {
-                        max-width: 90% !important;
-                        padding: 1.5rem !important;
-                    }
-                    div[style*="position: fixed"][style*="zIndex: 9999"] h2 {
+                    .delete-modal-content h2 {
                         font-size: 1.25rem !important;
                     }
-                    div[style*="position: fixed"][style*="zIndex: 9999"] button {
-                        padding: 0.6rem 1rem !important;
-                        font-size: 0.9rem !important;
+                    /* Delete Modal Buttons */
+                    .delete-modal-actions {
+                         flex-direction: column !important;
+                         gap: 0.75rem !important;
+                         width: 100% !important;
+                    }
+                    .delete-modal-actions button {
+                        width: 100% !important;
+                        justify-content: center !important;
+                        padding: 0.8rem !important;
+                        min-width: 0 !important;
+                        white-space: normal !important;
                     }
                 }
             `}</style>
@@ -922,4 +966,3 @@ const Settings: React.FC = () => {
     )
 }
 export default Settings
- 
