@@ -16,6 +16,7 @@ import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ui/ThemeToggle'
 import DecryptedText from '../common/animations/DecryptedText'
 import { BackgroundBeams } from '../common/animations/BackgroundBeams'
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
 export default function AdminLayout() {
     const { logout, user } = useAuthStore()
     const navigate = useNavigate()
@@ -85,7 +86,9 @@ export default function AdminLayout() {
             navigate('/')
         }, 3000)
     }
-    if (isLoggingOut) {
+
+    function SignOutScreen({ greetingName }: { greetingName: string }) {
+        useLockBodyScroll()
         return (
             <div style={{
                 position: 'fixed',
@@ -118,6 +121,10 @@ export default function AdminLayout() {
                 </div>
             </div>
         )
+    }
+
+    if (isLoggingOut) {
+        return <SignOutScreen greetingName={greetingName} />
     }
     return (
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>

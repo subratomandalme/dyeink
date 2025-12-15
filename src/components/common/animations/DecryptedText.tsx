@@ -48,7 +48,7 @@ export default function DecryptedText({
     const [isHovering, setIsHovering] = useState(false)
     const [isScrambling, setIsScrambling] = useState(false)
     const [revealedIndices, setRevealedIndices] = useState(new Set<number>())
-    const [hasAnimated, setHasAnimated] = useState(false) 
+    const [hasAnimated, setHasAnimated] = useState(false)
     const containerRef = useRef<HTMLSpanElement>(null)
     useEffect(() => {
         let interval: any
@@ -126,6 +126,16 @@ export default function DecryptedText({
             }
         }
         if (isHovering) {
+            // Performance optimization: Disable scrambling on mobile/tablets
+            const isMobile = window.innerWidth < 768
+            if (isMobile) {
+                setDisplayText(text)
+                setIsScrambling(false)
+                setRevealedIndices(new Set(Array.from({ length: text.length }, (_, i) => i)))
+                setHasAnimated(true)
+                return
+            }
+
             setIsScrambling(true)
             interval = setInterval(() => {
                 setRevealedIndices((prevRevealed) => {
@@ -230,4 +240,4 @@ export default function DecryptedText({
         </motion.span>
     )
 }
- 
+
