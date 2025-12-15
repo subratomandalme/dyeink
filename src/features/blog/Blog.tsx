@@ -159,7 +159,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             { }
                         </div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
                         {slug ? (
                             <Link to={subdomain ? `/${subdomain}` : "/blog"} className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <ArrowLeft size={16} /> {subdomain ? '' : 'All Posts'}
@@ -190,7 +190,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             </button>
                         )}
                         {!slug && (
-                            <div style={{ margin: '0.5rem 0' }}>
+                            <div style={{}}>
                                 <input
                                     type="text"
                                     placeholder="Search here..."
@@ -211,7 +211,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 />
                             </div>
                         )}
-                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
 
                             {twitterLink && (
                                 <a
