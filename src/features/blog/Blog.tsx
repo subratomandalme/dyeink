@@ -162,7 +162,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {slug ? (
                             <Link to={subdomain ? `/${subdomain}` : "/blog"} className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <ArrowLeft size={16} /> {subdomain ? 'Back to Blog' : 'All Posts'}
+                                <ArrowLeft size={16} /> {subdomain ? '' : 'All Posts'}
                             </Link>
                         ) : !isCustomDomain && (
                             <Link to="/" className="sidebar-link" style={{ fontSize: '0.95rem' }}>
