@@ -211,13 +211,14 @@ export default function Register() {
                             <div style={{ color: '#22c55e', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
                                 <CheckCircle2 size={48} />
                             </div>
-                            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Account created!</h2>
-                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '1.5rem' }}>
-                                Please check your email for verification instructions (if enabled) or log in to continue.
+                            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+                                Account created!
+                            </h2>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
+                                Please check your email for verification instructions (if enabled) or log in to continue. <br />
+                                <strong>Check Spam Folders in Email</strong>
                             </p>
-                            <Link
-                                to="/login"
-                                className="btn btn-primary"
+                            <Link to="/login" className="btn btn-primary"
                                 style={{ display: 'flex', justifyContent: 'center', width: '100%', textDecoration: 'none' }}
                             >
                                 Sign In Now
