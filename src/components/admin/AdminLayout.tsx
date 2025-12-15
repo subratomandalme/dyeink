@@ -351,12 +351,12 @@ export default function AdminLayout() {
                 flex: 1,
                 marginLeft: '260px',
                 backgroundColor: 'var(--bg-primary)',
-                minHeight: '100vh',
+                height: '100vh',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
                 <BackgroundBeams style={{ opacity: 0.5 }} />
-                { }
+                {/* Theme Toggle */}
                 <div className="theme-toggle-wrapper" style={{
                     position: 'absolute',
                     top: '2rem',
@@ -365,18 +365,31 @@ export default function AdminLayout() {
                 }}>
                     <ThemeToggle />
                 </div>
-                <div className="content-wrapper" style={{ position: 'relative', zIndex: 10, maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={location.pathname}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -15 }}
-                            transition={{ duration: 0.2 }}
-                        >
-                            <Outlet />
-                        </motion.div>
-                    </AnimatePresence>
+
+                {/* Scrollable Content Container */}
+                <div className="scroll-container" style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    zIndex: 10
+                }}>
+                    <div className="content-wrapper" style={{ position: 'relative', maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={location.pathname}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -15 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <Outlet />
+                            </motion.div>
+                        </AnimatePresence>
+                    </div>
                 </div>
             </main>
             { }
