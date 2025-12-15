@@ -179,7 +179,7 @@ export default function Editor() {
             color: 'var(--text-primary)',
             fontFamily: "'Roboto', sans-serif"
         }}>
-            { }
+
             <nav style={{
                 position: 'sticky',
                 top: 0,
@@ -191,7 +191,7 @@ export default function Editor() {
                 alignItems: 'center',
                 zIndex: 50
             }}>
-                { }
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <button
                         onClick={() => navigate(-1)}
@@ -225,7 +225,7 @@ export default function Editor() {
                         </div>
                     )}
                 </div>
-                { }
+
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -272,7 +272,7 @@ export default function Editor() {
                 </div>
                 { }
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem' }}>
-                    { }
+
                     <button
                         onClick={() => handleSave(true)}
                         onMouseEnter={() => setIsContinueHovered(true)}
@@ -301,7 +301,7 @@ export default function Editor() {
                     </button>
                 </div>
             </nav>
-            { }
+
             <div style={{ maxWidth: '720px', margin: '0 auto', padding: '5rem 1.5rem 3rem 1.5rem' }}>
                 <div
                     ref={titleRef}
@@ -326,7 +326,7 @@ export default function Editor() {
                         lineHeight: '1.2'
                     }}
                 />
-                { }
+
                 <div
                     ref={contentRef}
                     contentEditable

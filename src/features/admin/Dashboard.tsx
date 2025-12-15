@@ -146,24 +146,24 @@ export default function Dashboard() {
     }, [realStats])
     return (
         <div style={{ paddingBottom: '4rem' }}>
-            { }
+
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Dashboard</h1>
             </div>
-            { }
+
             <section style={{ marginBottom: '3rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
                     <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-secondary)', margin: 0 }}>Analytics</h2>
                 </div>
-                { }
+
                 <div style={{
                     borderRadius: '8px',
                     overflow: 'hidden',
                     background: 'transparent'
                 }}>
-                    { }
+
                     <div className="dashboard-stats-row" style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
-                        { }
+
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Total Views
@@ -172,7 +172,7 @@ export default function Dashboard() {
                                 {(realStats?.totalViews || 0).toLocaleString()}
                             </div>
                         </div>
-                        { }
+
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Total Shares
@@ -181,7 +181,7 @@ export default function Dashboard() {
                                 {(realStats?.totalShares || 0).toLocaleString()}
                             </div>
                         </div>
-                        { }
+
 
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
@@ -190,7 +190,7 @@ export default function Dashboard() {
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.publishedPosts}</div>
                         </div>
                     </div>
-                    { }
+
                     <div style={{ height: '300px', width: '100%', minWidth: '200px', padding: '1rem 0', background: 'transparent', position: 'relative' }}>
                         {!realStats && postsLoading ? (
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
@@ -263,7 +263,7 @@ export default function Dashboard() {
                     </div>
                 </div>
             </section>
-            { }
+
             <div style={{ marginBottom: '2rem' }}>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Latest Post</h2>
                 {stats.latestPost ? (
@@ -333,7 +333,7 @@ export default function Dashboard() {
                     </div>
                 )}
             </div>
-            { }
+
             <style>{`
                 @media (max-width: 499px) {
                     .dashboard-stats-row {

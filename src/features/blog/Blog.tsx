@@ -110,14 +110,14 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
     }
     return (
         <div style={{ minHeight: '100vh', position: 'relative', overflowX: 'hidden' }}>
-            { }
+
             <div style={{
                 position: 'fixed',
                 inset: 0,
                 zIndex: 0,
                 background: 'radial-gradient(circle at 10% 10%, var(--bg-secondary), var(--bg-primary))'
             }} />
-            { }
+
             <div className="blog-theme-toggle-wrapper" style={{
                 position: 'fixed',
                 top: '2rem',
@@ -135,9 +135,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
             }}>
                 <ThemeToggle />
             </div>
-            { }
+
             <div style={{ position: 'relative', zIndex: 10, maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem', display: 'grid', gridTemplateColumns: 'minmax(200px, 250px) 1fr', gap: '4rem' }}>
-                { }
+
                 <aside style={{ position: 'sticky', top: '4rem', height: 'fit-content' }}>
                     <div style={{ marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
@@ -156,7 +156,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             }}>
                                 {blogTitle}
                             </Link>
-                            { }
+
                         </div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -282,12 +282,11 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 </a>
                             )}
                         </div>
-                        { }
-                        { }
+
                     </div>
                 </aside>
-                { }
-                <main ref={contentRef} style={{ paddingTop: '0.4rem' }}> { }
+
+                <main ref={contentRef} style={{ paddingTop: '0.4rem' }}>
                     {loading ? (
                         <div style={{ padding: '2rem 0', color: 'var(--text-muted)' }}>Loading...</div>
                     ) : posts.length === 0 ? (
@@ -299,7 +298,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             {currentPosts.map((post, index) => (
                                 <article key={post.id} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '3rem', borderBottom: index < currentPosts.length - 1 ? '1px dashed var(--border-color)' : 'none' }}>
                                     <header>
-                                        { }
+
                                         <h2 style={{
                                             fontFamily: "'Gabarito', sans-serif",
                                             fontSize: '1.6rem',
@@ -315,8 +314,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                             {slug ? post.title : <Link to={subdomain ? `/${subdomain}/${post.slug}` : `/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>{post.title}</Link>}
                                         </h2>
                                     </header>
-                                    { }
-                                    { }
+
                                     <div
                                         className="post-content"
                                     >
@@ -327,7 +325,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                             maxWidth: '700px'
                                         }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
                                     </div>
-                                    { }
+
                                     <div style={{
                                         marginTop: '1.5rem',
                                         display: 'flex',
@@ -336,7 +334,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                         paddingTop: 0
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                            { }
+
                                             <button
                                                 onClick={() => {
                                                     const path = subdomain ? `/${subdomain}/${post.slug}` : `/blog/${post.slug}`
@@ -405,7 +403,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     </div>
                                 </article>
                             ))}
-                            { }
+
                             {!slug && totalPages > 1 && (
                                 <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center', marginTop: '2rem' }}>
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
@@ -433,7 +431,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     )}
                 </main>
             </div >
-            { }
+
             < SubscribeModal
                 isOpen={isSubscribeOpen}
                 onClose={() => setIsSubscribeOpen(false)

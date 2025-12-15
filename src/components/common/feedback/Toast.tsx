@@ -38,7 +38,7 @@ export const ToastContainer = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
-            pointerEvents: 'none' 
+            pointerEvents: 'none'
         }}>
             {toasts.map((toast) => (
                 <ToastItem key={toast.id} toast={toast} onDismiss={() => removeToast(toast.id)} />
@@ -121,8 +121,8 @@ const ToastItem = ({ toast, onDismiss }: { toast: Toast, onDismiss: () => void }
             >
                 <X size={16} />
             </button>
-            {}
+
         </div>
     )
 }
- 
+

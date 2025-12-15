@@ -149,7 +149,7 @@ export default function Register() {
                         <NeumorphismButton
                             text={loading ? 'Signing Up...' : 'Sign Up'}
                             type="submit"
-                            style={{ width: '100%', height: '56px', justifyContent: 'center', fontSize: '1.2rem', fontWeight: 700 }}
+                            style={{ width: '100%', height: '48px', justifyContent: 'center', fontSize: '1rem', fontWeight: 600 }}
                             icon={loading ? <WaveLoader size={24} /> : null}
                         />
                     </div>

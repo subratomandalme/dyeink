@@ -83,8 +83,7 @@ function App() {
             <AuthListener />
             <ToastContainer />
             <Routes>
-                { }
-                { }
+
                 <Route path="/" element={
                     !window.location.hostname.includes('localhost') &&
                         !window.location.hostname.includes('vercel.app') &&
@@ -96,13 +95,12 @@ function App() {
                         </PublicRoute>
                     )
                 } />
-                { }
+
                 <Route path="/blog" element={<Blog />} />
-                { }
+
                 <Route path="/:subdomain" element={<Blog />} />
                 <Route path="/:subdomain/:slug" element={<Blog />} />
-                { }
-                { }
+
                 <Route path="/login" element={
                     <PublicRoute>
                         <Login />
@@ -121,7 +119,7 @@ function App() {
                 <Route path="/reset-password" element={
                     <ResetPassword />
                 } />
-                { }
+
                 <Route
                     path="/admin"
                     element={
@@ -138,7 +136,7 @@ function App() {
                     <Route path="settings" element={<Settings />} />
                     <Route path="domains" element={<Domains />} />
                 </Route>
-                { }
+
                 <Route
                     path="/admin/posts/new"
                     element={

@@ -45,7 +45,7 @@ const Stats: React.FC = () => {
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                             <StatCard label="Total Views" value={(realStats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
                             <StatCard label="Posts Published" value={publishedPosts.toString()} />
-                            { }
+
                         </div>
                     </div>
                 )
@@ -67,7 +67,7 @@ const Stats: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Stats</h1>
             </div>
-            { }
+
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', paddingBottom: '0' }}>
                 {tabs.map((tab) => (
                     <button
@@ -90,7 +90,7 @@ const Stats: React.FC = () => {
                     </button>
                 ))}
             </div>
-            { }
+
             {
                 showLoader ? (
                     <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
