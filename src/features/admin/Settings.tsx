@@ -827,7 +827,7 @@ const Settings: React.FC = () => {
                                                 addToast({ type: 'success', message: 'All posts deleted.' })
                                             } else {
                                                 const { postService } = await import('../../services/postService')
-                                                try { await postService.deleteAllPosts() } catch (e) { }
+                                                await postService.deleteAllPosts()
 
                                                 const { data: { session } } = await supabase.auth.getSession()
                                                 if (!session?.access_token) throw new Error('No session')
@@ -845,6 +845,7 @@ const Settings: React.FC = () => {
                                                 }
 
                                                 const { useAuthStore } = await import('../../stores/authStore')
+                                                await supabase.auth.signOut()
                                                 await useAuthStore.getState().logout()
                                                 window.location.href = '/'
                                             }
