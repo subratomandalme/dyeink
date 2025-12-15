@@ -25,7 +25,9 @@ export default function AdminLayout() {
     const subdomain = settings?.subdomain || null
     const [isCreateHovered, setIsCreateHovered] = useState(false)
     const [isLoggingOut, setIsLoggingOut] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
     const { theme } = useThemeStore()
+
     const getNeumorphicShadows = () => {
         const isDark = theme === 'dark'
         if (isCreateHovered) {
@@ -42,6 +44,16 @@ export default function AdminLayout() {
             return '-5px -5px 10px rgba(255, 255, 255, 0.8), 5px 5px 10px rgba(0, 0, 0, 0.25)'
         }
     }
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768)
+        }
+        checkMobile()
+        window.addEventListener('resize', checkMobile)
+        return () => window.removeEventListener('resize', checkMobile)
+    }, [])
+
     useEffect(() => {
         const loadSettings = async () => {
             if (!user) return
@@ -355,7 +367,7 @@ export default function AdminLayout() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                <BackgroundBeams style={{ opacity: 0.5 }} />
+                {!isMobile && <BackgroundBeams style={{ opacity: 0.5 }} />}
                 {/* Theme Toggle */}
                 <div className="theme-toggle-wrapper" style={{
                     position: 'absolute',
