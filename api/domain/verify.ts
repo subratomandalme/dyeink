@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'GET') {
         return res.status(405).json({ error: 'Method not allowed' })
@@ -12,7 +11,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Domain is required' })
     }
 
-    
     const VERCEL_TOKEN = process.env.VERCEL_TOKEN
     const PROJECT_ID = process.env.PROJECT_ID
     const TEAM_ID = process.env.TEAM_ID
@@ -22,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const response = await fetch(`https:
+        const response = await fetch(`https://api.vercel.com/v9/projects/${PROJECT_ID}/domains/${domain}?teamId=${TEAM_ID}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${VERCEL_TOKEN}`,
@@ -36,15 +34,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const data = await response.json()
 
-        
-        
         if (data.verified) {
-            
-            
-            
             return res.status(200).json({ verified: true, status: 'active' })
         } else {
-            
             return res.status(200).json({ verified: false, verification: data.verification })
         }
 
@@ -53,4 +45,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(500).json({ error: 'Internal Server Error' })
     }
 }
- 
+

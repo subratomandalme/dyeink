@@ -38,7 +38,7 @@ export default function ForgotPassword() {
             background: 'var(--bg-primary)',
             color: 'var(--text-primary)'
         }}>
-            {}
+
             <div style={{
                 position: 'absolute',
                 inset: 0,
@@ -54,7 +54,7 @@ export default function ForgotPassword() {
                 padding: '2.5rem',
                 borderRadius: '16px',
                 border: '1px solid var(--border-color)',
-                background: 'var(--bg-elevated)', 
+                background: 'var(--bg-elevated)',
                 boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)'
             }}>
                 <div style={{ marginBottom: '2rem' }}>
@@ -115,7 +115,7 @@ export default function ForgotPassword() {
                             <div style={{
                                 padding: '0.75rem',
                                 borderRadius: '8px',
-                                background: 'rgba(239, 68, 68, 0.1)', 
+                                background: 'rgba(239, 68, 68, 0.1)',
                                 border: '1px solid rgba(239, 68, 68, 0.2)',
                                 color: '#ef4444',
                                 fontSize: '0.9rem'
@@ -201,4 +201,4 @@ export default function ForgotPassword() {
         </div>
     )
 }
- 
+

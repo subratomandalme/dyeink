@@ -66,8 +66,6 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 .then(({ error }) => {
                                     if (error) {
                                         console.error('VIEW ERROR:', error)
-                                        console.error('Run v42_disable_rls.sql in Supabase!')
-                                    } else {
                                     }
                                 })
                             const today = format(new Date(), 'yyyy-MM-dd')
@@ -120,8 +118,8 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
 
             <div className="blog-theme-toggle-wrapper" style={{
                 position: 'fixed',
-                top: '2rem',
-                right: '2rem',
+                top: '1.5rem',
+                right: '1.5rem',
                 zIndex: 100,
                 border: '1px solid var(--border-color)',
                 borderRadius: '50%',
@@ -142,9 +140,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     <div style={{ marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
                             <Link to="/" style={{
-                                fontFamily: 'var(--font-display)',
-                                fontSize: '1.75rem',
-                                fontWeight: 800,
+                                fontFamily: "'Jost', sans-serif",
+                                fontSize: '1.8rem',
+                                fontWeight: 400,
                                 color: 'var(--text-primary)',
                                 display: '-webkit-box',
                                 letterSpacing: '-0.03em',
@@ -165,7 +163,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 <ArrowLeft size={16} /> {subdomain ? '' : 'All Posts'}
                             </Link>
                         ) : !isCustomDomain && (
-                            <Link to="/" className="sidebar-link" style={{ fontSize: '0.95rem' }}>
+                            <Link to="/" className="sidebar-link" style={{ fontSize: '0.95rem', fontFamily: "'Jost', sans-serif", fontWeight: 400 }}>
                                 Home
                             </Link>
                         )}
@@ -179,7 +177,8 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     padding: 0,
                                     cursor: 'pointer',
                                     textAlign: 'left',
-                                    fontFamily: 'inherit',
+                                    fontFamily: "'Jost', sans-serif",
+                                    fontWeight: 400,
                                     fontSize: '0.95rem',
                                     display: 'flex',
                                     alignItems: 'center',
@@ -192,6 +191,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                         {!slug && (
                             <div style={{ margin: '0.5rem 0' }}>
                                 <input
+                                    className="blog-search-input"
                                     type="text"
                                     placeholder="Search here..."
                                     value={searchTerm}
@@ -211,7 +211,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                 />
                             </div>
                         )}
-                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
+                        <div style={{ display: 'flex', gap: '1rem' }}>
 
                             {twitterLink && (
                                 <a
@@ -300,9 +300,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     <header>
 
                                         <h2 style={{
-                                            fontFamily: "'Gabarito', sans-serif",
-                                            fontSize: '1.6rem',
-                                            fontWeight: 800,
+                                            fontFamily: "'Jost', sans-serif",
+                                            fontSize: '1.5rem',
+                                            fontWeight: 400,
                                             lineHeight: 1.1,
                                             marginBottom: '0.75rem',
                                             letterSpacing: '-0.02em',
@@ -322,7 +322,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                             color: 'var(--text-secondary)',
                                             lineHeight: 1.6,
                                             fontSize: '0.95rem',
-                                            maxWidth: '700px'
+                                            maxWidth: '700px',
+                                            fontFamily: "'Jost', sans-serif",
+                                            fontWeight: 400
                                         }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
                                     </div>
 
@@ -471,10 +473,17 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     aside > div:first-child a {
                         font-size: 1.5rem !important;
                     }
+                    aside > div:last-child {
+                        gap: 0.5rem !important;
+                    }
+                    aside > div:last-child > div {
+                        margin: 0 !important;
+                    }
                     aside > div:last-child > div:last-child {
                         flex-direction: row !important;
-                        gap: 1.25rem !important;
-                        margin-top: 0.75rem !important;
+                        gap: 0.75rem !important;
+                        margin-top: 0 !important;
+                        padding-top: 0.25rem !important;
                     }
                     main {
                         padding-top: 0 !important;
@@ -498,6 +507,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     .blog-theme-toggle-wrapper button {
                         width: 36px !important;
                         height: 36px !important;
+                    }
+                    .blog-search-input {
+                        width: 140px !important;
                     }
                 }
             `}</style>

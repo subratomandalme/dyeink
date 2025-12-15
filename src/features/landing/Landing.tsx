@@ -7,7 +7,7 @@ import PixelCard from '../../components/common/ui/PixelCard'
 export default function Landing() {
     return (
         <div className="landing-page" style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)', position: 'relative', overflow: 'hidden' }}>
-            {}
+
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
                 <LightRays
                     raysOrigin="top-center"
@@ -21,7 +21,7 @@ export default function Landing() {
                     distortion={0.1}
                 />
             </div>
-            {}
+
             <div className="landing-theme-toggle" style={{
                 position: 'fixed',
                 top: '2rem',
@@ -30,16 +30,16 @@ export default function Landing() {
             }}>
                 <ThemeToggle />
             </div>
-            {}
+
             <nav style={{ position: 'relative', zIndex: 10, padding: '2rem 7rem 2rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ width: '40px', height: '40px' }}>
                     <img src="/Di.png" alt="DyeInk" className="logo-adaptive" style={{ height: '100%', width: '100%', objectFit: 'contain' }} />
                 </div>
-                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '-8px'  }}>
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '-8px' }}>
                     <NeumorphismButton to="/login" text="Sign In" icon={null} />
                 </div>
             </nav>
-            {}
+
             <main style={{
                 position: 'relative',
                 zIndex: 10,
@@ -47,7 +47,7 @@ export default function Landing() {
                 margin: '0 auto',
                 padding: '0 2rem',
                 textAlign: 'center',
-                minHeight: 'calc(100vh - 140px)', 
+                minHeight: 'calc(100vh - 140px)',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center',
@@ -55,7 +55,7 @@ export default function Landing() {
             }}>
                 <h1 style={{
                     fontFamily: 'var(--font-display)',
-                    fontSize: 'clamp(4.5rem, 12vw, 8rem)', 
+                    fontSize: 'clamp(4.5rem, 12vw, 8rem)',
                     fontWeight: 800,
                     lineHeight: 1.05,
                     marginBottom: '2rem',
@@ -72,7 +72,7 @@ export default function Landing() {
                     maxWidth: '500px',
                     margin: '0 auto 2rem auto',
                     lineHeight: 1.6,
-                    fontFamily: 'var(--font-display)', 
+                    fontFamily: 'var(--font-display)',
                     fontWeight: 500
                 }}>
                     A minimal, distraction-free publishing platform for writers who value clarity and silence.
@@ -81,7 +81,7 @@ export default function Landing() {
                     <NeumorphismButton to="/register" text="Create your blog" icon={null} />
                 </div>
             </main>
-            {}
+
             <section style={{ position: 'relative', zIndex: 10, maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 8rem 2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', justifyItems: 'center' }}>
                 <PixelCard variant="pink" className="feature-card-override">
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', padding: '2rem', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', zIndex: 20 }}>
@@ -123,7 +123,7 @@ export default function Landing() {
                     <Github size={24} />
                 </a>
             </footer>
-            {}
+
             <style>{`
                 @media (max-width: 499px) {
                     .landing-theme-toggle {
@@ -164,4 +164,4 @@ export default function Landing() {
         </div>
     )
 }
- 
+
