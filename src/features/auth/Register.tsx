@@ -72,7 +72,7 @@ export default function Register() {
         }
     }
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
+        <div className="register-container" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', position: 'relative', overflow: 'hidden' }}>
 
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
                 <LightRays
@@ -226,6 +226,42 @@ export default function Register() {
                     </div>
                 )
             }
+            <style>{`
+                @media (max-width: 499px) {
+                    .register-container {
+                        height: 100vh !important;
+                        overflow: hidden !important;
+                        padding: 1rem !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                    }
+                    .logo-adaptive {
+                         width: 50px !important;
+                         height: 50px !important;
+                    }
+                    .animate-fade-in {
+                        transform: scale(0.9);
+                        width: 100% !important;
+                        max-width: 320px !important;
+                        padding: 1.25rem !important;
+                    }
+                    .form-label {
+                        font-size: 0.8rem !important;
+                        margin-bottom: 0.2rem !important;
+                    }
+                    input {
+                        height: 40px !important;
+                        font-size: 0.9rem !important;
+                    }
+                    form > div {
+                        gap: 1rem !important;
+                    }
+                     .github-btn {
+                        padding: 0.6rem !important;
+                        font-size: 0.9rem !important;
+                    }
+                }
+            `}</style>
         </div >
     )
 }

@@ -189,7 +189,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             </button>
                         )}
                         {!slug && (
-                            <div style={{ margin: '0.5rem 0' }}>
+                            <div className="sidebar-search-wrapper" style={{ margin: '0.5rem 0' }}>
                                 <input
                                     className="blog-search-input"
                                     type="text"
@@ -471,19 +471,33 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                         margin-bottom: 0.75rem !important;
                     }
                     aside > div:first-child a {
-                        font-size: 1.5rem !important;
+                        font-size: 2.2rem !important;
+                        font-weight: 500 !important;
+                        line-height: 1.1 !important;
                     }
                     aside > div:last-child {
-                        gap: 0.5rem !important;
+                        gap: 0.2rem !important;
                     }
-                    aside > div:last-child > div {
+                    .blog-search-input {
                         margin: 0 !important;
+                    }
+                    aside > div:last-child > .sidebar-search-wrapper {
+                        margin: 0 !important;
+                        margin-top: 0.6rem !important;
                     }
                     aside > div:last-child > div:last-child {
                         flex-direction: row !important;
-                        gap: 0.75rem !important;
-                        margin-top: 0 !important;
-                        padding-top: 0.25rem !important;
+                        gap: 1.25rem !important;
+                        margin: 0 !important;
+                        margin-top: 0.65rem !important;
+                        padding: 0 !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        height: auto !important;
+                    }
+                    aside > div:last-child > div {
+                         margin: 0 !important;
+                         padding: 0 !important;
                     }
                     main {
                         padding-top: 0 !important;
