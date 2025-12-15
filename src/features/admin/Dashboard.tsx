@@ -165,7 +165,7 @@ export default function Dashboard() {
                     <div className="dashboard-stats-row" style={{ display: 'flex', gap: '2rem', marginBottom: '2rem' }}>
                         { }
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Total Views
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -174,7 +174,7 @@ export default function Dashboard() {
                         </div>
                         { }
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Total Shares
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
@@ -184,7 +184,7 @@ export default function Dashboard() {
                         { }
 
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
-                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                            <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Published Posts
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.publishedPosts}</div>
@@ -342,14 +342,14 @@ export default function Dashboard() {
                         gap: 1rem !important;
                     }
                     .dashboard-stats-row > div {
-                        padding: 0.75rem 0 !important;
+                        padding: 0.5rem 0 !important;
                     }
                     .dashboard-stats-row .stat-label {
-                        font-size: 0.75rem !important;
+                        font-size: 0.8rem !important;
                         white-space: nowrap !important;
                     }
                     .dashboard-stats-row .stat-value {
-                        font-size: 1.5rem !important;
+                        font-size: 1.75rem !important;
                     }
                 }
             `}</style>
