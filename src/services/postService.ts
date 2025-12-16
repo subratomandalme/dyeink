@@ -1,6 +1,32 @@
 import { supabase } from '../lib/supabase'
 import { Post, CreatePostInput, UpdatePostInput } from '../types'
 export const postService = {
+    async uploadImage(file: File): Promise<string | null> {
+        try {
+            const fileExt = file.name.substring(file.name.lastIndexOf('.'))
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}${fileExt}`
+            const filePath = `${fileName}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('post-images')
+                .upload(filePath, file)
+
+            if (uploadError) {
+                console.error('Error uploading image:', uploadError)
+                throw uploadError
+            }
+
+            const { data } = supabase.storage
+                .from('post-images')
+                .getPublicUrl(filePath)
+
+            return data.publicUrl
+        } catch (error) {
+            console.error('Upload failed:', error)
+            return null
+        }
+    },
+
     async createPost(post: CreatePostInput): Promise<Post | null> {
         const slug = post.title
             .toLowerCase()
@@ -17,7 +43,7 @@ export const postService = {
                 title: post.title,
                 content: post.content,
                 excerpt: post.excerpt,
-                slug: slug, 
+                slug: slug,
                 cover_image: post.coverImage,
                 published: post.published,
                 published_at: post.published ? new Date().toISOString() : null,
@@ -108,7 +134,7 @@ export const postService = {
             }
         }
         if (options.publishedOnly) {
-            query = query.eq('published', true)
+            query = query.eq('published', true).order('published_at', { ascending: false })
         }
         const { data, error } = await query
         if (error) {
@@ -148,11 +174,11 @@ const mapResponseToPost = (data: any): Post => {
         published: data.published,
         publishedAt: data.published_at,
         userId: data.user_id,
-        views: data.views, 
-        shares: data.shares, 
+        views: data.views,
+        shares: data.shares,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
         user: data.user
     }
 }
- 
+

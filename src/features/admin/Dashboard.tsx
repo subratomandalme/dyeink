@@ -14,7 +14,7 @@ import { format } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminStore } from '../../stores/adminStore'
-import WaveLoader from '../../components/common/feedback/WaveLoader'
+import DashboardSkeleton from '../../components/admin/skeletons/DashboardSkeleton'
 export default function Dashboard() {
     const { posts, settings, postsLoading, stats, statsLoading } = useAdminStore()
 
@@ -24,7 +24,7 @@ export default function Dashboard() {
 
 
     useEffect(() => {
-        // Delay chart rendering to ensure layout is stable (fixes Recharts width/height -1 warning)
+
         const timer = requestAnimationFrame(() => setReady(true))
         return () => cancelAnimationFrame(timer)
     }, [])
@@ -62,8 +62,12 @@ export default function Dashboard() {
 
     const showLoader = (postsLoading && !posts) || (statsLoading && !stats)
 
+    if (showLoader) {
+        return <DashboardSkeleton />
+    }
+
     return (
-        <div style={{ paddingBottom: '4rem' }}>
+        <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Dashboard</h1>
@@ -103,18 +107,15 @@ export default function Dashboard() {
 
                         <div style={{ flex: 1, padding: '1.5rem 0' }}>
                             <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                Published Posts
+                                Published
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{dashboardStats.publishedPosts}</div>
                         </div>
                     </div>
 
                     <div style={{ width: "100%", height: "300px", minHeight: "300px", minWidth: 0 }}>
-                        {showLoader ? (
-                            <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
-                                <WaveLoader size={48} />
-                            </div>
-                        ) : !ready || graphData.length === 0 ? (
+
+                        {!ready || graphData.length === 0 ? (
                             <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
                                 {!ready ? null : 'No stats recorded yet'}
                             </div>

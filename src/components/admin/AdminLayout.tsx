@@ -15,12 +15,13 @@ import { useAdminStore } from '../../stores/adminStore'
 import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ui/ThemeToggle'
 import DecryptedText from '../common/animations/DecryptedText'
+import Skeleton from '../common/ui/Skeleton'
 
 import AdminGreeting from './AdminGreeting'
 import NewPostButton from './sidebar/NewPostButton'
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
 export default function AdminLayout() {
-    const { logout, user } = useAuthStore()
+    const { logout, user, isLoading } = useAuthStore()
     const navigate = useNavigate()
     const location = useLocation()
     const { settings, fetchSettings, updateSettingsInCache } = useAdminStore()
@@ -263,8 +264,17 @@ export default function AdminLayout() {
                     overflowX: 'hidden',
                     zIndex: 10
                 }}>
-                    <div className="content-wrapper" style={{ position: 'relative', maxWidth: '1000px', margin: '0 auto', padding: '4rem 2rem 2rem 2rem' }}>
-                        <Outlet />
+                    <div className="content-wrapper" style={{ position: 'relative', maxWidth: '1000px', margin: '0 auto', padding: '2.5rem 2rem 2rem 2rem' }}>
+                        {isLoading ? (
+                            <div className="animate-fade-in">
+                                <div style={{ marginBottom: '2rem' }}>
+                                    <Skeleton style={{ height: '40px', width: '200px' }} />
+                                </div>
+                                <Skeleton style={{ height: '300px', width: '100%', borderRadius: '12px' }} />
+                            </div>
+                        ) : (
+                            <Outlet />
+                        )}
                     </div>
                 </div>
             </main>
@@ -294,14 +304,12 @@ export default function AdminLayout() {
                     font-weight: 500;
                 }
 
-                /* Active state visibility for dark mode */
                 html[data-theme="dark"] .sidebar-item.active {
                     background-color: #262626 !important;
                     color: #ffffff !important;
                     box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
                 }
 
-                /* Explicit light mode overrides */
                 html[data-theme="light"] .sidebar-item {
                      color: #52525b !important;
                 }
@@ -309,7 +317,6 @@ export default function AdminLayout() {
                      color: #18181b !important;
                      background: #f3f4f6 !important;
                 }
-                /* Ensure hover is black in light mode */
                 html[data-theme="light"] .sidebar-item:hover {
                      color: #000000 !important;
                 }
@@ -431,7 +438,7 @@ export default function AdminLayout() {
                         font-weight: 300 !important;
                         line-height: 1 !important;
                         display: block !important;
-                        margin-top: -1px !important; /* Slight correction often needed depending on font baseline */
+                        margin-top: -1px !important;
                         color: #ffffff !important;
                         -webkit-text-fill-color: #ffffff !important;
                         background: none !important;
@@ -440,9 +447,7 @@ export default function AdminLayout() {
                         color: #000000 !important;
                         -webkit-text-fill-color: #000000 !important;
                     }
-                    /* Ensure we don't break the gradient border on the anchor itself */
                     .admin-sidebar .new-post-btn a::before {
-                         /* Let the original gradient style apply */
                          content: "" !important;
                          font-size: unset !important;
                          font-weight: unset !important;

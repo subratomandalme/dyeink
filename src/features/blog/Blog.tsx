@@ -7,7 +7,40 @@ import { supabase } from '../../lib/supabase'
 import type { Post } from '../../types'
 import { format } from 'date-fns'
 import ThemeToggle from '../../components/common/ui/ThemeToggle'
-import { Share2, Twitter, Linkedin, Github, Globe, ArrowLeft } from 'lucide-react'
+import { Share2, Linkedin, Github, Globe, ArrowLeft, Dribbble } from 'lucide-react'
+
+
+const XIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.901 3H21L14.415 10.531L22.158 21H16.857L12.706 15.578L7.957 21H5.857L12.923 12.922L5.525 3H10.957L14.618 7.95L18.901 3ZM18.163 19.742H19.325L9.288 5.161H8.042L18.163 19.742Z" />
+    </svg>
+)
+
+const HuggingFaceIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+        <path d="M9 13h.01M15 13h.01M10 16s1 1 2 1 2-1 2-1" />
+    </svg>
+)
+
+const BehanceIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7.78 17.55c2.97 0 4.15-1.52 4.15-4.14 0-1.89-.91-2.92-2.3-3.23 1.1-.47 1.84-1.34 1.84-2.8 0-2.31-1.63-3.38-4.04-3.38H2v13.55h5.78zm-3.46-8.9h2.95c1.07 0 1.64.49 1.64 1.57 0 1.12-.62 1.66-1.74 1.66H4.32V8.65zm3.17 7.02H4.32v-3.78h3.29c1.23 0 1.96.63 1.96 1.83 0 1.34-.82 1.95-2.08 1.95zm8.13-7.53h5.27v-1.6h-5.27v1.6zm2.63 7.85c-2.39 0-3.69-1.3-3.69-3.96 0-2.69 1.34-4.04 3.79-4.04 2.37 0 3.65 1.3 3.65 4h-5.75c.08 1.54.89 2.29 2.19 2.29 1.05 0 1.76-.44 2.02-1.28h1.68c-.37 1.77-1.87 3-3.89 3zm-.05-6.42c-1.03 0-1.63.5-1.77 1.55h3.6c-.08-1.07-.65-1.55-1.83-1.55z" />
+    </svg>
+)
+
+const LeetCodeIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.843 5.843 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z" />
+    </svg>
+)
+
+const HackerRankIcon = ({ size = 20 }: { size?: number }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z M7 7h2v10H7V7zm8 0h2v10h-2V7z M12 11h2v2h-2v-2z" />
+        <rect x="11" y="9" width="2" height="6" rx="1" />
+    </svg>
+)
 import { useToast } from '../../components/common/feedback/Toast'
 import { useCodeCopy } from '../../hooks/useCodeCopy'
 import SubscribeModal from '../../components/common/ui/SubscribeModal'
@@ -25,6 +58,11 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
     const [linkedinLink, setLinkedinLink] = useState<string | null>(null)
     const [githubLink, setGithubLink] = useState<string | null>(null)
     const [websiteLink, setWebsiteLink] = useState<string | null>(null)
+    const [dribbbleLink, setDribbbleLink] = useState<string | null>(null)
+    const [huggingfaceLink, setHuggingfaceLink] = useState<string | null>(null)
+    const [behanceLink, setBehanceLink] = useState<string | null>(null)
+    const [leetcodeLink, setLeetcodeLink] = useState<string | null>(null)
+    const [hackerrankLink, setHackerrankLink] = useState<string | null>(null)
     const [newsletterEmail, setNewsletterEmail] = useState<string | null>(null)
     const [blogId, setBlogId] = useState<number | null>(null)
     const { addToast } = useToast()
@@ -51,9 +89,15 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     setLinkedinLink(settings.linkedinLink || null)
                     setGithubLink(settings.githubLink || null)
                     setWebsiteLink(settings.websiteLink || null)
+                    setDribbbleLink(settings.dribbbleLink || null)
+                    setHuggingfaceLink(settings.huggingfaceLink || null)
+                    setBehanceLink(settings.behanceLink || null)
+                    setLeetcodeLink(settings.leetcodeLink || null)
+                    setHackerrankLink(settings.hackerrankLink || null)
                     setNewsletterEmail(settings.newsletterEmail || null)
                     setBlogId(settings.id || null)
                     const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
+
                     setPosts(fetchedPosts)
                     if (slug && fetchedPosts.length > 0) {
                         const activePost = fetchedPosts.find(p => p.slug === slug)
@@ -227,7 +271,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
                                     title="Follow on X / Twitter"
                                 >
-                                    <Twitter size={20} />
+                                    <XIcon size={20} />
                                 </a>
                             )}
                             {linkedinLink && (
@@ -262,6 +306,91 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     title="View on GitHub"
                                 >
                                     <Github size={20} />
+                                </a>
+                            )}
+                            {dribbbleLink && (
+                                <a
+                                    href={dribbbleLink.startsWith('http') ? dribbbleLink : `https://${dribbbleLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                    title="View on Dribbble"
+                                >
+                                    <Dribbble size={20} />
+                                </a>
+                            )}
+                            {behanceLink && (
+                                <a
+                                    href={behanceLink.startsWith('http') ? behanceLink : `https://${behanceLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                    title="View on Behance"
+                                >
+                                    <BehanceIcon size={20} />
+                                </a>
+                            )}
+                            {leetcodeLink && (
+                                <a
+                                    href={leetcodeLink.startsWith('http') ? leetcodeLink : `https://${leetcodeLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                    title="View on LeetCode"
+                                >
+                                    <LeetCodeIcon size={20} />
+                                </a>
+                            )}
+                            {hackerrankLink && (
+                                <a
+                                    href={hackerrankLink.startsWith('http') ? hackerrankLink : `https://${hackerrankLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                    title="View on HackerRank"
+                                >
+                                    <HackerRankIcon size={20} />
+                                </a>
+                            )}
+                            {huggingfaceLink && (
+                                <a
+                                    href={huggingfaceLink.startsWith('http') ? huggingfaceLink : `https://${huggingfaceLink}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                        color: 'var(--text-secondary)',
+                                        transition: 'color 0.2s',
+                                        display: 'inline-flex'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                    title="View on Hugging Face"
+                                >
+                                    <HuggingFaceIcon size={20} />
                                 </a>
                             )}
                             {websiteLink && (
@@ -325,7 +454,12 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                             maxWidth: '700px',
                                             fontFamily: "'Jost', sans-serif",
                                             fontWeight: 400
-                                        }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
+                                        }} dangerouslySetInnerHTML={{
+                                            __html: DOMPurify.sanitize(post.content, {
+                                                ADD_TAGS: ['img'],
+                                                ADD_ATTR: ['src', 'alt', 'width', 'height', 'style'],
+                                            })
+                                        }} />
                                     </div>
 
                                     <div style={{
@@ -455,6 +589,13 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     color: var(--text-primary);
                     text-decoration: underline;
                 }
+                .post-content img {
+                    max-width: 100%;
+                    height: auto;
+                    border-radius: 8px;
+                    margin: 1.5rem 0;
+                    display: block;
+                }
                 @media (max-width: 499px) {
                     div[style*="grid-template-columns"] {
                         grid-template-columns: 1fr !important;
@@ -524,6 +665,12 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     }
                     .blog-search-input {
                         width: 140px !important;
+                    }
+                    .post-content img {
+                        max-width: 100% !important;
+                        height: auto !important;
+                        margin: 1rem 0 !important;
+                        border-radius: 6px !important;
                     }
                 }
             `}</style>

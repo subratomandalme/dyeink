@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { BarChart2, Share2 } from 'lucide-react'
-import WaveLoader from '../../components/common/feedback/WaveLoader'
+import StatsSkeleton from '../../components/admin/skeletons/StatsSkeleton'
 import { useAdminStore } from '../../stores/adminStore'
 const Stats: React.FC = () => {
     const { posts, postsLoading, stats, statsLoading } = useAdminStore()
@@ -18,7 +18,7 @@ const Stats: React.FC = () => {
                     <div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
                             <StatCard label="Total Views" value={(stats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
-                            <StatCard label="Posts Published" value={publishedPosts.toString()} />
+                            <StatCard label="Published" value={publishedPosts.toString()} />
                         </div>
                     </div>
                 )
@@ -67,16 +67,14 @@ const Stats: React.FC = () => {
 
             {
                 showLoader ? (
-                    <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
-                        <WaveLoader />
-                    </div>
+                    <StatsSkeleton />
                 ) : (
-                    renderTabContent()
+                    <div className="animate-fade-in">
+                        {renderTabContent()}
+                    </div>
                 )
             }
-            <style>{`
 
-`}</style>
         </div >
     )
 }
