@@ -23,11 +23,7 @@ const HuggingFaceIcon = ({ size = 20 }: { size?: number }) => (
     </svg>
 )
 
-const BehanceIcon = ({ size = 20 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M7.78 17.55c2.97 0 4.15-1.52 4.15-4.14 0-1.89-.91-2.92-2.3-3.23 1.1-.47 1.84-1.34 1.84-2.8 0-2.31-1.63-3.38-4.04-3.38H2v13.55h5.78zm-3.46-8.9h2.95c1.07 0 1.64.49 1.64 1.57 0 1.12-.62 1.66-1.74 1.66H4.32V8.65zm3.17 7.02H4.32v-3.78h3.29c1.23 0 1.96.63 1.96 1.83 0 1.34-.82 1.95-2.08 1.95zm8.13-7.53h5.27v-1.6h-5.27v1.6zm2.63 7.85c-2.39 0-3.69-1.3-3.69-3.96 0-2.69 1.34-4.04 3.79-4.04 2.37 0 3.65 1.3 3.65 4h-5.75c.08 1.54.89 2.29 2.19 2.29 1.05 0 1.76-.44 2.02-1.28h1.68c-.37 1.77-1.87 3-3.89 3zm-.05-6.42c-1.03 0-1.63.5-1.77 1.55h3.6c-.08-1.07-.65-1.55-1.83-1.55z" />
-    </svg>
-)
+
 
 const LeetCodeIcon = ({ size = 20 }: { size?: number }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -35,12 +31,7 @@ const LeetCodeIcon = ({ size = 20 }: { size?: number }) => (
     </svg>
 )
 
-const HackerRankIcon = ({ size = 20 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z M7 7h2v10H7V7zm8 0h2v10h-2V7z M12 11h2v2h-2v-2z" />
-        <rect x="11" y="9" width="2" height="6" rx="1" />
-    </svg>
-)
+
 import { useToast } from '../../components/common/feedback/Toast'
 import { useCodeCopy } from '../../hooks/useCodeCopy'
 import SubscribeModal from '../../components/common/ui/SubscribeModal'
@@ -60,9 +51,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
     const [websiteLink, setWebsiteLink] = useState<string | null>(null)
     const [dribbbleLink, setDribbbleLink] = useState<string | null>(null)
     const [huggingfaceLink, setHuggingfaceLink] = useState<string | null>(null)
-    const [behanceLink, setBehanceLink] = useState<string | null>(null)
+
     const [leetcodeLink, setLeetcodeLink] = useState<string | null>(null)
-    const [hackerrankLink, setHackerrankLink] = useState<string | null>(null)
+
     const [newsletterEmail, setNewsletterEmail] = useState<string | null>(null)
     const [blogId, setBlogId] = useState<number | null>(null)
     const { addToast } = useToast()
@@ -91,9 +82,9 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     setWebsiteLink(settings.websiteLink || null)
                     setDribbbleLink(settings.dribbbleLink || null)
                     setHuggingfaceLink(settings.huggingfaceLink || null)
-                    setBehanceLink(settings.behanceLink || null)
+
                     setLeetcodeLink(settings.leetcodeLink || null)
-                    setHackerrankLink(settings.hackerrankLink || null)
+
                     setNewsletterEmail(settings.newsletterEmail || null)
                     setBlogId(settings.id || null)
                     const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
@@ -325,23 +316,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     <Dribbble size={20} />
                                 </a>
                             )}
-                            {behanceLink && (
-                                <a
-                                    href={behanceLink.startsWith('http') ? behanceLink : `https://${behanceLink}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        color: 'var(--text-secondary)',
-                                        transition: 'color 0.2s',
-                                        display: 'inline-flex'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-                                    title="View on Behance"
-                                >
-                                    <BehanceIcon size={20} />
-                                </a>
-                            )}
+
                             {leetcodeLink && (
                                 <a
                                     href={leetcodeLink.startsWith('http') ? leetcodeLink : `https://${leetcodeLink}`}
@@ -359,23 +334,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                                     <LeetCodeIcon size={20} />
                                 </a>
                             )}
-                            {hackerrankLink && (
-                                <a
-                                    href={hackerrankLink.startsWith('http') ? hackerrankLink : `https://${hackerrankLink}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        color: 'var(--text-secondary)',
-                                        transition: 'color 0.2s',
-                                        display: 'inline-flex'
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-                                    title="View on HackerRank"
-                                >
-                                    <HackerRankIcon size={20} />
-                                </a>
-                            )}
+
                             {huggingfaceLink && (
                                 <a
                                     href={huggingfaceLink.startsWith('http') ? huggingfaceLink : `https://${huggingfaceLink}`}
