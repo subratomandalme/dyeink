@@ -1,5 +1,5 @@
 # DyeInk
-A blogging platform which is designed to be simple to use, fast, and minimalistic.
+A simple to use, fast, and minimalistic blogging site.
 ## Live
 [![Live](https://vercel.com/button)](https://dyeink.subratomandal.com)
 ## Features
