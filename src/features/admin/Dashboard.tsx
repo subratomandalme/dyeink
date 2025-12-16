@@ -70,7 +70,7 @@ export default function Dashboard() {
         <div className="animate-fade-in" style={{ paddingBottom: '4rem' }}>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Dashboard</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)', fontFamily: "'Jost', sans-serif" }}>Dashboard</h1>
             </div>
 
             <section style={{ marginBottom: '3rem' }}>
@@ -211,9 +211,9 @@ export default function Dashboard() {
                     >
                         <h3 style={{
                             fontSize: '1.4rem',
-                            fontWeight: 700,
+                            fontWeight: 400,
                             margin: '0 0 1rem 0',
-                            fontFamily: 'var(--font-display)',
+                            fontFamily: "'Jost', sans-serif",
                             color: 'var(--text-primary)',
                             lineHeight: 1.2,
                             letterSpacing: '-0.02em'
@@ -224,7 +224,8 @@ export default function Dashboard() {
                             <span style={{
                                 fontSize: '0.8rem',
                                 color: 'var(--text-secondary)',
-                                fontFamily: 'var(--font-mono)'
+                                fontFamily: "'Jost', sans-serif",
+                                fontWeight: 400
                             }}>
                                 {new Date(dashboardStats.latestPost.createdAt).toLocaleDateString('en-US')}
                             </span>
@@ -234,7 +235,8 @@ export default function Dashboard() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.4rem',
-                                fontWeight: 500
+                                fontFamily: "'Jost', sans-serif",
+                                fontWeight: 400
                             }}>
                                 View Post <ArrowRight size={16} />
                             </span>

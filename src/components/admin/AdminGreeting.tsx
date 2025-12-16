@@ -35,7 +35,7 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
                     fontSize: '1.5rem',
                     color: 'var(--text-secondary)',
                     opacity: 0.8,
-                    fontFamily: 'var(--font-sans)',
+                    fontFamily: "'Jost', sans-serif",
                     fontWeight: 500,
                     textShadow: '0 0 25px rgba(255, 255, 255, 0.8)'
                 }}>Hi,</span>
@@ -46,8 +46,8 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 700,
+                    fontFamily: "'Jost', sans-serif",
+                    fontWeight: 500,
                     display: 'block',
                     height: '2.2rem',
                     width: '100%'
@@ -64,7 +64,7 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
                 fontSize: '1.5rem',
                 color: 'var(--text-secondary)',
                 opacity: 0.8,
-                fontFamily: 'var(--font-sans)',
+                fontFamily: "'Jost', sans-serif",
                 fontWeight: 500,
                 textShadow: '0 0 25px rgba(255, 255, 255, 0.8)'
             }}>Hi,</span>
@@ -75,8 +75,8 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 700,
+                fontFamily: "'Jost', sans-serif",
+                fontWeight: 500,
                 display: 'block',
                 height: '2.2rem',
                 width: '100%'
