@@ -13,7 +13,8 @@ A blogging platform which is designed to be simple to use, fast, and minimalisti
 
 
 <p>
-    <img width="1469" height="833" alt="Screenshot 2025-12-15 at 3 46 12 AM" src="https://github.com/user-attachments/assets/c32f772a-e00b-43db-a148-4778c9a97e02" />
+    <img width="1469" height="834" alt="Screenshot 2025-12-16 at 12 23 01 PM" src="https://github.com/user-attachments/assets/eb7e1ec8-9431-4d93-9079-8c96934509b5" />
+
 </p>
 
 <p>
