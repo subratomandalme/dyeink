@@ -191,7 +191,7 @@ const Settings: React.FC = () => {
         <div className="settings-page" style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
 
             <div className="settings-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Settings</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)', fontFamily: "'Jost', sans-serif" }}>Settings</h1>
             </div>
 
             {schemaError && (
@@ -751,25 +751,25 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;`)
                             </div>
                         </div>
                         <style>{`
-                                .danger - magic - btn {
+                                .danger-magic-btn {
                                     position: relative;
-                                    display: inline - flex;
-                                    align- items: center;
-                    justify-content: center;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 9999px;
-                    text-decoration: none;
-                    font-size: 0.95rem;
-                    font-weight: 600;
-                    color: #ef4444;
-                    background: transparent;
-                    border: none;
-                    cursor: pointer;
-                    overflow: hidden;
-                    transition: transform 0.2s ease, color 0.2s ease;
-                    transform: translateZ(0);
-                    isolation: isolate;
-                            }
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    padding: 0.75rem 1.5rem;
+                                    border-radius: 9999px;
+                                    text-decoration: none;
+                                    font-size: 0.95rem;
+                                    font-weight: 600;
+                                    color: #ef4444;
+                                    background: transparent;
+                                    border: none;
+                                    cursor: pointer;
+                                    overflow: hidden;
+                                    transition: transform 0.2s ease, color 0.2s ease;
+                                    transform: translateZ(0);
+                                    isolation: isolate;
+                                }
 
                     .danger-magic-btn:hover {
                         color: #ffffff;

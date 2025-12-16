@@ -45,14 +45,14 @@ export default function Posts() {
         <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '0' }}>
 
             <div style={{ marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Published Posts</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)', fontFamily: "'Jost', sans-serif" }}>Published Posts</h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Manage your live content.</p>
             </div>
 
             {showLoader ? (
                 <PostsSkeleton />
             ) : filteredPosts.length === 0 ? (
-                <div style={{
+                <div className="animate-fade-in" style={{
                     padding: '4rem',
                     textAlign: 'center',
                     border: '1px dashed var(--border-color)',
@@ -62,7 +62,7 @@ export default function Posts() {
                     No published posts yet.
                 </div>
             ) : (
-                <div style={{
+                <div className="animate-fade-in" style={{
                     borderRadius: '8px',
                     overflowX: 'auto'
                 }}>

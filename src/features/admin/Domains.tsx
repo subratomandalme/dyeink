@@ -70,7 +70,7 @@ export default function Domains() {
         <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem' }}>
 
             <div style={{ marginBottom: '3rem' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Custom Domains</h1>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 600, margin: 0, color: 'var(--text-primary)', fontFamily: "'Jost', sans-serif" }}>Custom Domains</h1>
                 <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Connect your own domain to your blog</p>
             </div>
             <div className="card" style={{ marginBottom: '2rem' }}>
