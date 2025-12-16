@@ -9,6 +9,11 @@ export interface SiteSettings {
     linkedinLink?: string | null
     githubLink?: string | null
     websiteLink?: string | null
+    dribbbleLink?: string | null
+    huggingfaceLink?: string | null
+    behanceLink?: string | null
+    leetcodeLink?: string | null
+    hackerrankLink?: string | null
     newsletterEmail?: string | null
     domainStatus?: 'pending' | 'verified' | 'active' | 'failed' | null
 }
@@ -16,16 +21,19 @@ export const settingsService = {
     async getSettings(): Promise<SiteSettings | null> {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return null
+
         const { data, error } = await supabase
             .from('site_settings')
             .select('*')
             .eq('user_id', user.id)
             .single()
+
         if (error) {
             if (error.code === 'PGRST116') return null
             console.error('Error fetching settings:', error)
             throw error
         }
+
         return {
             id: data.id,
             siteName: data.site_name,
@@ -36,6 +44,11 @@ export const settingsService = {
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
             websiteLink: data.website_link,
+            dribbbleLink: data.dribbble_link,
+            huggingfaceLink: data.huggingface_link,
+            behanceLink: data.behance_link,
+            leetcodeLink: data.leetcode_link,
+            hackerrankLink: data.hackerrank_link,
             newsletterEmail: data.newsletter_email
         }
     },
@@ -45,10 +58,12 @@ export const settingsService = {
             .select('*')
             .limit(1)
             .single()
+
         if (error) {
             console.error('Error fetching public settings:', error)
             return null
         }
+
         return {
             id: data.id,
             siteName: data.site_name,
@@ -59,6 +74,11 @@ export const settingsService = {
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
             websiteLink: data.website_link,
+            dribbbleLink: data.dribbble_link,
+            huggingfaceLink: data.huggingface_link,
+            behanceLink: data.behance_link,
+            leetcodeLink: data.leetcode_link,
+            hackerrankLink: data.hackerrank_link,
             newsletterEmail: data.newsletter_email
         }
     },
@@ -68,10 +88,12 @@ export const settingsService = {
             .select('*, user_id')
             .eq('custom_domain', domain)
             .single()
+
         if (error) {
             console.error('Error fetching settings by custom domain:', error)
             return null
         }
+
         return {
             settings: {
                 id: data.id,
@@ -83,6 +105,11 @@ export const settingsService = {
                 linkedinLink: data.linkedin_link,
                 githubLink: data.github_link,
                 websiteLink: data.website_link,
+                dribbbleLink: data.dribbble_link,
+                huggingfaceLink: data.huggingface_link,
+                behanceLink: data.behance_link,
+                leetcodeLink: data.leetcode_link,
+                hackerrankLink: data.hackerrank_link,
                 newsletterEmail: data.newsletter_email,
                 domainStatus: data.domain_status
             },
@@ -92,13 +119,15 @@ export const settingsService = {
     async getSettingsBySubdomain(subdomain: string): Promise<{ settings: SiteSettings; userId: string } | null> {
         const { data, error } = await supabase
             .from('site_settings')
-            .select('*, user_id') 
+            .select('*, user_id')
             .eq('subdomain', subdomain)
             .single()
+
         if (error) {
             console.error('Error fetching settings by subdomain:', error)
             return null
         }
+
         return {
             settings: {
                 id: data.id,
@@ -110,6 +139,11 @@ export const settingsService = {
                 linkedinLink: data.linkedin_link,
                 githubLink: data.github_link,
                 websiteLink: data.website_link,
+                dribbbleLink: data.dribbble_link,
+                huggingfaceLink: data.huggingface_link,
+                behanceLink: data.behance_link,
+                leetcodeLink: data.leetcode_link,
+                hackerrankLink: data.hackerrank_link,
                 newsletterEmail: data.newsletter_email,
                 domainStatus: data.domain_status
             },
@@ -119,29 +153,38 @@ export const settingsService = {
     async saveSettings(settings: SiteSettings): Promise<SiteSettings | null> {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('User not authenticated')
+
         const updates = {
             ...(settings.id ? { id: settings.id } : {}),
             user_id: user.id,
             site_name: settings.siteName,
             site_description: settings.siteDescription,
             custom_domain: settings.customDomain || null,
-            subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`, 
+            subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`,
             twitter_link: settings.twitterLink,
             linkedin_link: settings.linkedinLink,
             github_link: settings.githubLink,
             website_link: settings.websiteLink,
+            dribbble_link: settings.dribbbleLink,
+            huggingface_link: settings.huggingfaceLink,
+            behance_link: settings.behanceLink,
+            leetcode_link: settings.leetcodeLink,
+            hackerrank_link: settings.hackerrankLink,
             newsletter_email: settings.newsletterEmail,
             domain_status: settings.domainStatus || null
         }
+
         const { data, error } = await supabase
             .from('site_settings')
             .upsert(updates, { onConflict: 'user_id' })
             .select()
             .single()
+
         if (error) {
             console.error('Error saving settings:', error)
             throw error
         }
+
         return {
             id: data.id,
             siteName: data.site_name,
@@ -152,6 +195,11 @@ export const settingsService = {
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
             websiteLink: data.website_link,
+            dribbbleLink: data.dribbble_link,
+            huggingfaceLink: data.huggingface_link,
+            behanceLink: data.behance_link,
+            leetcodeLink: data.leetcode_link,
+            hackerrankLink: data.hackerrank_link,
             newsletterEmail: data.newsletter_email,
             domainStatus: data.domain_status
         }
@@ -175,6 +223,7 @@ export const settingsService = {
     async initializeSettings(settings: SiteSettings): Promise<SiteSettings | null> {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) throw new Error('User not authenticated')
+
         const newSettings = {
             user_id: user.id,
             site_description: settings.siteDescription,
@@ -182,17 +231,21 @@ export const settingsService = {
             subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`,
             domain_status: 'pending'
         }
+
         const existing = await this.getSettings()
         if (existing) return existing
+
         const { data, error } = await supabase
             .from('site_settings')
             .insert(newSettings)
             .select()
             .single()
+
         if (error) {
             console.error('Error initializing settings:', error)
             throw error
         }
+
         return {
             id: data.id,
             siteName: data.site_name,
@@ -203,9 +256,13 @@ export const settingsService = {
             linkedinLink: data.linkedin_link,
             githubLink: data.github_link,
             websiteLink: data.website_link,
+            dribbbleLink: data.dribbble_link,
+            huggingfaceLink: data.huggingface_link,
+            behanceLink: data.behance_link,
+            leetcodeLink: data.leetcode_link,
+            hackerrankLink: data.hackerrank_link,
             newsletterEmail: data.newsletter_email,
             domainStatus: data.domain_status
         }
     }
 }
- 

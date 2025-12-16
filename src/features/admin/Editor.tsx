@@ -7,13 +7,118 @@ import {
     Redo,
     Bold,
     Italic,
+    Underline,
+
+    List,
+    ListOrdered,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    Link as LinkIcon,
+    Image as ImageIcon,
+    Quote,
 } from 'lucide-react'
-import WaveLoader from '../../components/common/feedback/WaveLoader'
+import EditorSkeleton from '../../components/admin/skeletons/EditorSkeleton'
 import DecryptedText from '../../components/common/animations/DecryptedText'
 import { useThemeStore } from '../../stores/themeStore'
 import { useAuthStore } from '../../stores/authStore'
 import { useAdminStore } from '../../stores/adminStore'
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
+
+interface ModalConfig {
+    isOpen: boolean;
+    type: 'link' | null;
+    inputValue: string;
+}
+
+interface EditorInputModalProps {
+    config: ModalConfig;
+    onClose: () => void;
+    onConfirm: () => void;
+    onChange: (value: string) => void;
+}
+
+function EditorInputModal({ config, onClose, onConfirm, onChange }: EditorInputModalProps) {
+    if (!config.isOpen) return null;
+
+    return (
+        <div className="editor-modal-overlay">
+            <div className="editor-modal">
+                <h3>Insert Link</h3>
+                <input
+                    type="text"
+                    placeholder="https://example.com"
+                    value={config.inputValue}
+                    onChange={(e) => onChange(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') onConfirm();
+                        if (e.key === 'Escape') onClose();
+                    }}
+                    autoFocus
+                />
+                <div className="editor-modal-actions">
+                    <button onClick={onClose} className="btn-cancel">Cancel</button>
+                    <button onClick={onConfirm} className="btn-confirm">Confirm</button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+interface ImageContextMenuProps {
+    visible: boolean;
+    x: number;
+    y: number;
+    onDelete: () => void;
+}
+
+function ImageContextMenu({ visible, x, y, onDelete }: ImageContextMenuProps) {
+    if (!visible) return null;
+    return (
+        <div
+            className="image-context-menu"
+            style={{
+                position: 'fixed',
+                top: y,
+                left: x,
+                zIndex: 10000,
+                backgroundColor: 'var(--bg-elevated)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '8px',
+                padding: '0.5rem',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                animation: 'fadeIn 0.1s ease-out'
+            }}
+            onClick={(e) => e.stopPropagation()}
+        >
+            <button
+                onClick={onDelete}
+                style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#ef4444',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: 500,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    width: '100%'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    Delete Image
+                </div>
+            </button>
+        </div>
+    )
+}
+
 export default function Editor() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -30,6 +135,23 @@ export default function Editor() {
     const [isContinueHovered, setIsContinueHovered] = useState(false)
     const [isBackHovered, setIsBackHovered] = useState(false)
     const [initialContent, setInitialContent] = useState('')
+
+
+    const [modalConfig, setModalConfig] = useState<{
+        isOpen: boolean;
+        type: 'link' | null;
+        inputValue: string;
+    }>({ isOpen: false, type: null, inputValue: '' });
+
+
+    const [contextMenu, setContextMenu] = useState<{
+        visible: boolean;
+        x: number;
+        y: number;
+        target: HTMLImageElement | null;
+    }>({ visible: false, x: 0, y: 0, target: null });
+
+    const savedSelection = useRef<Range | null>(null);
 
     useEffect(() => {
         if (!id) return
@@ -50,7 +172,51 @@ export default function Editor() {
             }
         }
         fetchPost()
+        fetchPost()
     }, [id])
+
+
+    useEffect(() => {
+        const handleClick = () => setContextMenu(prev => ({ ...prev, visible: false }));
+        document.addEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
+    }, []);
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+        if ((e.target as HTMLElement).tagName === 'IMG') {
+            e.preventDefault();
+            setContextMenu({
+                visible: true,
+                x: e.clientX,
+                y: e.clientY,
+                target: e.target as HTMLImageElement
+            });
+        }
+    };
+
+    const handleDeleteImage = () => {
+        if (contextMenu.target) {
+            contextMenu.target.remove();
+            setContextMenu(prev => ({ ...prev, visible: false }));
+
+            if (contentRef.current) {
+                contentRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        }
+    };
+
+    const handleContentClick = (e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'IMG') {
+            const selection = window.getSelection();
+            if (!selection) return;
+            const range = document.createRange();
+            range.setStartAfter(target);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    };
 
 
     useEffect(() => {
@@ -70,6 +236,84 @@ export default function Editor() {
     const titleRef = useRef<HTMLDivElement>(null)
     const executeCommand = (command: string, value: string | undefined = undefined) => {
         document.execCommand(command, false, value)
+    }
+
+    const saveSelection = () => {
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            savedSelection.current = selection.getRangeAt(0);
+        } else {
+            savedSelection.current = null;
+        }
+    }
+
+    const restoreSelection = () => {
+        const selection = window.getSelection();
+        if (selection && savedSelection.current) {
+            selection.removeAllRanges();
+            selection.addRange(savedSelection.current);
+        }
+    }
+
+    const fileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        try {
+
+            const url = await postService.uploadImage(file)
+            if (url) {
+                restoreSelection()
+
+                setTimeout(() => {
+
+                    executeCommand('insertHTML', `<p><br></p><img src="${url}" alt="Uploaded image" /><p><br></p>`)
+                }, 50)
+            } else {
+                alert('Failed to upload image')
+            }
+        } catch (error) {
+            console.error('Image upload failed:', error)
+            alert('Image upload failed')
+        } finally {
+
+            if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+    }
+
+    const handleLink = () => {
+        saveSelection();
+        setModalConfig({ isOpen: true, type: 'link', inputValue: '' });
+    }
+
+    const handleImage = () => {
+        saveSelection();
+
+        fileInputRef.current?.click()
+    }
+
+    const handleModalClose = () => {
+        setModalConfig({ isOpen: false, type: null, inputValue: '' });
+
+        setTimeout(() => {
+            contentRef.current?.focus();
+            if (savedSelection.current) restoreSelection();
+        }, 0);
+    }
+
+    const handleModalConfirm = () => {
+        const { type, inputValue } = modalConfig;
+
+
+
+        setTimeout(() => {
+            restoreSelection();
+            if (type === 'link') {
+                if (inputValue) executeCommand('createLink', inputValue);
+            }
+        }, 10);
     }
     const handleSave = async (shouldPublish: boolean = false) => {
         if (!title) {
@@ -102,6 +346,9 @@ export default function Editor() {
                 shouldPublish ? new Promise(resolve => setTimeout(resolve, 3000)) : Promise.resolve()
             ])
             setLastSaved(new Date())
+
+            await useAdminStore.getState().fetchPosts(true)
+
             if (shouldPublish && result) {
                 const subdomain = settings?.subdomain || 'blog'
                 navigate(`/${subdomain}/${result.slug}`)
@@ -113,6 +360,8 @@ export default function Editor() {
                 alert('Session expired. Redirecting to login...')
                 await logout()
                 navigate('/login')
+            } else if (msg.includes('posts_slug_key') || msg.includes('duplicate key')) {
+                alert('Duplicate title: A post with this title already exists. Please choose a different title.')
             } else {
                 alert(`Failed to save post: ${msg}`)
             }
@@ -122,17 +371,7 @@ export default function Editor() {
         }
     }
     if (loading) {
-        return (
-            <div style={{
-                height: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'var(--bg-primary)'
-            }}>
-                <WaveLoader />
-            </div>
-        )
+        return <EditorSkeleton />
     }
 
     function PublishingScreen() {
@@ -174,11 +413,34 @@ export default function Editor() {
     if (isPublishing) {
         return <PublishingScreen />
     }
+
+
+
     return (
         <div className="editor-page" style={{
             color: 'var(--text-primary)',
             fontFamily: "'Roboto', sans-serif"
         }}>
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                style={{ display: 'none' }}
+            />
+            <EditorInputModal
+                config={modalConfig}
+                onClose={handleModalClose}
+                onConfirm={handleModalConfirm}
+                onChange={(val) => setModalConfig(prev => ({ ...prev, inputValue: val }))}
+            />
+
+            <ImageContextMenu
+                visible={contextMenu.visible}
+                x={contextMenu.x}
+                y={contextMenu.y}
+                onDelete={handleDeleteImage}
+            />
 
             <nav style={{
                 position: 'sticky',
@@ -229,48 +491,52 @@ export default function Editor() {
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '1rem',
-                    color: 'var(--text-secondary)'
+                    gap: '0.5rem',
+                    color: 'var(--text-secondary)',
+                    overflowX: 'auto',
+                    scrollbarWidth: 'none',
+                    paddingRight: '1rem',
+                    maskImage: 'linear-gradient(to right, black 90%, transparent 100%)'
                 }}>
-                    <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeCommand('undo')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
-                        title="Undo"
-                    >
-                        <Undo size={18} />
-                    </button>
-                    <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeCommand('redo')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
-                        title="Redo"
-                    >
-                        <Redo size={18} />
-                    </button>
-                    <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--border-color)' }} />
-                    <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeCommand('bold')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
-                        title="Bold"
-                    >
-                        <Bold size={18} />
-                    </button>
-                    <button
-                        type="button"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => executeCommand('italic')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}
-                        title="Italic"
-                    >
-                        <Italic size={18} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('undo')} className="toolbar-btn" title="Undo"><Undo size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('redo')} className="toolbar-btn" title="Redo"><Redo size={18} /></button>
+                    </div>
+
+                    <div className="toolbar-divider" />
+
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('bold')} className="toolbar-btn" title="Bold"><Bold size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('italic')} className="toolbar-btn" title="Italic"><Italic size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('underline')} className="toolbar-btn" title="Underline"><Underline size={18} /></button>
+                    </div>
+
+                    <div className="toolbar-divider" />
+
+
+
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('insertUnorderedList')} className="toolbar-btn" title="Bullet List"><List size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('insertOrderedList')} className="toolbar-btn" title="Numbered List"><ListOrdered size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('formatBlock', 'blockquote')} className="toolbar-btn" title="Quote"><Quote size={18} /></button>
+                    </div>
+
+                    <div className="toolbar-divider" />
+
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('justifyLeft')} className="toolbar-btn" title="Align Left"><AlignLeft size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('justifyCenter')} className="toolbar-btn" title="Align Center"><AlignCenter size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('justifyRight')} className="toolbar-btn" title="Align Right"><AlignRight size={18} /></button>
+                    </div>
+
+                    <div className="toolbar-divider" />
+
+                    <div style={{ display: 'flex', gap: '0.25rem' }}>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={handleLink} className="toolbar-btn" title="Link"><LinkIcon size={18} /></button>
+                        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={handleImage} className="toolbar-btn" title="Image"><ImageIcon size={18} /></button>
+                    </div>
                 </div>
-                { }
+
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '1rem' }}>
 
                     <button
@@ -309,6 +575,11 @@ export default function Editor() {
                     className="editor-title-editable"
                     data-placeholder="Title"
                     onInput={(e) => setTitle(e.currentTarget.innerText)}
+                    onPaste={(e) => {
+                        e.preventDefault();
+                        const text = e.clipboardData.getData('text/plain');
+                        document.execCommand('insertText', false, text);
+                    }}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault()
@@ -343,6 +614,8 @@ export default function Editor() {
                         fontFamily: 'inherit',
                         whiteSpace: 'pre-wrap'
                     }}
+                    onContextMenu={handleContextMenu}
+                    onClick={handleContentClick}
                     onKeyDown={(e) => {
                         if (e.key === 'Tab') {
                             e.preventDefault()
@@ -366,9 +639,59 @@ export default function Editor() {
                     font-weight: 700;
                     opacity: 0.3;
                 }
+                .toolbar-btn {
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    color: inherit;
+                    padding: 0.4rem;
+                    border-radius: 6px;
+                    transition: all 0.2s;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .toolbar-btn:hover {
+                    background: var(--bg-secondary);
+                    color: var(--text-primary);
+                }
+                .toolbar-divider {
+                    width: 1px;
+                    height: 20px;
+                    background-color: var(--border-color);
+                    margin: 0 0.25rem;
+                }
+
+                .editor-content-editable h1 { font-size: 2.5em; margin: 0.67em 0; font-weight: 700; line-height: 1.2; }
+                .editor-content-editable h2 { font-size: 2em; margin: 0.75em 0; font-weight: 600; line-height: 1.3; }
+                .editor-content-editable h3 { font-size: 1.5em; margin: 0.83em 0; font-weight: 600; line-height: 1.4; }
+                .editor-content-editable p { margin: 1em 0; }
+                .editor-content-editable ul { list-style-type: disc; padding-left: 1.5em; margin: 1em 0; }
+                .editor-content-editable ol { list-style-type: decimal; padding-left: 1.5em; margin: 1em 0; }
+                .editor-content-editable blockquote {
+                    border-left: 4px solid var(--border-color);
+                    padding-left: 1rem;
+                    margin: 1rem 0;
+                    font-style: italic;
+                    color: var(--text-secondary);
+                }
+                .editor-content-editable img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    border-radius: 8px;
+                    margin: 1rem 0;
+                    display: block;
+                }
+                .editor-content-editable a {
+                    color: var(--accent-primary);
+                    text-decoration: underline;
+                }
+
                 @media (max-width: 499px) {
                     .editor-page nav {
                         padding: 0.75rem 1rem !important;
+                        grid-template-columns: auto 1fr auto !important;
+                        gap: 1rem;
                     }
                     .editor-page nav > div:first-child button {
                         width: 36px !important;
@@ -376,8 +699,11 @@ export default function Editor() {
                     }
                     .editor-page nav > div:nth-child(2) {
                         display: flex !important;
-                        justify-content: center !important;
+                        justify-content: flex-start !important;
                         align-items: center !important;
+                        overflow-x: auto !important;
+                        width: 100%;
+                        -webkit-overflow-scrolling: touch;
                     }
                     .editor-page nav > div:last-child button {
                         padding: 0.6rem 1rem !important;
@@ -392,10 +718,89 @@ export default function Editor() {
                     .editor-content-editable {
                         font-size: 1rem !important;
                         min-height: 50vh !important;
+                        padding-bottom: 200px !important;
                     }
                     .editor-page > div:last-of-type {
                         padding: 2rem 1rem 2rem 1rem !important;
                     }
+                }
+
+
+                .editor-modal-overlay {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    backdrop-filter: blur(4px);
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 1rem;
+                }
+                .editor-modal {
+                    background: var(--bg-secondary);
+                    border: 1px solid var(--border-color);
+                    padding: 1.5rem;
+                    border-radius: 12px;
+                    width: 100%;
+                    max-width: 400px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .editor-modal h3 {
+                    margin: 0 0 1rem 0;
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                }
+                .editor-modal input {
+                    width: 100%;
+                    padding: 0.75rem;
+                    border-radius: 8px;
+                    border: 1px solid var(--border-color);
+                    background: var(--bg-primary);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    margin-bottom: 1.5rem;
+                    outline: none;
+                    transition: border-color 0.2s;
+                }
+                .editor-modal input:focus {
+                    border-color: var(--accent-primary, #0070f3);
+                }
+                .editor-modal-actions {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 0.75rem;
+                }
+                .editor-modal button {
+                    padding: 0.5rem 1rem;
+                    border-radius: 6px;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                .btn-cancel {
+                    background: transparent;
+                    border: 1px solid var(--border-color);
+                    color: var(--text-secondary);
+                }
+                .btn-cancel:hover {
+                    background: var(--bg-tertiary, #f3f4f6);
+                    color: var(--text-primary);
+                }
+                .btn-confirm {
+                    background: var(--text-primary);
+                    color: var(--bg-primary);
+                    border: 1px solid var(--text-primary);
+                }
+                .btn-confirm:hover {
+                    opacity: 0.9;
+                    transform: translateY(-1px);
+                }
+                @keyframes modalPop {
+                    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+                    to { opacity: 1; transform: scale(1) translateY(0); }
                 }
             `}</style>
         </div>

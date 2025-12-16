@@ -1,4 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Lato:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Gabarito:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Syne:wght@400;500;700;800&family=Raleway:wght@400;500;600;700;800;900&family=Jost:wght@300;400;500;600;700&display=block');
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
 
 .font-heading-logo {
   font-family: 'Mochiy Pop One', sans-serif;

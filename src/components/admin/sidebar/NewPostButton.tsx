@@ -25,21 +25,20 @@ export default function NewPostButton() {
                     overflow: hidden;
                     background: transparent;
                     isolation: isolate;
-                    transform: translateZ(0); /* Fix for Safari clipping */
+                    transform: translateZ(0);
                     transition: transform 0.2s ease;
-                    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); /* Subtle glow */
+                    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
                 }
 
                 .magic-button:hover {
                     transform: scale(1.02);
-                    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); /* Stronger glow on hover */
+                    box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
                 }
                 
                 .magic-button:active {
                     transform: scale(0.98);
                 }
 
-                /* The rotating gradient border */
                 .magic-button::before {
                     content: "";
                     position: absolute;
@@ -57,21 +56,20 @@ export default function NewPostButton() {
                     );
                     animation: rotate 4s linear infinite;
                     z-index: -2;
-                    filter: blur(20px); /* Smooth out the gradient */
+                    filter: blur(20px);
                 }
 
-                /* The inner background to cover the center */
                 .magic-button::after {
                     content: "";
                     position: absolute;
-                    inset: 3px; /* Slightly thicker border visual */
+                    inset: 3px;
                     background: ${theme === 'dark' ? '#0f0f0f' : '#ffffff'};
                     border-radius: 9999px;
                     z-index: -1;
-                    transition: opacity 0.4s ease; /* Smoother fade */
+                    transition: opacity 0.4s ease;
                 }
 
-                /* Light mode specific override for text if needed */
+
                 ${theme !== 'dark' ? `
                     .magic-text {
                         background: none;
@@ -82,19 +80,16 @@ export default function NewPostButton() {
                     }
                 ` : ''}
 
-                /* Reveal full gradient on hover */
                 .magic-button:hover::after {
                     opacity: 0;
                 }
                 
-                /* Ensure text is white and clean on full gradient */
                 .magic-button:hover .magic-text {
                     color: #ffffff;
                     background: none;
                     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
                 }
 
-                /* Text color adjustments */
                 .magic-text {
                     background: linear-gradient(to right, #fff, #e2e8f0);
                     -webkit-background-clip: text;

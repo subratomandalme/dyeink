@@ -18,26 +18,19 @@ import Stats from './features/admin/Stats'
 import AdminLayout from './components/admin/AdminLayout'
 import { ToastContainer } from './components/common/feedback/Toast'
 import { SimpleErrorBoundary } from './components/common/feedback/SimpleErrorBoundary'
-import WaveLoader from './components/common/feedback/WaveLoader'
+import AuthShellSkeleton from './components/admin/skeletons/AuthShellSkeleton'
 import './styles/globals.css'
 interface ProtectedRouteProps {
     children: React.ReactNode
 }
-import { useLockBodyScroll } from './hooks/useLockBodyScroll'
 
-function FullScreenLoader() {
-    useLockBodyScroll()
-    return (
-        <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-primary)' }}>
-            <WaveLoader />
-        </div>
-    )
-}
 function ProtectedRoute({ children }: ProtectedRouteProps) {
     const { isAuthenticated, isLoading } = useAuthStore()
+
     if (isLoading) {
-        return <FullScreenLoader />
+        return <>{children}</>
     }
+
     if (!isAuthenticated) {
         return <Navigate to="/login" replace />
     }
@@ -46,7 +39,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated, isLoading } = useAuthStore()
     if (isLoading) {
-        return <FullScreenLoader />
+        return <AuthShellSkeleton />
     }
     if (isAuthenticated) {
         return <Navigate to="/admin" replace />

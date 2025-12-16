@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase'
 
 import { useAdminStore } from '../../stores/adminStore'
 import { AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
-import WaveLoader from '../../components/common/feedback/WaveLoader'
+import SettingsSkeleton from '../../components/admin/skeletons/SettingsSkeleton'
 import { useToast } from '../../components/common/feedback/Toast'
 const Settings: React.FC = () => {
     const { settings, fetchSettings, settingsLoading, updateSettingsInCache } = useAdminStore()
@@ -22,6 +22,11 @@ const Settings: React.FC = () => {
     const [linkedinLink, setLinkedinLink] = useState("")
     const [githubLink, setGithubLink] = useState("")
     const [websiteLink, setWebsiteLink] = useState("")
+    const [dribbbleLink, setDribbbleLink] = useState("")
+    const [huggingfaceLink, setHuggingfaceLink] = useState("")
+    const [behanceLink, setBehanceLink] = useState("")
+    const [leetcodeLink, setLeetcodeLink] = useState("")
+    const [hackerrankLink, setHackerrankLink] = useState("")
     const [email, setEmail] = useState("")
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null)
     const [domainStatus, setDomainStatus] = useState<'pending' | 'verified' | 'active' | 'failed' | null>(null)
@@ -62,7 +67,11 @@ const Settings: React.FC = () => {
             setLinkedinLink(settings.linkedinLink || "")
             setGithubLink(settings.githubLink || "")
             setWebsiteLink(settings.websiteLink || "")
-            setWebsiteLink(settings.websiteLink || "")
+            setDribbbleLink(settings.dribbbleLink || "")
+            setHuggingfaceLink(settings.huggingfaceLink || "")
+            setBehanceLink(settings.behanceLink || "")
+            setLeetcodeLink(settings.leetcodeLink || "")
+            setHackerrankLink(settings.hackerrankLink || "")
             setEmail(settings.newsletterEmail || "")
             setDomainStatus(settings.domainStatus || null)
         }
@@ -80,6 +89,11 @@ const Settings: React.FC = () => {
                 linkedinLink: linkedinLink || null,
                 githubLink: githubLink || null,
                 websiteLink: websiteLink || null,
+                dribbbleLink: dribbbleLink || null,
+                huggingfaceLink: huggingfaceLink || null,
+                behanceLink: behanceLink || null,
+                leetcodeLink: leetcodeLink || null,
+                hackerrankLink: hackerrankLink || null,
                 newsletterEmail: email || null
             })
             if (updated) {
@@ -171,11 +185,7 @@ const Settings: React.FC = () => {
         }
     }
     if (settingsLoading && !settings) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                <WaveLoader />
-            </div>
-        )
+        return <SettingsSkeleton />
     }
     return (
         <div className="settings-page" style={{ padding: '0', color: 'var(--text-primary)', maxWidth: '100%' }}>
@@ -197,7 +207,7 @@ const Settings: React.FC = () => {
                         <h4 style={{ margin: 0, fontWeight: 700 }}>Database Update Required</h4>
                     </div>
                     <p style={{ margin: '0 0 1rem 0', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                        The <code>newsletter_email</code> column is missing in your database. Please run this SQL command in your Supabase SQL Editor:
+                        The <code>newsletter_email</code> or other new social columns (Dribbble, etc.) are missing. Please run this SQL:
                     </p>
                     <div style={{
                         backgroundColor: 'var(--bg-secondary)',
@@ -210,10 +220,20 @@ const Settings: React.FC = () => {
                         whiteSpace: 'nowrap'
                     }}>
                         ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS dribbble_link TEXT;
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS huggingface_link TEXT;
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS behance_link TEXT;
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;
+                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;
                     </div>
                     <button
                         onClick={() => {
-                            navigator.clipboard.writeText("ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;")
+                            navigator.clipboard.writeText(`ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS dribbble_link TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS huggingface_link TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS behance_link TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`)
                             addToast({ type: 'success', message: 'SQL copied to clipboard!' })
                         }}
                         style={{
@@ -352,6 +372,81 @@ const Settings: React.FC = () => {
                                     placeholder="LinkedIn Profile"
                                     value={linkedinLink}
                                     onChange={(e) => setLinkedinLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Dribbble Profile"
+                                    value={dribbbleLink}
+                                    onChange={(e) => setDribbbleLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Hugging Face Profile"
+                                    value={huggingfaceLink}
+                                    onChange={(e) => setHuggingfaceLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Behance Profile"
+                                    value={behanceLink}
+                                    onChange={(e) => setBehanceLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="LeetCode Profile"
+                                    value={leetcodeLink}
+                                    onChange={(e) => setLeetcodeLink(e.target.value)}
+                                    style={{
+                                        width: '100%',
+                                        padding: '0.75rem',
+                                        background: 'transparent',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '6px',
+                                        color: 'inherit',
+                                        fontSize: '1rem'
+                                    }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="HackerRank Profile"
+                                    value={hackerrankLink}
+                                    onChange={(e) => setHackerrankLink(e.target.value)}
                                     style={{
                                         width: '100%',
                                         padding: '0.75rem',
@@ -740,7 +835,7 @@ const Settings: React.FC = () => {
                             .danger-magic-btn::after {
                                 content: "";
                                 position: absolute;
-                                inset: 2px; /* Thicker border look */
+                                inset: 2px;
                                 background: var(--bg-primary); 
                                 border-radius: 9999px;
                                 z-index: -1;
@@ -748,7 +843,7 @@ const Settings: React.FC = () => {
                             }
 
                             .danger-magic-btn:hover::after {
-                                opacity: 0; /* Reveal full gradient on hover */
+                                opacity: 0;
                             }
 
                             .danger-text {
@@ -892,7 +987,7 @@ const Settings: React.FC = () => {
 
             <style>{`
                 @media (max-width: 499px) {
-                    /* Title */
+
                     .settings-header h1 {
                         font-size: 1.75rem !important;
                         margin-bottom: 1rem !important;

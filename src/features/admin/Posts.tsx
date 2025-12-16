@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { postService } from '../../services/postService'
 import { format } from 'date-fns'
 import { Trash2, Edit2 } from 'lucide-react'
 import { useToast } from '../../components/common/feedback/Toast'
-import WaveLoader from '../../components/common/feedback/WaveLoader'
+import PostsSkeleton from '../../components/admin/skeletons/PostsSkeleton'
 import { useAdminStore } from '../../stores/adminStore'
 export default function Posts() {
-    const { posts, postsLoading, deletePostFromCache } = useAdminStore()
+    const { posts, postsLoading, deletePostFromCache, fetchPosts } = useAdminStore()
+
+    useEffect(() => {
+
+        fetchPosts()
+    }, [fetchPosts])
+
     const showLoader = postsLoading && !posts
     const safePosts = posts || []
     const [showDeleteModal, setShowDeleteModal] = useState(false)
@@ -36,7 +42,7 @@ export default function Posts() {
     }
     const filteredPosts = safePosts.filter(post => post.published)
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '1rem' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', paddingBottom: '4rem', paddingTop: '0' }}>
 
             <div style={{ marginBottom: '3rem' }}>
                 <h1 style={{ fontSize: '2.5rem', fontWeight: 800, margin: 0, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>Published Posts</h1>
@@ -44,9 +50,7 @@ export default function Posts() {
             </div>
 
             {showLoader ? (
-                <div style={{ padding: '4rem', display: 'flex', justifyContent: 'center', color: 'var(--text-muted)' }}>
-                    <WaveLoader />
-                </div>
+                <PostsSkeleton />
             ) : filteredPosts.length === 0 ? (
                 <div style={{
                     padding: '4rem',
