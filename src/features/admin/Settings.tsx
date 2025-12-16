@@ -24,9 +24,9 @@ const Settings: React.FC = () => {
     const [websiteLink, setWebsiteLink] = useState("")
     const [dribbbleLink, setDribbbleLink] = useState("")
     const [huggingfaceLink, setHuggingfaceLink] = useState("")
-    const [behanceLink, setBehanceLink] = useState("")
+
     const [leetcodeLink, setLeetcodeLink] = useState("")
-    const [hackerrankLink, setHackerrankLink] = useState("")
+
     const [email, setEmail] = useState("")
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null)
     const [domainStatus, setDomainStatus] = useState<'pending' | 'verified' | 'active' | 'failed' | null>(null)
@@ -69,9 +69,9 @@ const Settings: React.FC = () => {
             setWebsiteLink(settings.websiteLink || "")
             setDribbbleLink(settings.dribbbleLink || "")
             setHuggingfaceLink(settings.huggingfaceLink || "")
-            setBehanceLink(settings.behanceLink || "")
+
             setLeetcodeLink(settings.leetcodeLink || "")
-            setHackerrankLink(settings.hackerrankLink || "")
+
             setEmail(settings.newsletterEmail || "")
             setDomainStatus(settings.domainStatus || null)
         }
@@ -91,9 +91,9 @@ const Settings: React.FC = () => {
                 websiteLink: websiteLink || null,
                 dribbbleLink: dribbbleLink || null,
                 huggingfaceLink: huggingfaceLink || null,
-                behanceLink: behanceLink || null,
+
                 leetcodeLink: leetcodeLink || null,
-                hackerrankLink: hackerrankLink || null,
+
                 newsletterEmail: email || null
             })
             if (updated) {
@@ -222,18 +222,17 @@ const Settings: React.FC = () => {
                         ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
                         ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS dribbble_link TEXT;
                         ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS huggingface_link TEXT;
-                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS behance_link TEXT;
+
                         ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;
-                        ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;
+
                     </div>
                     <button
                         onClick={() => {
                             navigator.clipboard.writeText(`ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS newsletter_email TEXT;
 ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS dribbble_link TEXT;
 ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS huggingface_link TEXT;
-ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS behance_link TEXT;
-ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;
-ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`)
+
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS leetcode_link TEXT;`)
                             addToast({ type: 'success', message: 'SQL copied to clipboard!' })
                         }}
                         style={{
@@ -412,21 +411,7 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`
                                         fontSize: '1rem'
                                     }}
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="Behance Profile"
-                                    value={behanceLink}
-                                    onChange={(e) => setBehanceLink(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        background: 'transparent',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '6px',
-                                        color: 'inherit',
-                                        fontSize: '1rem'
-                                    }}
-                                />
+
                                 <input
                                     type="text"
                                     placeholder="LeetCode Profile"
@@ -442,21 +427,7 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`
                                         fontSize: '1rem'
                                     }}
                                 />
-                                <input
-                                    type="text"
-                                    placeholder="HackerRank Profile"
-                                    value={hackerrankLink}
-                                    onChange={(e) => setHackerrankLink(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '0.75rem',
-                                        background: 'transparent',
-                                        border: '1px solid var(--border-color)',
-                                        borderRadius: '6px',
-                                        color: 'inherit',
-                                        fontSize: '1rem'
-                                    }}
-                                />
+
                                 <input
                                     type="text"
                                     placeholder="GitHub Profile"
@@ -538,17 +509,7 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`
                                             <Globe size={20} />
                                             <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{customDomain}</span>
                                         </div>
-                                        <div style={{
-                                            padding: '0.25rem 0.75rem',
-                                            borderRadius: '20px',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 600,
-                                            backgroundColor: domainStatus === 'active' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(234, 179, 8, 0.1)',
-                                            color: domainStatus === 'active' ? '#22c55e' : '#eab308',
-                                            textTransform: 'uppercase'
-                                        }}>
-                                            {domainStatus || 'Pending'}
-                                        </div>
+
                                     </div>
 
                                     {domainStatus !== 'active' && domainStatus !== 'verified' && (
@@ -790,70 +751,71 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS hackerrank_link TEXT;`
                             </div>
                         </div>
                         <style>{`
-                            .danger-magic-btn {
-                                position: relative;
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                padding: 0.75rem 1.5rem;
-                                border-radius: 9999px;
-                                text-decoration: none;
-                                font-size: 0.95rem;
-                                font-weight: 600;
-                                color: #ef4444;
-                                background: transparent;
-                                border: none;
-                                cursor: pointer;
-                                overflow: hidden;
-                                transition: transform 0.2s ease, color 0.2s ease;
-                                transform: translateZ(0); 
-                                isolation: isolate;
+                                .danger - magic - btn {
+                                    position: relative;
+                                    display: inline - flex;
+                                    align- items: center;
+                    justify-content: center;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 9999px;
+                    text-decoration: none;
+                    font-size: 0.95rem;
+                    font-weight: 600;
+                    color: #ef4444;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                    overflow: hidden;
+                    transition: transform 0.2s ease, color 0.2s ease;
+                    transform: translateZ(0);
+                    isolation: isolate;
                             }
 
-                            .danger-magic-btn:hover {
-                                color: #ffffff;
+                    .danger-magic-btn:hover {
+                        color: #ffffff;
                             }
 
-                            .danger-magic-btn::before {
-                                content: "";
-                                position: absolute;
-                                top: -150%;
-                                left: -150%;
-                                width: 400%;
-                                height: 400%;
-                                background: conic-gradient(
-                                    from 0deg,
-                                    #ef4444,
-                                    #f97316,
-                                    #ef4444
-                                );
-                                z-index: -2;
-                                transition: opacity 0.3s ease;
-                                opacity: 1;
+                    .danger-magic-btn::before {
+                        content: "";
+                    position: absolute;
+                    top: -150%;
+                    left: -150%;
+                    width: 400%;
+                    height: 400%;
+                    background: conic-gradient(
+                    from 0deg,
+                    #ef4444,
+                    #f97316,
+                    #ef4444
+                    );
+                    z-index: -2;
+                    transition: opacity 0.3s ease;
+                    opacity: 1;
                             }
 
-                            .danger-magic-btn::after {
-                                content: "";
-                                position: absolute;
-                                inset: 2px;
-                                background: var(--bg-primary); 
-                                border-radius: 9999px;
-                                z-index: -1;
-                                transition: opacity 0.3s ease;
+                    .danger-magic-btn::after {
+                        content: "";
+                    position: absolute;
+                    inset: 2px;
+                    background: var(--bg-primary);
+                    border-radius: 9999px;
+                    z-index: -1;
+                    transition: opacity 0.3s ease;
                             }
 
-                            .danger-magic-btn:hover::after {
-                                opacity: 0;
+                    .danger-magic-btn:hover::after {
+                        opacity: 0;
                             }
 
-                            .danger-text {
-                                position: relative;
-                                z-index: 10;
+                    .danger-text {
+                        position: relative;
+                    z-index: 10;
                             }
                         `}</style>
                     </div>
-                )}
-            </div>
+                )
+                }
+            </div >
 
 
             {

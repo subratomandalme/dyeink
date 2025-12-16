@@ -11,9 +11,9 @@ export interface SiteSettings {
     websiteLink?: string | null
     dribbbleLink?: string | null
     huggingfaceLink?: string | null
-    behanceLink?: string | null
+
     leetcodeLink?: string | null
-    hackerrankLink?: string | null
+
     newsletterEmail?: string | null
     domainStatus?: 'pending' | 'verified' | 'active' | 'failed' | null
 }
@@ -46,9 +46,9 @@ export const settingsService = {
             websiteLink: data.website_link,
             dribbbleLink: data.dribbble_link,
             huggingfaceLink: data.huggingface_link,
-            behanceLink: data.behance_link,
+
             leetcodeLink: data.leetcode_link,
-            hackerrankLink: data.hackerrank_link,
+
             newsletterEmail: data.newsletter_email
         }
     },
@@ -76,9 +76,9 @@ export const settingsService = {
             websiteLink: data.website_link,
             dribbbleLink: data.dribbble_link,
             huggingfaceLink: data.huggingface_link,
-            behanceLink: data.behance_link,
+
             leetcodeLink: data.leetcode_link,
-            hackerrankLink: data.hackerrank_link,
+
             newsletterEmail: data.newsletter_email
         }
     },
@@ -107,9 +107,9 @@ export const settingsService = {
                 websiteLink: data.website_link,
                 dribbbleLink: data.dribbble_link,
                 huggingfaceLink: data.huggingface_link,
-                behanceLink: data.behance_link,
+
                 leetcodeLink: data.leetcode_link,
-                hackerrankLink: data.hackerrank_link,
+
                 newsletterEmail: data.newsletter_email,
                 domainStatus: data.domain_status
             },
@@ -141,9 +141,9 @@ export const settingsService = {
                 websiteLink: data.website_link,
                 dribbbleLink: data.dribbble_link,
                 huggingfaceLink: data.huggingface_link,
-                behanceLink: data.behance_link,
+
                 leetcodeLink: data.leetcode_link,
-                hackerrankLink: data.hackerrank_link,
+
                 newsletterEmail: data.newsletter_email,
                 domainStatus: data.domain_status
             },
@@ -167,9 +167,9 @@ export const settingsService = {
             website_link: settings.websiteLink,
             dribbble_link: settings.dribbbleLink,
             huggingface_link: settings.huggingfaceLink,
-            behance_link: settings.behanceLink,
+
             leetcode_link: settings.leetcodeLink,
-            hackerrank_link: settings.hackerrankLink,
+
             newsletter_email: settings.newsletterEmail,
             domain_status: settings.domainStatus || null
         }
@@ -197,9 +197,9 @@ export const settingsService = {
             websiteLink: data.website_link,
             dribbbleLink: data.dribbble_link,
             huggingfaceLink: data.huggingface_link,
-            behanceLink: data.behance_link,
+
             leetcodeLink: data.leetcode_link,
-            hackerrankLink: data.hackerrank_link,
+
             newsletterEmail: data.newsletter_email,
             domainStatus: data.domain_status
         }
@@ -258,9 +258,9 @@ export const settingsService = {
             websiteLink: data.website_link,
             dribbbleLink: data.dribbble_link,
             huggingfaceLink: data.huggingface_link,
-            behanceLink: data.behance_link,
+
             leetcodeLink: data.leetcode_link,
-            hackerrankLink: data.hackerrank_link,
+
             newsletterEmail: data.newsletter_email,
             domainStatus: data.domain_status
         }
