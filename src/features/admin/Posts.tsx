@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { postService } from '../../services/postService'
 import { format } from 'date-fns'
@@ -7,10 +7,7 @@ import { useToast } from '../../components/common/feedback/Toast'
 import WaveLoader from '../../components/common/feedback/WaveLoader'
 import { useAdminStore } from '../../stores/adminStore'
 export default function Posts() {
-    const { posts, fetchPosts, postsLoading, deletePostFromCache } = useAdminStore()
-    useEffect(() => {
-        fetchPosts()
-    }, [])
+    const { posts, postsLoading, deletePostFromCache } = useAdminStore()
     const showLoader = postsLoading && !posts
     const safePosts = posts || []
     const [showDeleteModal, setShowDeleteModal] = useState(false)

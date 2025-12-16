@@ -11,113 +11,27 @@ import {
     ArrowRight
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminStore } from '../../stores/adminStore'
-import { useAuthStore } from '../../stores/authStore'
-import { supabase } from '../../lib/supabase'
 import WaveLoader from '../../components/common/feedback/WaveLoader'
 export default function Dashboard() {
-    const { posts, settings, fetchPosts, fetchSettings, postsLoading } = useAdminStore()
-    const { user } = useAuthStore()
-    const [realStats, setRealStats] = useState<{
-        totalViews: number;
-        totalShares: number;
-        graphData: any[];
-    } | null>(null)
-    useEffect(() => {
-        fetchPosts()
-        fetchSettings()
-    }, [])
-    const loadStats = useCallback(async () => {
-        if (!user?.id) return
-        try {
-            const { data: userPosts, error: postsErr } = await supabase
-                .from('posts')
-                .select('id, views, shares, created_at')
-                .eq('user_id', user.id)
-            if (postsErr) throw postsErr
-            const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
-            const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
-            const postIds = userPosts?.map(p => p.id) || []
+    const { posts, settings, postsLoading, stats, statsLoading } = useAdminStore()
 
-            const last7Days: any[] = []
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date()
-                d.setDate(d.getDate() - i)
-                const dateKey = format(d, 'yyyy-MM-dd')
-                last7Days.push({
-                    date: dateKey,
-                    name: format(d, 'MMM d'),
-                    views: 0,
-                    shares: 0,
-                    published: 0
-                })
-            }
-            const queryDate = last7Days[0].date
-            const mergedGraphData = [...last7Days]
-            if (userPosts) {
-                userPosts.forEach(p => {
-                    if (p.created_at) {
-                        const dateKey = format(new Date(p.created_at), 'yyyy-MM-dd')
-                        const entry = mergedGraphData.find(d => d.date === dateKey)
-                        if (entry) {
-                            entry.published += 1
-                        }
-                    }
-                })
-            }
-            if (postIds.length > 0) {
-                const { data: daily, error: dailyErr } = await supabase
-                    .from('daily_post_stats')
-                    .select('date, views, shares')
-                    .in('post_id', postIds)
-                    .gte('date', queryDate)
-                if (dailyErr) console.error('Daily Stats Fetch Error:', dailyErr)
-                if (daily) {
-                    daily.forEach(record => {
-                        const dayEntry = mergedGraphData.find(d => d.date === record.date)
-                        if (dayEntry) {
-                            dayEntry.views += (record.views || 0)
-                            dayEntry.shares += (record.shares || 0)
-                        }
-                    })
-                }
-            }
-            setRealStats({
-                totalViews,
-                totalShares,
-                graphData: mergedGraphData
-            })
-        } catch (err) {
-            console.error('STATS FETCH ERROR:', err)
-        }
-    }, [user?.id])
+
+    const [ready, setReady] = useState(false)
+
+
+
     useEffect(() => {
-        loadStats()
-        const channel = supabase
-            .channel('dashboard-stats-v62')
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'posts' },
-                () => {
-                    loadStats()
-                }
-            )
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'daily_post_stats' },
-                () => {
-                    loadStats()
-                }
-            )
-            .subscribe()
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }, [loadStats])
+        // Delay chart rendering to ensure layout is stable (fixes Recharts width/height -1 warning)
+        const timer = requestAnimationFrame(() => setReady(true))
+        return () => cancelAnimationFrame(timer)
+    }, [])
+
     const subdomain = settings?.subdomain || null
-    const stats = useMemo(() => {
+
+    const dashboardStats = useMemo(() => {
         const safePosts = posts || []
         return {
             totalPosts: safePosts.length,
@@ -125,10 +39,11 @@ export default function Dashboard() {
             latestPost: safePosts[0] || null
         }
     }, [posts])
+
     const graphData = useMemo(() => {
         let rawData: any[] = []
-        if (realStats?.graphData && realStats.graphData.length > 0) {
-            rawData = [...realStats.graphData]
+        if (stats?.graphData && stats.graphData.length > 0) {
+            rawData = [...stats.graphData]
         } else {
             rawData = Array.from({ length: 7 }, (_, i) => {
                 const d = new Date()
@@ -143,7 +58,10 @@ export default function Dashboard() {
             })
         }
         return rawData.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    }, [realStats])
+    }, [stats])
+
+    const showLoader = (postsLoading && !posts) || (statsLoading && !stats)
+
     return (
         <div style={{ paddingBottom: '4rem' }}>
 
@@ -169,7 +87,7 @@ export default function Dashboard() {
                                 Total Views
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {(realStats?.totalViews || 0).toLocaleString()}
+                                {(stats?.totalViews || 0).toLocaleString()}
                             </div>
                         </div>
 
@@ -178,7 +96,7 @@ export default function Dashboard() {
                                 Total Shares
                             </div>
                             <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {(realStats?.totalShares || 0).toLocaleString()}
+                                {(stats?.totalShares || 0).toLocaleString()}
                             </div>
                         </div>
 
@@ -187,21 +105,21 @@ export default function Dashboard() {
                             <div className="stat-label" style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                 Published Posts
                             </div>
-                            <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{stats.publishedPosts}</div>
+                            <div className="stat-value" style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--text-primary)' }}>{dashboardStats.publishedPosts}</div>
                         </div>
                     </div>
 
-                    <div style={{ height: '300px', width: '100%', minWidth: '200px', padding: '1rem 0', background: 'transparent', position: 'relative' }}>
-                        {!realStats && postsLoading ? (
+                    <div style={{ width: "100%", height: "300px", minHeight: "300px", minWidth: 0 }}>
+                        {showLoader ? (
                             <div style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 10 }}>
                                 <WaveLoader size={48} />
                             </div>
-                        ) : graphData.length === 0 ? (
+                        ) : !ready || graphData.length === 0 ? (
                             <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)' }}>
-                                No stats recorded yet
+                                {!ready ? null : 'No stats recorded yet'}
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
+                            <ResponsiveContainer width="100%" height="100%" debounce={300}>
                                 <AreaChart data={graphData} margin={{ top: 10, right: 10, left: -45, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="dash_grad_views_v58" x1="0" y1="0" x2="0" y2="1">
@@ -266,7 +184,7 @@ export default function Dashboard() {
 
             <div style={{ marginBottom: '2rem' }}>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>Latest Post</h2>
-                {stats.latestPost ? (
+                {dashboardStats.latestPost ? (
                     <Link
                         to={subdomain ? `/${subdomain}` : "/blog"}
                         style={{
@@ -278,15 +196,16 @@ export default function Dashboard() {
                             border: '1px solid var(--border-color)',
                             borderRadius: '12px',
                             transition: 'all 0.2s',
-                            background: 'transparent'
+                            background: 'transparent',
+                            transform: 'translateZ(0)'
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = 'var(--text-primary)'
-                            e.currentTarget.style.transform = 'translateY(-2px)'
+                            e.currentTarget.style.transform = 'scale(1.01) translateZ(0)'
                         }}
                         onMouseLeave={(e) => {
                             e.currentTarget.style.borderColor = 'var(--border-color)'
-                            e.currentTarget.style.transform = 'translateY(0)'
+                            e.currentTarget.style.transform = 'scale(1) translateZ(0)'
                         }}
                     >
                         <h3 style={{
@@ -298,7 +217,7 @@ export default function Dashboard() {
                             lineHeight: 1.2,
                             letterSpacing: '-0.02em'
                         }}>
-                            {stats.latestPost.title}
+                            {dashboardStats.latestPost.title}
                         </h3>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                             <span style={{
@@ -306,7 +225,7 @@ export default function Dashboard() {
                                 color: 'var(--text-secondary)',
                                 fontFamily: 'var(--font-mono)'
                             }}>
-                                {new Date(stats.latestPost.createdAt).toLocaleDateString('en-US')}
+                                {new Date(dashboardStats.latestPost.createdAt).toLocaleDateString('en-US')}
                             </span>
                             <span style={{
                                 fontSize: '0.85rem',

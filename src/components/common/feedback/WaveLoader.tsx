@@ -1,10 +1,10 @@
 interface WaveLoaderProps {
     size?: number;
     color?: string;
-    style?: React.CSSProperties; 
+    style?: React.CSSProperties;
 }
 export default function WaveLoader({ size, color }: WaveLoaderProps) {
-    const currentSize = size || 48 
+    const currentSize = size || 48
     return (
         <div style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
             <svg
@@ -14,13 +14,13 @@ export default function WaveLoader({ size, color }: WaveLoaderProps) {
                 style={{
                     width: `${currentSize}px`,
                     height: `${currentSize}px`,
-                    color: color || '#ffffff' 
+                    color: color || 'var(--text-secondary)'
                 }}
             >
                 <g
                     strokeLinejoin="round"
                     strokeLinecap="round"
-                    fillRule="evenodd" 
+                    fillRule="evenodd"
                     fill="none"
                     strokeWidth="1"
                     stroke="none"
@@ -145,4 +145,4 @@ export default function WaveLoader({ size, color }: WaveLoaderProps) {
         </div>
     )
 }
- 
+

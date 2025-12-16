@@ -30,7 +30,7 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
 
     if (hasAnimated) {
         return (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', paddingLeft: '0.4rem' }}>
                 <span style={{
                     fontSize: '1.5rem',
                     color: 'var(--text-secondary)',
@@ -59,7 +59,7 @@ const AdminGreeting = memo(({ name }: AdminGreetingProps) => {
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', paddingLeft: '0.4rem' }}>
             <span style={{
                 fontSize: '1.5rem',
                 color: 'var(--text-secondary)',
