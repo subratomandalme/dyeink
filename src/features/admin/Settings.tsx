@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { settingsService } from '../../services/settingsService'
 import { supabase } from '../../lib/supabase'
-import { useThemeStore } from '../../stores/themeStore'
+
 import { useAdminStore } from '../../stores/adminStore'
 import { AlertTriangle, CheckCircle2, Globe } from 'lucide-react'
 import WaveLoader from '../../components/common/feedback/WaveLoader'
@@ -12,9 +12,8 @@ const Settings: React.FC = () => {
     const [saving, setSaving] = useState(false)
     const [schemaError, setSchemaError] = useState<string | null>(null)
     const { addToast } = useToast()
-    const { theme } = useThemeStore()
-    const [hoverDeletePosts, setHoverDeletePosts] = useState(false)
-    const [hoverDeleteAccount, setHoverDeleteAccount] = useState(false)
+
+
     const [pubName, setPubName] = useState("")
     const [description, setDescription] = useState("")
     const [customDomain, setCustomDomain] = useState("")
@@ -30,20 +29,7 @@ const Settings: React.FC = () => {
     const [deleteType, setDeleteType] = useState<'posts' | 'publication' | null>(null)
     const [deleteConfirmation, setDeleteConfirmation] = useState("")
     const [isDeleting, setIsDeleting] = useState(false)
-    const getNeumorphicShadows = (isHovered: boolean) => {
-        const isDark = theme === 'dark'
-        if (isHovered) {
-            if (isDark) {
-                return '-1px -1px 5px rgba(255,255,255,0.15), 1px 1px 5px rgba(255,255,255,0.05), inset -2px -2px 5px rgba(255,255,255,0.1), inset 2px 2px 4px rgba(0,0,0,0.5)'
-            }
-            return '-1px -1px 5px rgba(255,255,255,0.6), 1px 1px 5px rgba(0,0,0,0.3), inset -2px -2px 5px rgba(255,255,255,1), inset 2px 2px 4px rgba(0,0,0,0.3)'
-        } else {
-            if (isDark) {
-                return '-5px -5px 10px rgba(255,255,255,0.1), 5px 5px 10px rgba(255,255,255,0.03)'
-            }
-            return '-5px -5px 10px rgba(255,255,255,0.8), 5px 5px 10px rgba(0,0,0,0.25)'
-        }
-    }
+
     const tabs = [
         { id: 'Basics', label: 'Basics' },
         { id: 'Publication', label: 'Publication' },
@@ -681,31 +667,14 @@ const Settings: React.FC = () => {
                                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete post archive</h3>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete all posts on this publication.</p>
                                 <button
-                                    className="danger-btn"
-                                    onMouseEnter={() => setHoverDeletePosts(true)}
-                                    onMouseLeave={() => setHoverDeletePosts(false)}
+                                    className="danger-magic-btn"
                                     onClick={() => {
                                         setDeleteType('posts')
                                         setDeleteConfirmation('')
                                         setShowDeleteModal(true)
                                     }}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '50px',
-                                        backgroundColor: 'var(--bg-primary)',
-                                        color: hoverDeletePosts ? 'var(--error)' : 'var(--text-secondary)',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontWeight: 600,
-                                        fontSize: '0.9rem',
-                                        transition: 'all 0.3s ease',
-                                        boxShadow: getNeumorphicShadows(hoverDeletePosts)
-                                    }}
                                 >
-                                    Delete all posts
+                                    <span className="danger-text">Delete all posts</span>
                                 </button>
                             </div>
                         </div>
@@ -714,37 +683,83 @@ const Settings: React.FC = () => {
                                 <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>Delete Account</h3>
                                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Permanently delete your account, posts, subscriber list, and all other content.</p>
                                 <button
-                                    className="danger-btn"
-                                    onMouseEnter={() => setHoverDeleteAccount(true)}
-                                    onMouseLeave={() => setHoverDeleteAccount(false)}
+                                    className="danger-magic-btn"
                                     onClick={() => {
                                         setDeleteType('publication')
                                         setDeleteConfirmation('')
                                         setShowDeleteModal(true)
                                     }}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '0.5rem',
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '50px',
-                                        backgroundColor: 'var(--bg-primary)',
-                                        color: hoverDeleteAccount ? 'var(--error)' : 'var(--text-secondary)',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontWeight: 600,
-                                        fontSize: '0.9rem',
-                                        transition: 'all 0.3s ease',
-                                        boxShadow: getNeumorphicShadows(hoverDeleteAccount)
-                                    }}
                                 >
-                                    Delete Account
+                                    <span className="danger-text">Delete Account</span>
                                 </button>
                             </div>
                         </div>
+                        <style>{`
+                            .danger-magic-btn {
+                                position: relative;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                padding: 0.75rem 1.5rem;
+                                border-radius: 9999px;
+                                text-decoration: none;
+                                font-size: 0.95rem;
+                                font-weight: 600;
+                                color: #ef4444;
+                                background: transparent;
+                                border: none;
+                                cursor: pointer;
+                                overflow: hidden;
+                                transition: transform 0.2s ease, color 0.2s ease;
+                                transform: translateZ(0); 
+                                isolation: isolate;
+                            }
+
+                            .danger-magic-btn:hover {
+                                color: #ffffff;
+                            }
+
+                            .danger-magic-btn::before {
+                                content: "";
+                                position: absolute;
+                                top: -150%;
+                                left: -150%;
+                                width: 400%;
+                                height: 400%;
+                                background: conic-gradient(
+                                    from 0deg,
+                                    #ef4444,
+                                    #f97316,
+                                    #ef4444
+                                );
+                                z-index: -2;
+                                transition: opacity 0.3s ease;
+                                opacity: 1;
+                            }
+
+                            .danger-magic-btn::after {
+                                content: "";
+                                position: absolute;
+                                inset: 2px; /* Thicker border look */
+                                background: var(--bg-primary); 
+                                border-radius: 9999px;
+                                z-index: -1;
+                                transition: opacity 0.3s ease;
+                            }
+
+                            .danger-magic-btn:hover::after {
+                                opacity: 0; /* Reveal full gradient on hover */
+                            }
+
+                            .danger-text {
+                                position: relative;
+                                z-index: 10;
+                            }
+                        `}</style>
                     </div>
                 )}
             </div>
+
 
             {
                 showDeleteModal && (
@@ -926,7 +941,7 @@ const Settings: React.FC = () => {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     )
 }
 export default Settings

@@ -15,7 +15,7 @@ import { useAdminStore } from '../../stores/adminStore'
 import { settingsService } from '../../services/settingsService'
 import ThemeToggle from '../common/ui/ThemeToggle'
 import DecryptedText from '../common/animations/DecryptedText'
-import { BackgroundBeams } from '../common/animations/BackgroundBeams'
+
 import AdminGreeting from './AdminGreeting'
 import NewPostButton from './sidebar/NewPostButton'
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
@@ -27,21 +27,18 @@ export default function AdminLayout() {
     const greetingName = settings?.siteName || user?.name || 'User'
     const subdomain = settings?.subdomain || null
     const [isLoggingOut, setIsLoggingOut] = useState(false)
-    const [isMobile, setIsMobile] = useState(false)
+
     const { theme } = useThemeStore()
 
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768)
-        }
-        checkMobile()
-        window.addEventListener('resize', checkMobile)
-        return () => window.removeEventListener('resize', checkMobile)
-    }, [])
+
 
     useEffect(() => {
         const loadSettings = async () => {
             if (!user) return
+
+            useAdminStore.getState().fetchPosts()
+            useAdminStore.getState().fetchStats(user.id)
+
             await fetchSettings()
             const currentSettings = useAdminStore.getState().settings
             if (!currentSettings) {
@@ -77,13 +74,13 @@ export default function AdminLayout() {
             <div style={{
                 position: 'fixed',
                 inset: 0,
-                backgroundColor: '#000000',
+                backgroundColor: 'var(--bg-primary)',
                 zIndex: 9999,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ffffff'
+                color: 'var(--text-primary)'
             }}>
                 <div style={{ fontSize: '2rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                     <DecryptedText
@@ -115,7 +112,7 @@ export default function AdminLayout() {
 
             <aside className="admin-sidebar" style={{
                 width: '260px',
-                backgroundColor: 'var(--bg-primary)',
+                backgroundColor: theme === 'dark' ? '#0B0B0B' : '#eceeeb',
                 borderRight: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.15)',
                 boxShadow: theme === 'dark' ? '1px 0 30px rgba(255, 255, 255, 0.15)' : '1px 0 25px rgba(0, 0, 0, 0.1)',
                 display: 'flex',
@@ -146,54 +143,14 @@ export default function AdminLayout() {
                     </div>
                     <Link
                         to="/admin"
-                        className="sidebar-item"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.6rem 0.75rem',
-                            borderRadius: '6px',
-                            color: isActive('/admin') ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            backgroundColor: isActive('/admin') ? 'var(--bg-tertiary)' : 'transparent',
-                            textDecoration: 'none',
-                            fontSize: '0.95rem',
-                            fontWeight: isActive('/admin') ? 500 : 400
-                        }}
+                        className={`sidebar-item ${isActive('/admin') ? 'active' : ''}`}
                     >
                         <Home size={20} /><span className="sidebar-item-text"> Home</span>
                     </Link>
-                    <Link
-                        to={subdomain ? `/${subdomain}` : "/blog"}
-                        target="_blank"
-                        className="sidebar-item"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.6rem 0.75rem',
-                            borderRadius: '6px',
-                            color: 'var(--text-secondary)',
-                            textDecoration: 'none',
-                            fontSize: '0.95rem',
-                        }}
-                    >
-                        <Globe size={20} /><span className="sidebar-item-text"> View</span>
-                    </Link>
+
                     <Link
                         to="/admin/posts"
-                        className="sidebar-item"
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.75rem',
-                            padding: '0.6rem 0.75rem',
-                            borderRadius: '6px',
-                            color: isActive('/admin/posts') ? 'var(--text-primary)' : 'var(--text-secondary)',
-                            backgroundColor: isActive('/admin/posts') ? 'var(--bg-tertiary)' : 'transparent',
-                            textDecoration: 'none',
-                            fontSize: '0.95rem',
-                            fontWeight: isActive('/admin/posts') ? 500 : 400
-                        }}
+                        className={`sidebar-item ${isActive('/admin/posts') ? 'active' : ''}`}
                     >
                         <FileText size={20} /><span className="sidebar-item-text"> Posts</span>
                     </Link>
@@ -212,19 +169,7 @@ export default function AdminLayout() {
                         </div>
                         <Link
                             to="/admin/stats"
-                            className="sidebar-item"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                                padding: '0.6rem 0.75rem',
-                                borderRadius: '6px',
-                                color: isActive('/admin/stats') ? 'var(--text-primary)' : 'var(--text-secondary)',
-                                backgroundColor: isActive('/admin/stats') ? 'var(--bg-tertiary)' : 'transparent',
-                                textDecoration: 'none',
-                                fontSize: '0.95rem',
-                                fontWeight: isActive('/admin/stats') ? 500 : 400
-                            }}
+                            className={`sidebar-item ${isActive('/admin/stats') ? 'active' : ''}`}
                         >
                             <BarChart2 size={20} /><span className="sidebar-item-text"> Stats</span>
                         </Link>
@@ -244,21 +189,17 @@ export default function AdminLayout() {
                         </div>
                         <Link
                             to="/admin/settings"
-                            className="sidebar-item"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.75rem',
-                                padding: '0.6rem 0.75rem',
-                                borderRadius: '6px',
-                                color: isActive('/admin/settings') ? 'var(--text-primary)' : 'var(--text-secondary)',
-                                backgroundColor: isActive('/admin/settings') ? 'var(--bg-tertiary)' : 'transparent',
-                                textDecoration: 'none',
-                                fontSize: '0.95rem',
-                                fontWeight: isActive('/admin/settings') ? 500 : 400
-                            }}
+                            className={`sidebar-item ${isActive('/admin/settings') ? 'active' : ''}`}
                         >
                             <Settings size={20} /><span className="sidebar-item-text"> Settings</span>
+                        </Link>
+                        <Link
+                            to={subdomain ? `/${subdomain}` : "/blog"}
+                            target="_blank"
+                            className="sidebar-item"
+                            style={{ marginTop: '0.4rem' }}
+                        >
+                            <Globe size={20} /><span className="sidebar-item-text"> Live ↗</span>
                         </Link>
                     </div>
                 </nav>
@@ -292,7 +233,7 @@ export default function AdminLayout() {
                         }
                     `}</style>
                 </div>
-            </aside>
+            </aside >
 
             <main className="admin-main" style={{
                 flex: 1,
@@ -302,7 +243,7 @@ export default function AdminLayout() {
                 position: 'relative',
                 overflow: 'hidden'
             }}>
-                {!isMobile && <BackgroundBeams style={{ opacity: 0.5 }} />}
+
                 <div className="theme-toggle-wrapper" style={{
                     position: 'absolute',
                     top: '1.5rem',
@@ -329,6 +270,109 @@ export default function AdminLayout() {
             </main>
 
             <style>{`
+                .sidebar-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    padding: 0.6rem 0.75rem;
+                    border-radius: 9999px;
+                    text-decoration: none;
+                    font-size: 0.95rem;
+                    font-weight: 400;
+                    position: relative;
+                    overflow: hidden;
+                    color: var(--text-secondary);
+                    background: transparent;
+                    transition: all 0.2s ease;
+                    isolation: isolate;
+                    transform: translateZ(0);
+                }
+
+                .sidebar-item.active {
+                    color: var(--text-primary);
+                    background: var(--bg-tertiary);
+                    font-weight: 500;
+                }
+
+                /* Active state visibility for dark mode */
+                html[data-theme="dark"] .sidebar-item.active {
+                    background-color: #262626 !important;
+                    color: #ffffff !important;
+                    box-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+                }
+
+                /* Explicit light mode overrides */
+                html[data-theme="light"] .sidebar-item {
+                     color: #52525b !important;
+                }
+                html[data-theme="light"] .sidebar-item.active {
+                     color: #18181b !important;
+                     background: #f3f4f6 !important;
+                }
+                /* Ensure hover is black in light mode */
+                html[data-theme="light"] .sidebar-item:hover {
+                     color: #000000 !important;
+                }
+
+                .sidebar-item:hover {
+                    color: #ffffff !important;
+                    background: transparent !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                    transform: scale(1.02);
+                }
+
+                .sidebar-item:active {
+                    transform: scale(0.98);
+                }
+
+                .sidebar-item::before {
+                    content: "";
+                    position: absolute;
+                    top: -150%;
+                    left: -150%;
+                    width: 400%;
+                    height: 400%;
+                    background: conic-gradient(
+                        from 0deg,
+                        transparent 0deg,
+                        #a855f7 60deg,
+                        #ec4899 120deg,
+                        transparent 180deg,
+                        transparent 360deg
+                    );
+                    animation: rotate 4s linear infinite;
+                    opacity: 0; 
+                    z-index: -2;
+                    transition: opacity 0.3s ease;
+                    filter: blur(20px);
+                }
+
+                .sidebar-item::after {
+                    content: "";
+                    position: absolute;
+                    inset: 1px;
+                    background: var(--bg-primary);
+                    border-radius: 9999px;
+                    opacity: 0;
+                    z-index: -1;
+                    transition: opacity 0.3s ease;
+                }
+
+                .sidebar-item:hover::before,
+                .sidebar-item:hover::after {
+                    opacity: 1;
+                }
+
+                .sidebar-item svg, .sidebar-item-text {
+                    position: relative;
+                    z-index: 10;
+                }
+
+                @keyframes rotate {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+
                 @media (max-width: 499px) {
                     .admin-sidebar {
                         width: 70px !important;
@@ -368,20 +412,42 @@ export default function AdminLayout() {
                         width: 44px !important;
                         height: 44px !important;
                         padding: 0 !important;
-                        font-size: 0 !important;
-                        display: block !important;
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
                         border-radius: 50% !important;
-                        position: relative !important;
                     }
-                    .admin-sidebar .new-post-btn a::before {
+                    .admin-sidebar .new-post-btn a .magic-text {
+                        font-size: 0 !important;
+                        display: flex !important;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                        height: 100%;
+                    }
+                    .admin-sidebar .new-post-btn a .magic-text::before {
                         content: '+' !important;
-                        position: absolute !important;
-                        top: 47% !important;
-                        left: 50% !important;
-                        transform: translate(-50%, -50%) !important;
-                        font-size: 32px !important;
-                        font-weight: 200 !important;
+                        font-size: 28px !important;
+                        font-weight: 300 !important;
                         line-height: 1 !important;
+                        display: block !important;
+                        margin-top: -1px !important; /* Slight correction often needed depending on font baseline */
+                        color: #ffffff !important;
+                        -webkit-text-fill-color: #ffffff !important;
+                        background: none !important;
+                    }
+                    html[data-theme="light"] .admin-sidebar .new-post-btn a .magic-text::before {
+                        color: #000000 !important;
+                        -webkit-text-fill-color: #000000 !important;
+                    }
+                    /* Ensure we don't break the gradient border on the anchor itself */
+                    .admin-sidebar .new-post-btn a::before {
+                         /* Let the original gradient style apply */
+                         content: "" !important;
+                         font-size: unset !important;
+                         font-weight: unset !important;
+                         line-height: unset !important;
+                         margin-top: unset !important;
                     }
                     .admin-sidebar .section-label {
                         display: none !important;
@@ -429,8 +495,8 @@ export default function AdminLayout() {
                         overflow-x: hidden !important;
                     }
                     .admin-main .theme-toggle-wrapper {
-                        top: 0.5rem !important;
-                        right: 0.5rem !important;
+                        top: 1rem !important;
+                        right: 1rem !important;
                     }
                     .admin-main h1 {
                         font-size: 1.75rem !important;
@@ -446,7 +512,7 @@ export default function AdminLayout() {
                     }
                 }
             `}</style>
-        </div>
+        </div >
     )
 }
 

@@ -219,35 +219,7 @@ textarea::placeholder {
   box-shadow: none;
 }
 
-.sidebar-item {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
 
-.sidebar-item:hover {
-  background-color: var(--bg-tertiary) !important;
-  color: var(--text-primary) !important;
-  transform: translateX(4px);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
-}
-
-.sidebar-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background-color: var(--text-primary);
-  transform: scaleY(0);
-  transition: transform 0.2s ease;
-  transform-origin: center;
-}
-
-.sidebar-item:hover::before {
-  transform: scaleY(1);
-}
 
 .btn-signout {
   transition: all 0.3s ease;
@@ -397,7 +369,16 @@ textarea::placeholder {
 .hover-row:hover {
   background: var(--bg-tertiary);
   transition: background 0.2s;
-  border-radius: 8px;
+}
+
+.hover-row:hover td:first-child {
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+}
+
+.hover-row:hover td:last-child {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 .empty-state {

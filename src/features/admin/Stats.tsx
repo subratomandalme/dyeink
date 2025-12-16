@@ -1,60 +1,33 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { BarChart2, Share2 } from 'lucide-react'
 import WaveLoader from '../../components/common/feedback/WaveLoader'
 import { useAdminStore } from '../../stores/adminStore'
-import { useAuthStore } from '../../stores/authStore'
-import { supabase } from '../../lib/supabase'
 const Stats: React.FC = () => {
-    const { posts, fetchPosts, postsLoading } = useAdminStore()
-    const { user } = useAuthStore()
+    const { posts, postsLoading, stats, statsLoading } = useAdminStore()
     const [activeTab, setActiveTab] = useState('Traffic')
-    const [realStats, setRealStats] = useState<any>(null)
     const tabs = ['Traffic', 'Sharing']
-    useEffect(() => {
-        fetchPosts()
-    }, [])
-    useEffect(() => {
-        const loadStats = async () => {
-            if (!user?.id) return
-            try {
-                const { data: userPosts, error: postsErr } = await supabase
-                    .from('posts')
-                    .select('id, views, shares')
-                    .eq('user_id', user.id)
-                if (postsErr) throw postsErr
-                const totalViews = userPosts?.reduce((acc, p) => acc + (p.views || 0), 0) || 0
-                const totalShares = userPosts?.reduce((acc, p) => acc + (p.shares || 0), 0) || 0
-                setRealStats({
-                    totalViews,
-                    totalShares
-                })
-            } catch (err) {
-                console.error('Stats Page Error:', err)
-            }
-        }
-        loadStats()
-    }, [user?.id])
+
     const safePosts = posts || []
-    const showLoader = postsLoading && !posts
+    const showLoader = (postsLoading && !posts) || (statsLoading && !stats)
     const publishedPosts = safePosts.filter(p => p.published).length
+
     const renderTabContent = () => {
         switch (activeTab) {
             case 'Traffic':
                 return (
-                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
+                    <div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Views" value={(realStats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
+                            <StatCard label="Total Views" value={(stats?.totalViews || 0).toLocaleString()} icon={<BarChart2 size={20} />} />
                             <StatCard label="Posts Published" value={publishedPosts.toString()} />
-
                         </div>
                     </div>
                 )
 
             case 'Sharing':
                 return (
-                    <div style={{ animation: 'fadeIn 0.3s ease-in' }}>
+                    <div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
-                            <StatCard label="Total Shares" value={(realStats?.totalShares || 0).toLocaleString()} icon={<Share2 size={20} />} />
+                            <StatCard label="Total Shares" value={(stats?.totalShares || 0).toLocaleString()} icon={<Share2 size={20} />} />
                         </div>
                     </div>
                 )
@@ -62,6 +35,7 @@ const Stats: React.FC = () => {
                 return null
         }
     }
+
     return (
         <div className="stats-page" style={{ padding: '0', color: 'var(--text-primary)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -101,30 +75,7 @@ const Stats: React.FC = () => {
                 )
             }
             <style>{`
-@keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(5px); }
-                    to { opacity: 1; transform: translateY(0); }
-}
-@media (max-width: 499px) {
-    .stats-page > div:first-child {
-        margin-bottom: 0.5rem !important;
-    }
-    .stats-page h1 {
-        font-size: 1.75rem !important;
-    }
-    .stats-page > div:nth-child(2) {
-        margin-bottom: 0.75rem !important;
-    }
-    .stats-page .stat-card {
-        padding: 0.5rem 0 !important;
-    }
-    .stats-page .stat-card .label {
-        font-size: 0.8rem !important;
-    }
-    .stats-page .stat-card .value {
-        font-size: 1.75rem !important;
-    }
-}
+
 `}</style>
         </div >
     )

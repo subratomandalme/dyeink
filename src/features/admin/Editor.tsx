@@ -142,12 +142,12 @@ export default function Editor() {
                 position: 'fixed',
                 inset: 0,
                 zIndex: 9999,
-                backgroundColor: '#000000',
+                backgroundColor: 'var(--bg-primary)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ffffff'
+                color: 'var(--text-primary)'
             }}>
                 <div style={{ fontSize: '2rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                     <DecryptedText
