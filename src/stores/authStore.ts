@@ -60,7 +60,8 @@ export const useAuthStore = create<AuthState>()(
                 set({
                     session: null,
                     user: null,
-                    isAuthenticated: false
+                    isAuthenticated: false,
+                    isLoading: false
                 })
             },
             initialize: async () => {
@@ -103,4 +104,4 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 )
- 
+
