@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs": "^5.0.1",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.4.2",
+    "@react-three/drei": "^9.0.0",
+    "@react-three/fiber": "^8.0.0",
     "@supabase/supabase-js": "^2.87.1",
     "@types/dompurify": "^3.0.5",
     "@upstash/redis": "^1.35.8",
