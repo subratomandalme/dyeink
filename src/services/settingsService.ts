@@ -83,16 +83,22 @@ export const settingsService = {
         }
     },
     async getSettingsByCustomDomain(domain: string): Promise<{ settings: SiteSettings; userId: string } | null> {
+        const host = domain.toLowerCase()
+        const cleanHost = host.startsWith('www.') ? host.slice(4) : host
+
         const { data, error } = await supabase
             .from('site_settings')
             .select('*, user_id')
-            .eq('custom_domain', domain)
-            .single()
+            .or(`custom_domain.ilike.${cleanHost},custom_domain.ilike.www.${cleanHost}`)
+            .limit(1)
+            .maybeSingle()
 
         if (error) {
             console.error('Error fetching settings by custom domain:', error)
             return null
         }
+
+        if (!data) return null
 
         return {
             settings: {
@@ -159,7 +165,7 @@ export const settingsService = {
             user_id: user.id,
             site_name: settings.siteName,
             site_description: settings.siteDescription,
-            custom_domain: settings.customDomain || null,
+            custom_domain: settings.customDomain ? settings.customDomain.toLowerCase() : null,
             subdomain: settings.subdomain || `blog-${user.id.slice(0, 8)}`,
             twitter_link: settings.twitterLink,
             linkedin_link: settings.linkedinLink,
@@ -209,7 +215,7 @@ export const settingsService = {
             const response = await fetch('/api/add-domain', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ domain })
+                body: JSON.stringify({ domain: domain.toLowerCase() })
             })
             const data = await response.json()
             if (!response.ok) {

@@ -60,21 +60,31 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
     const [isSubscribeOpen, setIsSubscribeOpen] = useState(false)
     const contentRef = useRef<HTMLDivElement>(null)
     useCodeCopy(contentRef)
+    const [userId, setUserId] = useState<string | null>(null)
     const itemsPerPage = 5
     const currentPage = parseInt(searchParams.get('page') || '1')
     const navigate = useNavigate()
+
+    const isEffectiveCustomDomain = isCustomDomain || (
+        !window.location.hostname.includes('localhost') &&
+        !window.location.hostname.includes('vercel.app') &&
+        window.location.hostname !== 'dyeink.subratomandal.com'
+    )
+
     useEffect(() => {
-        const loadData = async () => {
+        const loadSettings = async () => {
             try {
                 let userConfig = null
-                if (isCustomDomain) {
+                if (isEffectiveCustomDomain) {
                     const hostname = window.location.hostname
                     userConfig = await settingsService.getSettingsByCustomDomain(hostname)
                 } else if (subdomain) {
                     userConfig = await settingsService.getSettingsBySubdomain(subdomain)
                 }
+
                 if (userConfig) {
                     const { settings, userId } = userConfig
+                    setUserId(userId)
                     if (settings.siteName) setBlogTitle(settings.siteName)
                     setTwitterLink(settings.twitterLink || null)
                     setLinkedinLink(settings.linkedinLink || null)
@@ -82,52 +92,62 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                     setWebsiteLink(settings.websiteLink || null)
                     setDribbbleLink(settings.dribbbleLink || null)
                     setHuggingfaceLink(settings.huggingfaceLink || null)
-
                     setLeetcodeLink(settings.leetcodeLink || null)
-
                     setNewsletterEmail(settings.newsletterEmail || null)
                     setBlogId(settings.id || null)
-                    const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
-
-                    setPosts(fetchedPosts)
-                    if (slug && fetchedPosts.length > 0) {
-                        const activePost = fetchedPosts.find(p => p.slug === slug)
-                        if (activePost) {
-                            const currentViews = activePost.views || 0
-                            supabase
-                                .from('posts')
-                                .update({ views: currentViews + 1 })
-                                .eq('id', activePost.id)
-                                .then(({ error }) => {
-                                    if (error) {
-                                        console.error('VIEW ERROR:', error)
-                                    }
-                                })
-                            const today = format(new Date(), 'yyyy-MM-dd')
-                            supabase.rpc('increment_daily_views', {
-                                p_post_id: activePost.id,
-                                p_date: today
-                            }).then(({ error }) => {
-                                if (error) console.error('Stats Update Error (RPC):', error)
-                            })
-                        }
-                    }
                 } else {
-                    if (isCustomDomain || subdomain) {
+                    if (isEffectiveCustomDomain || subdomain) {
                         setBlogTitle('User Not Found')
+                        setUserId(null)
                     } else {
                         navigate('/')
-                        return
                     }
                 }
             } catch (error) {
-                console.error('Failed to load data:', error)
+                console.error('Failed to load settings:', error)
+            }
+        }
+        loadSettings()
+    }, [subdomain, navigate, isEffectiveCustomDomain])
+
+    useEffect(() => {
+        if (!userId) return
+
+        const loadPosts = async () => {
+            setLoading(true)
+            try {
+                const fetchedPosts = await postService.getPosts({ userId, publishedOnly: true })
+                setPosts(fetchedPosts)
+
+                if (slug && fetchedPosts.length > 0) {
+                    const activePost = fetchedPosts.find(p => p.slug === slug)
+                    if (activePost) {
+                        const currentViews = activePost.views || 0
+                        supabase
+                            .from('posts')
+                            .update({ views: currentViews + 1 })
+                            .eq('id', activePost.id)
+                            .then(({ error }) => {
+                                if (error) console.error('VIEW ERROR:', error)
+                            })
+                        const today = format(new Date(), 'yyyy-MM-dd')
+                        supabase.rpc('increment_daily_views', {
+                            p_post_id: activePost.id,
+                            p_date: today
+                        }).then(({ error }) => {
+                            if (error) console.error('Stats Update Error (RPC):', error)
+                        })
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load posts:', error)
             } finally {
                 setLoading(false)
             }
         }
-        loadData()
-    }, [subdomain, navigate, isCustomDomain, slug])
+        loadPosts()
+    }, [userId, slug])
+
     const filteredPosts = posts.filter(post => {
         if (!post.published) return false
         if (slug) return post.slug === slug
@@ -174,21 +194,40 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                 <aside style={{ position: 'sticky', top: '4rem', height: 'fit-content' }}>
                     <div style={{ marginBottom: '1.5rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                            <Link to="/" style={{
-                                fontFamily: "'Jost', sans-serif",
-                                fontSize: '1.8rem',
-                                fontWeight: 400,
-                                color: 'var(--text-primary)',
-                                display: '-webkit-box',
-                                letterSpacing: '-0.03em',
-                                WebkitLineClamp: 3,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                                wordBreak: 'break-word',
-                                lineHeight: 1.2
-                            }}>
-                                {blogTitle}
-                            </Link>
+                            {isEffectiveCustomDomain ? (
+                                <h1 style={{
+                                    fontFamily: "'Jost', sans-serif",
+                                    fontSize: '1.8rem',
+                                    fontWeight: 400,
+                                    color: 'var(--text-primary)',
+                                    display: '-webkit-box',
+                                    letterSpacing: '-0.03em',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    wordBreak: 'break-word',
+                                    lineHeight: 1.2,
+                                    margin: 0
+                                }}>
+                                    {blogTitle}
+                                </h1>
+                            ) : (
+                                <Link to="/" style={{
+                                    fontFamily: "'Jost', sans-serif",
+                                    fontSize: '1.8rem',
+                                    fontWeight: 400,
+                                    color: 'var(--text-primary)',
+                                    display: '-webkit-box',
+                                    letterSpacing: '-0.03em',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    wordBreak: 'break-word',
+                                    lineHeight: 1.2
+                                }}>
+                                    {blogTitle}
+                                </Link>
+                            )}
 
                         </div>
                     </div>
@@ -197,7 +236,7 @@ export default function Blog({ isCustomDomain = false }: BlogProps) {
                             <Link to={subdomain ? `/${subdomain}` : "/blog"} className="sidebar-link" style={{ fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <ArrowLeft size={16} /> {subdomain ? '' : 'All Posts'}
                             </Link>
-                        ) : !isCustomDomain && (
+                        ) : !isEffectiveCustomDomain && (
                             <Link to="/" className="sidebar-link" style={{ fontSize: '0.95rem', fontFamily: "'Jost', sans-serif", fontWeight: 400 }}>
                                 Home
                             </Link>
