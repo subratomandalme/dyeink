@@ -77,8 +77,8 @@ export default function Register() {
             <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
                 <LightRays
                     raysOrigin="top-center"
-                    raysColor="#ff00ff"
-                    raysSpeed={6.0}
+                    raysColor="#00ffff"
+                    raysSpeed={2.0}
                     lightSpread={5.0}
                     rayLength={10.0}
                     followMouse={true}
@@ -215,7 +215,7 @@ export default function Register() {
                                 Account created!
                             </h2>
                             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
-                                Please check your email for verification instructions (if enabled) or log in to continue. <br />
+                                Please check your email for verification instructions. <br />
                                 <strong style={{ color: '#ef4444' }}>Check Spam Folders in Email</strong>
                             </p>
                             <Link to="/login" className="btn btn-primary"
