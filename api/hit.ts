@@ -36,7 +36,7 @@ export default async function handler(request: Request) {
                 .single()
 
             if (post) {
-                const current = (type === 'share' ? post.shares : post.views) || 0
+                const current = (type === 'share' ? (post as any).shares : (post as any).views) || 0
                 const update = type === 'share' ? { shares: current + 1 } : { views: current + 1 }
 
                 await supabase.from('posts').update(update).eq('id', postId)
@@ -54,8 +54,8 @@ export default async function handler(request: Request) {
                 if (daily) {
                     await supabase
                         .from('daily_post_stats')
-                        .update({ [field]: (daily[field] || 0) + 1 })
-                        .eq('id', daily.id)
+                        .update({ [field]: ((daily as any)[field] || 0) + 1 })
+                        .eq('id', (daily as any).id)
                 } else {
                     await supabase
                         .from('daily_post_stats')
