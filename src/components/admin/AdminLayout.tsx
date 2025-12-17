@@ -467,8 +467,12 @@ export default function AdminLayout() {
                     }
                     .admin-sidebar .sidebar-item {
                         justify-content: center !important;
-                        padding: 0.75rem !important;
+                        padding: 0 !important;
                         gap: 0 !important;
+                        width: 44px !important;
+                        height: 44px !important;
+                        border-radius: 50% !important;
+                        margin: 0 auto !important;
                     }
                     .admin-sidebar .sidebar-item svg {
                         width: 24px !important;
@@ -479,8 +483,12 @@ export default function AdminLayout() {
                     }
                     .admin-sidebar .btn-signout {
                         justify-content: center !important;
-                        padding: 0.75rem !important;
+                        padding: 0 !important;
                         gap: 0 !important;
+                        width: 44px !important;
+                        height: 44px !important;
+                        border-radius: 50% !important;
+                        margin: 0 auto !important;
                     }
                     .admin-sidebar .btn-signout svg {
                         width: 24px !important;

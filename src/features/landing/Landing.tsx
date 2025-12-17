@@ -12,7 +12,7 @@ export default function Landing() {
                 <LightRays
                     raysOrigin="top-center"
                     raysColor="#00ffff"
-                    raysSpeed={6.0}
+                    raysSpeed={2.0}
                     lightSpread={5.0}
                     rayLength={10.0}
                     followMouse={true}
@@ -36,7 +36,7 @@ export default function Landing() {
                     <img src="/Di.png" alt="DyeInk" className="logo-adaptive" style={{ height: '100%', width: '100%', objectFit: 'contain' }} />
                 </div>
                 <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '-8px' }}>
-                    <NeumorphismButton to="/login" text="Sign In" icon={null} />
+                    <NeumorphismButton to="/register" text="Sign Up" icon={null} />
                 </div>
             </nav>
 

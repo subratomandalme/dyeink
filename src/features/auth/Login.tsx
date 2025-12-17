@@ -86,7 +86,7 @@ export default function Login() {
                 <LightRays
                     raysOrigin="top-center"
                     raysColor="#00ffff"
-                    raysSpeed={6.0}
+                    raysSpeed={2.0}
                     lightSpread={5.0}
                     rayLength={10.0}
                     followMouse={true}

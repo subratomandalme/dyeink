@@ -496,7 +496,7 @@ export default function Editor() {
                     overflowX: 'auto',
                     scrollbarWidth: 'none',
                     paddingRight: '1rem',
-                    maskImage: 'linear-gradient(to right, black 90%, transparent 100%)'
+
                 }}>
                     <div style={{ display: 'flex', gap: '0.25rem' }}>
                         <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => executeCommand('undo')} className="toolbar-btn" title="Undo"><Undo size={18} /></button>
