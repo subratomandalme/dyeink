@@ -27,7 +27,7 @@ export default async function handler(request: Request) {
         const { error: rpcError } = await supabase.rpc(rpcName, { p_post_id: postId })
 
         if (rpcError) {
-            console.log('RPC Failed, falling back to manual update:', rpcError)
+
 
             const { data: post } = await supabase
                 .from('posts')

@@ -28,7 +28,7 @@ export default async function handler(req: Request) {
             return new Response('Invalid email', { status: 400 })
         }
         const token = await generateToken(email)
-        console.log(`[Mock Email] Sending verification to ${email} with token ${token}`)
+
         return new Response(JSON.stringify({ ok: true, message: 'Verification email sent' }), {
             headers: { 'Content-Type': 'application/json' }
         })
