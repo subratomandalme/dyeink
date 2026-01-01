@@ -3,9 +3,9 @@
   "private": true,
   "version": "3.0.0",
   "scripts": {
-    "dev": "cd platform/web && npm run dev",
-    "build": "cd platform/web && npm run build",
-    "preview": "cd platform/web && npm run preview"
+    "dev": "cd platform && npm run dev",
+    "build": "cd platform && npm run build",
+    "preview": "cd platform && npm run preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
