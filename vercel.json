@@ -1,4 +1,6 @@
 {
+    "buildCommand": "cd platform/web && npm install && npm run build",
+    "outputDirectory": "platform/web/dist",
     "rewrites": [
         {
             "source": "/((?!api/.*).*)",

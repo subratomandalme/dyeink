@@ -1,15 +1,17 @@
 import { supabase } from '../lib/supabase'
 import { Post, CreatePostInput, UpdatePostInput } from '../types'
+import { compressImage } from '../utils/imageCompression'
+
 export const postService = {
     async uploadImage(file: File): Promise<string | null> {
         try {
-            const fileExt = file.name.substring(file.name.lastIndexOf('.'))
-            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}${fileExt}`
+            const compressedFile = await compressImage(file)
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.webp`
             const filePath = `${fileName}`
 
             const { error: uploadError } = await supabase.storage
                 .from('post-images')
-                .upload(filePath, file)
+                .upload(filePath, compressedFile)
 
             if (uploadError) {
                 console.error('Error uploading image:', uploadError)
