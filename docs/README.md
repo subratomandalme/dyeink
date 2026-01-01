@@ -13,20 +13,19 @@ A simple to use, fast, and minimalistic blogging site.
 
 
 <p>
-    <img width="1469" height="834" alt="Screenshot 2025-12-16 at 12 23 01 PM" src="https://github.com/user-attachments/assets/eb7e1ec8-9431-4d93-9079-8c96934509b5" />
-
+    <img width="1466" height="832" alt="Screenshot 2026-01-01 at 9 59 48 AM" src="https://github.com/user-attachments/assets/b17be2e8-89be-480e-b47c-117fd0dbbfa4" />
 </p>
 
 <p>
-    <img width="1466" height="834" alt="Screenshot 2025-12-15 at 3 46 41 AM" src="https://github.com/user-attachments/assets/ef8de65d-59f8-4244-baef-4209efec6bee" />
+    <img width="1467" height="833" alt="Screenshot 2026-01-01 at 10 00 33 AM" src="https://github.com/user-attachments/assets/f1fe4c8f-3646-4b99-bd63-125f470589f3" />
 </p>
 
 <p>
-    <img width="1468" height="833" alt="Screenshot 2025-12-16 at 9 34 23 PM" src="https://github.com/user-attachments/assets/eea843a0-b676-48ff-9cc4-a7f269969938" />
+    <img width="1466" height="831" alt="Screenshot 2026-01-01 at 10 01 52 AM" src="https://github.com/user-attachments/assets/63586492-7de0-4416-be22-21d88f0d778a" />
 </p>
 
 <p>
-    <img width="1468" height="835" alt="Screenshot 2025-12-15 at 3 47 36 AM" src="https://github.com/user-attachments/assets/3a5c64fa-cf9d-471d-a02e-da528b86017d" />
+    <img width="1466" height="831" alt="Screenshot 2026-01-01 at 10 01 17 AM" src="https://github.com/user-attachments/assets/a64c5ca3-c841-4c91-a228-ff9336f9f8f5" />
 </p>
 
 
