@@ -1,3 +1,0 @@
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="/Users/subratomandal/.npm-global/bin:$PATH"
-

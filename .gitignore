@@ -7,3 +7,9 @@ dist
 .vscode
 .DS_Store
 .claude
+
+# Shell config files (should not be in repo)
+.zshrc*
+.bashrc*
+.bash_profile*
+.profile*
